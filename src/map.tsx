@@ -92,7 +92,10 @@ export class Map extends React.Component<{}, State> {
   public async componentWillMount() {
     const data = await getDataFromSheet();
 
-    const reports: TrafficLightReport[] = await Promise.all(data.map(convertToTrafficLightReport));
+    const safeData = data
+      .filter(report => report['Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)']);
+
+    const reports: TrafficLightReport[] = await Promise.all(safeData.map(convertToTrafficLightReport));
     console.log({ reports });
     this.setState({
       points: reports,
