@@ -3,7 +3,6 @@ import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
 import Card from "./Card";
 
-// const GSheetReader = require('g-sheets-api');
 import GSheetReader from "g-sheets-api";
 import { FormResponse, TrafficLightReport } from "./types";
 
@@ -42,7 +41,7 @@ export function drawMarker(
   map: mapboxgl.Map
 ): mapboxgl.Marker {
   const { lat, lon } = item;
-  var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+  var popup = new mapboxgl.Popup({ offset: 25}).setHTML(
     renderToString(<Card item={item} />)
   );
 

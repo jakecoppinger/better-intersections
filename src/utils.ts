@@ -13,6 +13,7 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   if(lat > 90 || lat< -90) {
     throw new Error(`Invalid latitude: ${lat}`);
   }
+  const timestampOverride: string = formResponse["Optional: What time (to the nearest 15 min) did you measure this?\nIf not specified assumes current time."]
 
   const val =  {
     osmId: osmId,
@@ -22,6 +23,7 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
     flashingDuration: parseInt(formResponse["How many seconds was the pedestrian light flashing red for?"]),
     redDuration: parseInt(formResponse["How many seconds was the pedestrian light solid red for?"]),
     notes: formResponse["Optional: Any other notes or observations?\n(possible improvements)"],
+    timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"]
   }
   const cycleTime = val.greenDuration + val.flashingDuration + val.redDuration;
 

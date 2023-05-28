@@ -67,7 +67,8 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: 10;
+  /* Show above the map, but below the pin popup */
+  z-index: 1;
 
 
   min-width: 400px;
@@ -90,4 +91,17 @@
   width: 310px;
   height: 30px;
   font-size: 20px;
+}
+
+h2 {
+  margin-top: 0px;
+}
+
+.mapboxgl-popup-content.mapboxgl-popup-content {
+  max-width: 200px;
+}
+
+.mapboxgl-popup {
+  /* Show popup over the top left info. */
+  z-index:2;
 }

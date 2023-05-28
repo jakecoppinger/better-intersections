@@ -15,6 +15,7 @@ export interface FormResponse {
 }
 
 export interface TrafficLightReport {
+  timestamp: string;
   osmId: string;
   lat: number;
   lon: number;
