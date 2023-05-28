@@ -67,17 +67,17 @@
   position: absolute;
   top: 10px;
   left: 10px;
+  right: 10px;
   /* Show above the map, but below the pin popup */
   z-index: 1;
 
 
-  min-width: 400px;
   
   padding: 5px 10px;
   
   background-color: rgba(255, 255, 255, 0.8);
   border: 3px solid gray;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 
