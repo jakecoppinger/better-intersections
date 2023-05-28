@@ -7,8 +7,15 @@ interface Props {
 
 export default function Card(props: Props) {
   const { item } = props;
-  const { greenDuration, flashingDuration, redDuration, cycleTime, notes, timestamp  } =
-    item;
+  const {
+    greenDuration,
+    flashingDuration,
+    redDuration,
+    cycleTime,
+    notes,
+    timestamp,
+    tags,
+  } = item;
 
   return (
     <div>
@@ -21,15 +28,19 @@ export default function Card(props: Props) {
       <p style={{ marginLeft: 4 }}>
         <h3>Measured at {timestamp}</h3>
         <br></br>
-        Green duration: {greenDuration} seconds
+        <b>Green duration:</b> {greenDuration} seconds
         <br></br>
-        Flashing red duration: {flashingDuration} seconds
+        <b>Flashing red duration:</b>  {flashingDuration} seconds
         <br></br>
-        Solid red duration: {redDuration} seconds
+        <b>Solid red duration:</b>  {redDuration} seconds
         <br></br>
-        Cycle time: {cycleTime} seconds
+        <b>Cycle time:</b>  {cycleTime} seconds
         <br></br>
         {notes ? `Additional notes: ${notes}` : ""}
+        
+        <br></br>
+        Additional OpenStreetMap intersection info:
+        <pre>{JSON.stringify(tags, null, 2)}</pre>
       </p>
     </div>
   );

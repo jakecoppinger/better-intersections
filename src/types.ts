@@ -25,4 +25,5 @@ export interface TrafficLightReport {
   notes?: string,
   /** Derived field */
   cycleTime: number,
+  tags: Record<string, string>
 }

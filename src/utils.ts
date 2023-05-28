@@ -6,17 +6,25 @@ function isStringInteger(str: string): boolean {
   return !isNaN(num) && parseInt(str, 10) === num;
 }
 
-/** Returns the lat/lon of an OpenStreetMap node by making a request to the OSM API */
-async function getOsmNodePosition(osmNode: string): Promise<{ lat: number, lon: number }> {
+async function getOsmNodePosition(osmNode: string): Promise<{ lat: number, lon: number, tags: Record<string, string> }> {
   const response: string = await (await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)).text();
   const osmApiResult = await parseStringPromise(response);
+
   const lat = parseFloat(osmApiResult.osm.node[0].$.lat);
   const lon = parseFloat(osmApiResult.osm.node[0].$.lon);
 
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);
   }
-  return { lat, lon };
+
+  // Extract tags
+  const tags: Record<string, string> = {};
+  const tagArray = osmApiResult.osm.node[0].tag || [];
+  tagArray.forEach((tag: any) => {
+    tags[tag.$.k] = tag.$.v;
+  });
+
+  return { lat, lon, tags };
 }
 
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
@@ -36,7 +44,7 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   if (osmId === undefined) {
     throw new Error(`No osm id in field: ${rawOsmId}`);
   }
-  const { lat, lon } = await getOsmNodePosition(osmId)
+  const { lat, lon, tags } = await getOsmNodePosition(osmId)
   const val = {
     osmId,
     lat: lat,
@@ -45,7 +53,8 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
     flashingDuration: parseInt(formResponse["How many seconds was the pedestrian light flashing red for?"]),
     redDuration: parseInt(formResponse["How many seconds was the pedestrian light solid red for?"]),
     notes: formResponse["Optional: Any other notes or observations?\n(possible improvements)"],
-    timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"]
+    timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"],
+    tags: tags
   }
   const cycleTime = val.greenDuration + val.flashingDuration + val.redDuration;
 
