@@ -9,7 +9,10 @@ import {
   removeMarkers,
 } from "./drawmap";
 import { SearchInput } from "./SearchInput";
-import { convertToTrafficLightReport } from "./utils";
+import {
+  convertToTrafficLightReport,
+  isValidTrafficLightReport,
+} from "./utils";
 import { TrafficLightReport } from "./types";
 
 const MAPBOX_TOKEN =
@@ -28,16 +31,14 @@ interface State {
   filteredPoints?: TrafficLightReport[];
 }
 
-
-const params = new URLSearchParams(window.location.search)
-const paramLat = params.get('lat');
-const paramLon = params.get('lon')
+const params = new URLSearchParams(window.location.search);
+const paramLat = params.get("lat");
+const paramLon = params.get("lon");
 
 const latitude = paramLat ? parseInt(paramLat) : -33.8688;
 const longitude = paramLon ? parseInt(paramLon) : 151.2093;
 
-console.log({lat: paramLat, lon: paramLon});
-
+console.log({ lat: paramLat, lon: paramLon });
 
 const initialState: State = {
   viewport: {
@@ -92,10 +93,18 @@ export class Map extends React.Component<{}, State> {
   public async componentWillMount() {
     const data = await getDataFromSheet();
 
-    const safeData = data
-      .filter(report => report['Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)']);
+    const safeData = data.filter(
+      (report) =>
+        report[
+          "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
+        ]
+    );
 
-    const reports: TrafficLightReport[] = await Promise.all(safeData.map(convertToTrafficLightReport));
+    const reports: TrafficLightReport[] = await Promise.all(
+      safeData
+        .filter(isValidTrafficLightReport)
+        .map(convertToTrafficLightReport)
+    );
     console.log({ reports });
     this.setState({
       points: reports,

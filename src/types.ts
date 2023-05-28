@@ -22,7 +22,7 @@ export interface TrafficLightReport {
   greenDuration: number,
   flashingDuration: number,
   redDuration: number,
-  notes: string,
+  notes?: string,
   /** Derived field */
   cycleTime: number,
 }
