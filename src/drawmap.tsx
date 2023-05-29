@@ -1,11 +1,12 @@
 import React from "react";
+import { debounce } from "ts-debounce";
 import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
 import IntersectionCard from "./Card";
 
 import GSheetReader from "g-sheets-api";
 import { FormResponse, IntersectionStats } from "./types";
-import { averageIntersectionCycleTime } from "./utils";
+import { averageIntersectionCycleTime, moveEndCallback } from "./utils";
 
 const options = {
   apiKey: "AIzaSyCr3HYpVAJ1iBlb_IjbK_KbltnC0T8C6hY",
@@ -68,6 +69,7 @@ export function addMapControls(map: mapboxgl.Map): void {
   );
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.FullscreenControl());
+
   // Add geolocate control to the map.
   map.addControl(
     new mapboxgl.GeolocateControl({
@@ -78,21 +80,13 @@ export function addMapControls(map: mapboxgl.Map): void {
     })
   );
 
-  // TODO: Fix this - fires many times per move
-  // map.on('moveend', function (originalEvent) {
-  //   const { lat, lng } = map.getCenter();
-  //   console.log('A moveend event occurred.');
-  //   console.log({ lat, lng })
+  const debouncedMoveEndCallback = debounce(moveEndCallback, 200, {});
 
-  //   // eg https://localhost:3000
-  //   const location = window.location.origin
-  //   console.log({ location });
-
-  //   // @ts-ignore
-  //   window.history.pushState({
-  //     id: 'homepage'
-  //   }, 'Home | My App', `${location}/?lat=${lat}&lon=${lng}`);
-  // });
+  map.on("moveend", function (originalEvent) {
+    console.log(originalEvent);
+    console.log("A moveend event occurred.");
+    debouncedMoveEndCallback({ centre: map.getCenter(), zoom: map.getZoom() });
+  });
 }
 
 export function removeMarkers(markers: mapboxgl.Marker[]): void {

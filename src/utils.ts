@@ -84,3 +84,24 @@ export function averageIntersectionCycleTime(intersection: IntersectionStats): n
   const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.cycleTime, 0);
   return totalCycleTime / intersection.reports.length;
 }
+
+
+interface MoveEndCallbackProps {
+  centre: mapboxgl.LngLat;
+  zoom: number;
+}
+
+export function moveEndCallback({ centre, zoom }: MoveEndCallbackProps) {
+  const { lat, lng } = centre;
+
+  const location = window.location.origin;
+  const fractionDigits = 4;
+
+  window.history.pushState(
+    {
+      id: "homepage",
+    },
+    "Home | My App",
+    `${location}/?lat=${lat.toFixed(fractionDigits)}&lon=${lng.toFixed(fractionDigits)}&zoom=${zoom.toFixed(fractionDigits)}`
+  );
+}

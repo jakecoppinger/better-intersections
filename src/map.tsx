@@ -36,9 +36,11 @@ interface State {
 const params = new URLSearchParams(window.location.search);
 const paramLat = params.get("lat");
 const paramLon = params.get("lon");
+const paramZoom = params.get("zoom");
 
-const latitude = paramLat ? parseInt(paramLat) : -33.8688;
-const longitude = paramLon ? parseInt(paramLon) : 151.2093;
+const latitude = paramLat ? parseFloat(paramLat) : -33.8688;
+const longitude = paramLon ? parseFloat(paramLon) : 151.2093;
+const zoom: number = paramZoom ? parseFloat(paramZoom) : 13;
 
 console.log({ lat: paramLat, lon: paramLon });
 
@@ -46,7 +48,7 @@ const initialState: State = {
   viewport: {
     longitude,
     latitude, // starting position
-    zoom: 13,
+    zoom,
   },
 };
 
