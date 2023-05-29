@@ -4,6 +4,10 @@ import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
 import IntersectionCard from "./Card";
 
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+
 import GSheetReader from "g-sheets-api";
 import { FormResponse, IntersectionStats } from "./types";
 import { averageIntersectionCycleTime, moveEndCallback } from "./utils";
@@ -70,13 +74,21 @@ export function addMapControls(map: mapboxgl.Map): void {
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.FullscreenControl());
 
+  // Add a mapbox search control to the map
+  map.addControl(
+    new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl,
+    }),
+    "bottom-left"
+  );
+
   // Add geolocate control to the map.
   map.addControl(
     new mapboxgl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: true,
       },
-      trackUserLocation: true,
     })
   );
 
