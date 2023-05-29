@@ -5,18 +5,20 @@ import "./App.css";
 import {
   drawmap,
   getDataFromSheet,
-  drawMarkers,
+  drawMarkers as drawIntersectionMarkers,
   removeMarkers,
 } from "./drawmap";
 import { SearchInput } from "./SearchInput";
 import {
   convertToTrafficLightReport,
   isValidTrafficLightReport,
+  summariseReportsByIntersection,
 } from "./utils";
-import { TrafficLightReport } from "./types";
+import { IntersectionStats, TrafficLightReport } from "./types";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
+
 interface State {
   viewport: {
     longitude: number;
@@ -26,9 +28,9 @@ interface State {
     // width: number;
   };
   map?: mapboxgl.Map;
-  points?: TrafficLightReport[];
+  points?: IntersectionStats[];
   markers?: mapboxgl.Marker[];
-  filteredPoints?: TrafficLightReport[];
+  filteredPoints?: IntersectionStats[];
 }
 
 const params = new URLSearchParams(window.location.search);
@@ -66,7 +68,7 @@ export class Map extends React.Component<{}, State> {
       console.log("Initial draw of map");
       const { map, filteredPoints } = nextState;
       drawmap(map);
-      const markers = drawMarkers(map, filteredPoints);
+      const markers = drawIntersectionMarkers(map, filteredPoints);
       this.setState({
         markers,
       });
@@ -79,7 +81,7 @@ export class Map extends React.Component<{}, State> {
       console.log("Redrawing markers");
       const { map, filteredPoints } = nextState;
       removeMarkers(this.state.markers);
-      const markers = drawMarkers(map, filteredPoints);
+      const markers = drawIntersectionMarkers(map, filteredPoints);
       this.setState({
         markers,
       });
@@ -105,11 +107,12 @@ export class Map extends React.Component<{}, State> {
         .filter(isValidTrafficLightReport)
         .map(convertToTrafficLightReport)
     );
+    const intersections: IntersectionStats[] = summariseReportsByIntersection(reports); 
     console.log({ reports });
     this.setState({
-      points: reports,
+      points: intersections,
       // Initially, show all points
-      filteredPoints: reports,
+      filteredPoints: intersections,
     });
   }
   public updateViewport = (viewport: Viewport) => {

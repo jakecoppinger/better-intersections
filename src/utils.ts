@@ -1,4 +1,4 @@
-import { FormResponse, TrafficLightReport } from "./types";
+import { FormResponse, IntersectionStats, TrafficLightReport } from "./types";
 import { parseStringPromise } from 'xml2js';
 
 function isStringInteger(str: string): boolean {
@@ -59,4 +59,28 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   const cycleTime = val.greenDuration + val.flashingDuration + val.redDuration;
 
   return { ...val, cycleTime };
+}
+
+export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
+  const stats: Record<string, IntersectionStats> = {};
+  reports.forEach(report => {
+    const existingStats = stats[report.osmId];
+    if (existingStats) {
+      existingStats.reports.push(report);
+    } else {
+      stats[report.osmId] = {
+        osmId: report.osmId,
+        reports: [report],
+        tags: report.tags,
+        lat: report.lat,
+        lon: report.lon,
+      }
+    }
+  });
+  return Object.values(stats);
+}
+
+export function averageIntersectionCycleTime(intersection: IntersectionStats): number {
+  const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.cycleTime, 0);
+  return totalCycleTime / intersection.reports.length;
 }

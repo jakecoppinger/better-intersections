@@ -67,11 +67,11 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  right: 10px;
+  
+  /* Don't attach to right side, but leave a gap */
+  margin-right: 10px;
   /* Show above the map, but below the pin popup */
   z-index: 1;
-
-
   
   padding: 5px 10px;
   
@@ -81,10 +81,10 @@
 }
 
 
-/* #search_container h3 {
-  margin: 0;
-  transform: translate(0, 18%);
-} */
+#search_overlay h2, #search_overlay h3 {
+  margin-top: 0px;
+  margin-bottom: 3px;
+}
 
 #search_container input {
   margin-left: 10px;
@@ -105,3 +105,4 @@ h2 {
   /* Show popup over the top left info. */
   z-index:2;
 }
+tr:nth-child(odd) {background-color: #f2f2f2;}

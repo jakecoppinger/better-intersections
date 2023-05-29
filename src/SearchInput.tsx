@@ -13,8 +13,7 @@ export const SearchInput: FunctionComponent<SearchInputProps> = ({
       <h3>A pedestrian traffic light timing map</h3>
 
       <p>
-        Very work in progress - I built this in an afternoon.<br></br> You can
-        contribute data with a simple form!{" "}
+        You can contribute data with a simple form!{" "}
         <a
           target="_blank"
           rel="noopener noreferrer"

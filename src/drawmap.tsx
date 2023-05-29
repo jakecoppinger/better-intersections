@@ -1,10 +1,11 @@
 import React from "react";
 import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
-import Card from "./Card";
+import IntersectionCard from "./Card";
 
 import GSheetReader from "g-sheets-api";
-import { FormResponse, TrafficLightReport } from "./types";
+import { FormResponse, IntersectionStats, TrafficLightReport } from "./types";
+import { averageIntersectionCycleTime } from "./utils";
 
 const options = {
   apiKey: "AIzaSyCr3HYpVAJ1iBlb_IjbK_KbltnC0T8C6hY",
@@ -36,27 +37,29 @@ export function getDataFromSheet(): Promise<FormResponse[]> {
   });
 }
 
-export function drawMarker(
-  item: TrafficLightReport,
+export function drawIntersectionMarker(
+  intersection: IntersectionStats,
   map: mapboxgl.Map
 ): mapboxgl.Marker {
-  const { lat, lon } = item;
-  var popup = new mapboxgl.Popup({ offset: 25}).setHTML(
-    renderToString(<Card item={item} />)
+  const { lat, lon } = intersection;
+  const cycleTime = averageIntersectionCycleTime(intersection);
+  var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+    renderToString(<IntersectionCard intersection={intersection} />)
   );
 
   let markerOptions: { color?: string } = {};
-  if (item.cycleTime < 30) {
+  // TODO: Automate this based on a map of thresholds and colours
+  if (cycleTime < 30) {
     markerOptions.color = "lime";
-  } else if (item.cycleTime < 45) {
+  } else if (cycleTime < 45) {
     markerOptions.color = "green";
-  } else if (item.cycleTime < 60) {
+  } else if (cycleTime < 60) {
     markerOptions.color = "orange";
-  } else if (item.cycleTime < 90) {
+  } else if (cycleTime < 90) {
     markerOptions.color = "red";
-  } else if (item.cycleTime < 120) {
+  } else if (cycleTime < 120) {
     markerOptions.color = "purple";
-  } else if (item.cycleTime >= 120) {
+  } else if (cycleTime >= 120) {
     markerOptions.color = "black";
   }
 
@@ -79,6 +82,7 @@ export function drawmap(map: mapboxgl.Map): void {
     })
   );
 
+  // TODO: Fix this - fires many times per move
   // map.on('moveend', function (originalEvent) {
   //   const { lat, lng } = map.getCenter();
   //   console.log('A moveend event occurred.');
@@ -91,21 +95,22 @@ export function drawmap(map: mapboxgl.Map): void {
   //   // @ts-ignore
   //   window.history.pushState({
   //     id: 'homepage'
-  //   }, 'Home | My App', `${location}/.../?lat=${lat}&lon=${lng}`);
+  //   }, 'Home | My App', `${location}/?lat=${lat}&lon=${lng}`);
   // });
 }
+
 export function removeMarkers(markers: mapboxgl.Marker[]): void {
   markers.map((marker) => marker.remove());
 }
 
 export function drawMarkers(
   map: mapboxgl.Map,
-  points: TrafficLightReport[]
+  points: IntersectionStats[]
 ): mapboxgl.Marker[] {
   const markers = points
-    .filter((point) => point.lat && point.lon)
-    .map((feedbackItem: TrafficLightReport) => {
-      return drawMarker(feedbackItem, map);
+    .filter((intersection) => intersection.lat && intersection.lon)
+    .map((intersection: IntersectionStats) => {
+      return drawIntersectionMarker(intersection, map);
     });
 
   return markers;

@@ -27,3 +27,15 @@ export interface TrafficLightReport {
   cycleTime: number,
   tags: Record<string, string>
 }
+
+
+export interface IntersectionStats {
+  osmId: string;
+  lat: number,
+  lon: number,
+  reports: TrafficLightReport[];
+  /** OSM tags for the intersection */
+  tags: Record<string, string>;
+}
+
+

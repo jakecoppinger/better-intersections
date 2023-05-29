@@ -1,46 +1,70 @@
 import React from "react";
-import { TrafficLightReport } from "./types";
+import { IntersectionStats } from "./types";
 
 interface Props {
-  item: TrafficLightReport;
+  intersection: IntersectionStats;
 }
 
-export default function Card(props: Props) {
-  const { item } = props;
-  const {
-    greenDuration,
-    flashingDuration,
-    redDuration,
-    cycleTime,
-    notes,
-    timestamp,
-    tags,
-  } = item;
+export default function IntersectionCard(props: {
+  intersection: IntersectionStats;
+}) {
+  const { intersection } = props;
+  const numMeasurements = intersection.reports.length;
 
   return (
     <div>
       <div
         style={{
           display: "flex",
-          margin: "8px 0",
+          margin: "0 0",
         }}
       ></div>
       <p style={{ marginLeft: 4 }}>
-        <h3>Measured at {timestamp}</h3>
+        <p>
+          {numMeasurements}{" "}
+          {numMeasurements === 1 ? "measurement" : "measurements"} at this
+          intersection.
+        </p>
+        <table>
+          <tr>
+            <th>Time</th>
+            <th>Green</th>
+            <th>Flashing red</th>
+            <th>Red</th>
+            <th>Cycle</th>
+            <th>Notes</th>
+          </tr>
+          {intersection.reports.map((r) => (
+            <tr>
+              <td>{r.timestamp}</td>
+              <td>
+                <span className="green">{r.greenDuration}</span>
+              </td>
+              <td>
+                <span className="flashing_red">{r.flashingDuration}</span>
+              </td>
+              <td>
+                <span className="red">{r.redDuration}</span>
+              </td>
+              <td>{r.cycleTime}</td>
+              {r.notes ? <td>{r.notes}</td> : <td></td>}
+            </tr>
+          ))}
+        </table>
+        {/* <h3>Measured at {timestamp}</h3>
         <br></br>
         <b>Green duration:</b> {greenDuration} seconds
         <br></br>
-        <b>Flashing red duration:</b>  {flashingDuration} seconds
+        <b>Flashing red duration:</b> {flashingDuration} seconds
         <br></br>
-        <b>Solid red duration:</b>  {redDuration} seconds
+        <b>Solid red duration:</b> {redDuration} seconds
         <br></br>
-        <b>Cycle time:</b>  {cycleTime} seconds
+        <b>Cycle time:</b> {cycleTime} seconds
         <br></br>
-        {notes ? `Additional notes: ${notes}` : ""}
-        
+        {notes ? `Additional notes: ${notes}` : ""} */}
         <br></br>
-        Additional OpenStreetMap intersection info:
-        <pre>{JSON.stringify(tags, null, 2)}</pre>
+        {/* Additional OpenStreetMap intersection info:
+        <pre>{JSON.stringify(tags, null, 2)}</pre> */}
       </p>
     </div>
   );
