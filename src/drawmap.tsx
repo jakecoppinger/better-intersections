@@ -9,19 +9,10 @@ import { averageIntersectionCycleTime } from "./utils";
 
 const options = {
   apiKey: "AIzaSyCr3HYpVAJ1iBlb_IjbK_KbltnC0T8C6hY",
-  sheetId: "12HwTj8Bi_7J5idIi4OWHMknTx1DkNVHqfpPlRxRJG_w",
-  // sheetNumber: 1,
-  sheetName: "Form Responses 1", // if sheetName is supplied, this will take precedence over sheetNumber
+  // This is a public Google Sheet, with results copied from a private sheet (excluding emails)
+  sheetId: "1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM",
+  sheetName: "Sheet1",
   returnAllResults: true,
-  // returnAllResults: false,
-  // filter: {
-  //   'department': 'archaeology',
-  //   'module description': 'introduction'
-  // },
-  // filterOptions: {
-  //   operator: 'or',
-  //   matching: 'loose'
-  // }
 };
 export function getDataFromSheet(): Promise<FormResponse[]> {
   return new Promise((resolve, reject) => {
