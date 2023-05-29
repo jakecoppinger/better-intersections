@@ -3,10 +3,10 @@ import ReactMapGL, { NavigationControl } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 import "./App.css";
 import {
-  drawmap,
   getDataFromSheet,
-  drawMarkers as drawIntersectionMarkers,
+  drawIntersectionMarkers,
   removeMarkers,
+  addMapControls,
 } from "./drawmap";
 import { SearchInput } from "./SearchInput";
 import {
@@ -54,9 +54,30 @@ type Viewport = typeof initialState.viewport;
 export class Map extends React.Component<{}, State> {
   public state: State = initialState;
 
-  public componentDidMount() {
+  async componentDidMount() {
     window.addEventListener("resize", this.resize);
     this.resize();
+    const data = await getDataFromSheet();
+
+    const safeData = data.filter(
+      (report) =>
+        report[
+          "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
+        ]
+    );
+
+    const reports: TrafficLightReport[] = await Promise.all(
+      safeData
+        .filter(isValidTrafficLightReport)
+        .map(convertToTrafficLightReport)
+    );
+    const intersections: IntersectionStats[] = summariseReportsByIntersection(reports); 
+    console.log({ reports });
+    this.setState({
+      points: intersections,
+      // Initially, show all points
+      filteredPoints: intersections,
+    });
   }
 
   async UNSAFE_componentWillUpdate(nextProps: any, nextState: State) {
@@ -67,7 +88,7 @@ export class Map extends React.Component<{}, State> {
     if (!this.state.markers && !nextState.markers) {
       console.log("Initial draw of map");
       const { map, filteredPoints } = nextState;
-      drawmap(map);
+      addMapControls(map);
       const markers = drawIntersectionMarkers(map, filteredPoints);
       this.setState({
         markers,
@@ -93,27 +114,6 @@ export class Map extends React.Component<{}, State> {
   }
 
   public async componentWillMount() {
-    const data = await getDataFromSheet();
-
-    const safeData = data.filter(
-      (report) =>
-        report[
-          "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
-        ]
-    );
-
-    const reports: TrafficLightReport[] = await Promise.all(
-      safeData
-        .filter(isValidTrafficLightReport)
-        .map(convertToTrafficLightReport)
-    );
-    const intersections: IntersectionStats[] = summariseReportsByIntersection(reports); 
-    console.log({ reports });
-    this.setState({
-      points: intersections,
-      // Initially, show all points
-      filteredPoints: intersections,
-    });
   }
   public updateViewport = (viewport: Viewport) => {
     this.setState((prevState) => ({
@@ -173,6 +173,7 @@ export class Map extends React.Component<{}, State> {
             }
             mapboxApiAccessToken={MAPBOX_TOKEN}
             onViewportChange={(v: Viewport) => this.updateViewport(v)}
+            attributionControl={false}
           >
             <div style={{ position: "absolute", right: 30, bottom: 30 }}>
               <NavigationControl onViewportChange={this.updateViewport} />

@@ -4,7 +4,7 @@ import { renderToString } from "react-dom/server";
 import IntersectionCard from "./Card";
 
 import GSheetReader from "g-sheets-api";
-import { FormResponse, IntersectionStats, TrafficLightReport } from "./types";
+import { FormResponse, IntersectionStats } from "./types";
 import { averageIntersectionCycleTime } from "./utils";
 
 const options = {
@@ -69,7 +69,12 @@ export function drawIntersectionMarker(
     .addTo(map);
 }
 
-export function drawmap(map: mapboxgl.Map): void {
+export function addMapControls(map: mapboxgl.Map): void {
+  map.addControl(
+    new mapboxgl.AttributionControl({
+      compact: false,
+    })
+  );
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.FullscreenControl());
   // Add geolocate control to the map.
@@ -103,7 +108,7 @@ export function removeMarkers(markers: mapboxgl.Marker[]): void {
   markers.map((marker) => marker.remove());
 }
 
-export function drawMarkers(
+export function drawIntersectionMarkers(
   map: mapboxgl.Map,
   points: IntersectionStats[]
 ): mapboxgl.Marker[] {

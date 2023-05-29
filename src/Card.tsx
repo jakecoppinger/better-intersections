@@ -35,7 +35,7 @@ export default function IntersectionCard(props: {
             <th>Notes</th>
           </tr>
           {intersection.reports.map((r) => (
-            <tr>
+            <tr key={r.osmId}>
               <td>{r.timestamp}</td>
               <td>
                 <span className="green">{r.greenDuration}</span>
