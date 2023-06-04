@@ -133,35 +133,12 @@ export class Map extends React.Component<{}, State> {
     }));
   };
 
-  private inputChange = (text: string) => {
-    // private inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // const text: string = e.target.value;
-
-    if (!this.state.points) {
-      return;
-    }
-
-    // const newFilteredPoints = this.state.points.filter((point) =>
-    //   point.Title?.toLowerCase().includes(text.toLowerCase())
-    // );
-
-    // this.setState({
-    //   // Initially, show all points
-    //   filteredPoints: newFilteredPoints,
-    // });
-  };
-  private buttonClick = (e: any) => {
-    if (this.state.markers) {
-      removeMarkers(this.state.markers);
-    }
-  };
-
   public render() {
     const { viewport } = this.state;
     return (
       <div id="container">
         <div id="search_overlay">
-          <MapInfoBox onSearchTermUpdated={this.inputChange} />
+          <MapInfoBox />
         </div>
         <div id="map">
           <ReactMapGL
