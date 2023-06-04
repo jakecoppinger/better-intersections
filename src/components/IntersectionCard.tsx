@@ -38,15 +38,15 @@ export default function IntersectionCard(props: {
             <tr key={r.osmId}>
               <td>{r.timestamp}</td>
               <td>
-                <span className="green">{r.greenDuration}</span>
+                <span className="green">{r.greenDuration} sec.</span>
               </td>
               <td>
-                <span className="flashing_red">{r.flashingDuration}</span>
+                <span className="flashing_red">{r.flashingDuration} sec.</span>
               </td>
               <td>
-                <span className="red">{r.redDuration}</span>
+                <span className="red">{r.redDuration} sec.</span>
               </td>
-              <td>{r.cycleTime}</td>
+              <td>{r.cycleTime} sec.</td>
               {r.notes ? <td>{r.notes}</td> : <td></td>}
             </tr>
           ))}
