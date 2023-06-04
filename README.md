@@ -7,7 +7,10 @@ Please forgive the bad code - I built this in an afternoon.
 
 # Contributing new data
 
-See https://forms.gle/3FFGD5Jk14wUS22n6
+See http://betterintersections.jakecoppinger.com/about
+
+# Developing
+Basically create react app development.
 
 ### `yarn start`
 

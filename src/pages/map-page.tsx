@@ -1,20 +1,20 @@
 import * as React from "react";
 import ReactMapGL, { NavigationControl } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
-import "./App.css";
+import "../App.css";
 import {
   getDataFromSheet,
   drawIntersectionMarkers,
   removeMarkers,
   addMapControls,
-} from "./drawmap";
-import { SearchInput } from "./SearchInput";
+} from "../drawmap";
+import { MapInfoBox } from "../components/MapInfoBox";
 import {
   convertToTrafficLightReport,
   isValidTrafficLightReport,
   summariseReportsByIntersection,
-} from "./utils";
-import { IntersectionStats, TrafficLightReport } from "./types";
+} from "../utils/utils";
+import { IntersectionStats, TrafficLightReport } from "../types";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -73,7 +73,8 @@ export class Map extends React.Component<{}, State> {
         .filter(isValidTrafficLightReport)
         .map(convertToTrafficLightReport)
     );
-    const intersections: IntersectionStats[] = summariseReportsByIntersection(reports); 
+    const intersections: IntersectionStats[] =
+      summariseReportsByIntersection(reports);
     console.log({ reports });
     this.setState({
       points: intersections,
@@ -115,8 +116,7 @@ export class Map extends React.Component<{}, State> {
     window.removeEventListener("resize", this.resize);
   }
 
-  public async componentWillMount() {
-  }
+  public async componentWillMount() {}
   public updateViewport = (viewport: Viewport) => {
     this.setState((prevState) => ({
       viewport: { ...prevState.viewport, ...viewport },
@@ -161,7 +161,7 @@ export class Map extends React.Component<{}, State> {
     return (
       <div id="container">
         <div id="search_overlay">
-          <SearchInput onSearchTermUpdated={this.inputChange} />
+          <MapInfoBox onSearchTermUpdated={this.inputChange} />
         </div>
         <div id="map">
           <ReactMapGL

@@ -1,4 +1,4 @@
-import { FormResponse, IntersectionStats, TrafficLightReport } from "./types";
+import { FormResponse, IntersectionStats, TrafficLightReport } from "../types";
 import { parseStringPromise } from 'xml2js';
 
 function isStringInteger(str: string): boolean {

@@ -1,5 +1,5 @@
 import React from "react";
-import { IntersectionStats } from "./types";
+import { IntersectionStats } from "../types";
 
 interface Props {
   intersection: IntersectionStats;

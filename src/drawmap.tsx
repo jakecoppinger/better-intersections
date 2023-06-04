@@ -2,7 +2,7 @@ import React from "react";
 import { debounce } from "ts-debounce";
 import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
-import IntersectionCard from "./Card";
+import IntersectionCard from "./components/IntersectionCard";
 
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 
@@ -10,7 +10,7 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import GSheetReader from "g-sheets-api";
 import { FormResponse, IntersectionStats } from "./types";
-import { averageIntersectionCycleTime, moveEndCallback } from "./utils";
+import { averageIntersectionCycleTime, moveEndCallback } from "./utils/utils";
 
 const options = {
   apiKey: "AIzaSyCr3HYpVAJ1iBlb_IjbK_KbltnC0T8C6hY",

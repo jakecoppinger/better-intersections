@@ -8,7 +8,7 @@ import {
   CloseButton,
   Content,
   Backdrop,
-} from './modal.style';
+} from '../styles/modal.style';
 export interface ModalProps {
   isShown: boolean;
   hide: () => void;
