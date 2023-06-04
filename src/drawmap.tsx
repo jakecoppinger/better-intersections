@@ -33,6 +33,9 @@ export function getDataFromSheet(): Promise<FormResponse[]> {
   });
 }
 
+const clamp = (num: number, min: number, max: number) =>
+  Math.min(Math.max(num, min), max);
+
 export function drawIntersectionMarker(
   intersection: IntersectionStats,
   map: mapboxgl.Map
@@ -44,20 +47,57 @@ export function drawIntersectionMarker(
   );
 
   let markerOptions: { color?: string } = {};
-  // TODO: Automate this based on a map of thresholds and colours
-  if (cycleTime < 30) {
-    markerOptions.color = "lime";
-  } else if (cycleTime < 45) {
-    markerOptions.color = "green";
-  } else if (cycleTime < 60) {
-    markerOptions.color = "orange";
-  } else if (cycleTime < 90) {
-    markerOptions.color = "red";
-  } else if (cycleTime < 120) {
-    markerOptions.color = "purple";
-  } else if (cycleTime >= 120) {
+  
+  const cycleColourCliffs: { [key: number]: string } = {
+    // Alternative colours
+    // 30: "#29FF08",
+    // 45: "#C5DE07",
+    // 60: "#F5CB13",
+    // 90: "#E08804",
+    // 120: "#FA5814",
+
+    30: "#ff0000",
+    45: "#fc4f00",
+    60: "#f27600",
+    90: "#e29700",
+    100: "#cab500",
+    120: "#aad000",
+    160: "#7de800",
+    180: "#00ff00",
+  };
+
+  // Cliffs keys sorted low to high
+  const cycleColourCliffKeys: number[] = Object.keys(cycleColourCliffs)
+    .map((key) => parseInt(key))
+    // Sort by smallest to largest number
+    .sort((a, b) => a - b);
+
+  // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
+  for (let i = 0; i < cycleColourCliffKeys.length; i++) {
+    const key = cycleColourCliffKeys[i];
+    if (cycleTime <= key) {
+      markerOptions.color = cycleColourCliffs[key];
+      break;
+    }
+  }
+  if (markerOptions.color === undefined) {
     markerOptions.color = "black";
   }
+
+  // First colours
+  // if (cycleTime < 30) {
+  //   markerOptions.color = "#29FF08";
+  // } else if (cycleTime < 45) {
+  //   markerOptions.color = "#C5DE07";
+  // } else if (cycleTime < 60) {
+  //   markerOptions.color = "#F5CB13";
+  // } else if (cycleTime < 90) {
+  //   markerOptions.color = "#E08804";
+  // } else if (cycleTime < 120) {
+  //   markerOptions.color = "#FA5814";
+  // } else if (cycleTime >= 120) {
+  //   markerOptions.color = "black";
+  // }
 
   return new mapboxgl.Marker(markerOptions)
     .setLngLat({ lat, lon })
