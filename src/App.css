@@ -12,6 +12,27 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+.green {
+  color: #179a58;
+}
+
+.flashing_red {
+  color: #ff0000;
+  animation: flashing_red 1s linear infinite;
+}
+
+.red {
+  color: #ff0000;
+}
+
+@keyframes flashing_red {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
 
 .App-header {
   background-color: #282c34;
@@ -22,6 +43,21 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+/* set the background colour to a soft pink */
+body {
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+h3,
+h2,
+h1,
+p {
+  font-family: Helvetica Neue, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, sans-serif;
 }
 
 .App-link {
@@ -46,7 +82,7 @@
 }
 
 #right {
-  width:70vw;
+  width: 70vw;
   overflow: hidden;
   position: absolute;
   top: 0;
@@ -66,21 +102,21 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  
+
   /* Don't attach to right side, but leave a gap */
   margin-right: 10px;
   /* Show above the map, but below the pin popup */
   z-index: 1;
-  
+
   padding: 5px 10px;
-  
+
   background-color: rgba(255, 255, 255, 0.8);
   border: 3px solid gray;
   border-radius: 10px;
 }
 
-
-#search_overlay h2, #search_overlay h3 {
+#search_overlay h2,
+#search_overlay h3 {
   margin-top: 0px;
   margin-bottom: 3px;
 }
@@ -102,6 +138,8 @@ h2 {
 
 .mapboxgl-popup {
   /* Show popup over the top left info. */
-  z-index:2;
+  z-index: 2;
 }
-tr:nth-child(odd) {background-color: #f2f2f2;}
+tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
