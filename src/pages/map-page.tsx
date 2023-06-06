@@ -25,6 +25,7 @@ import {
   averageIntersectionCycleTime,
   getColourForCycletime,
 } from "../utils/utils";
+import GeocoderControl from "../utils/geocoder-control";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -135,17 +136,11 @@ export function MapComponent() {
           }
           attributionControl={false}
         >
-          {/* TODO: Broken with react map gl 7 */}
-          {/* <Geocoder
-            mapRef={state.map}
-            onViewportChange={handleGeocoderViewportChange}
-            mapboxApiAccessToken={MAPBOX_TOKEN}
-            position="top-left"
-          /> */}
+          <GeocoderControl mapboxAccessToken={MAPBOX_TOKEN} position="bottom-left" />
           <AttributionControl compact={false} />
-          <FullscreenControl />
-          <GeolocateControl />
-          <NavigationControl />
+          <FullscreenControl position="bottom-right"/>
+          <GeolocateControl position="bottom-right"/>
+          <NavigationControl position="bottom-right"/>
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
                 const cycleTime = averageIntersectionCycleTime(intersection);
