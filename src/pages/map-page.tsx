@@ -34,8 +34,8 @@ const paramLon = params.get("lon");
 const paramZoom = params.get("zoom");
 
 const latitude = paramLat ? parseFloat(paramLat) : -33.8688;
-const longitude = paramLon ? parseFloat(paramLon) : 151.2093;
-const zoom: number = paramZoom ? parseFloat(paramZoom) : 13;
+const longitude = paramLon ? parseFloat(paramLon) : 151.1593;
+const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
 
 console.log({ lat: paramLat, lon: paramLon });
 

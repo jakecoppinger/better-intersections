@@ -76,13 +76,33 @@ export default function IntersectionNodePage() {
     adjacentWays !== undefined
       ? getMainWayForIntersection(adjacentWays)
       : undefined;
+
   return (
     <HeaderAndFooter>
       <div>
         <h1>
-          {adjacentWays === undefined
-            ? "Loading street..."
-            : adjacentWays[0].tags.name}
+          <span>
+            {adjacentWays === undefined
+              ? "Loading street "
+              : adjacentWays[0].tags.name + " "}
+            {intersection ? (
+              <span>
+                (
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`https://geohack.toolforge.org/geohack.php?params=${generateGeohackQueryParam(
+                    { lat: intersection.lat, lon: intersection.lon }
+                  )}`}
+                >
+                  {intersection.lat}, {intersection.lon}
+                </a>
+                )
+              </span>
+            ) : (
+              <span>(...)</span>
+            )}
+          </span>
         </h1>
 
         {/* TODO: Add paragraph like x measurements over x hours/days whatever */}
