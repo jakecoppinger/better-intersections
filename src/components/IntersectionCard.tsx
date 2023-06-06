@@ -19,17 +19,17 @@ export default function IntersectionCard(props: {
           margin: "0 0",
         }}
       ></div>
-      <p style={{ marginLeft: 4 }}>
-        <p>
-          {numMeasurements}{" "}
-          {numMeasurements === 1 ? "measurement" : "measurements"} at this
-          intersection.
-        </p>
-        {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
-        <a href={`/intersection/node/${intersection.osmId}`}>
-          View more stats about this intersection
-        </a>
-        <table>
+      <p>
+        {numMeasurements}{" "}
+        {numMeasurements === 1 ? "measurement" : "measurements"} at this
+        intersection.
+      </p>
+      {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
+      <a href={`/intersection/node/${intersection.osmId}`}>
+        View more stats about this intersection
+      </a>
+      <table>
+        <thead>
           <tr>
             <th>Time</th>
             <th>Green</th>
@@ -38,24 +38,28 @@ export default function IntersectionCard(props: {
             <th>Cycle</th>
             <th>Notes</th>
           </tr>
-          {intersection.reports.map((r) => (
-            <tr key={r.osmId}>
-              <td>{r.timestamp}</td>
-              <td>
-                <span className="green">{r.greenDuration} sec.</span>
-              </td>
-              <td>
-                <span className="flashing_red">{r.flashingDuration} sec.</span>
-              </td>
-              <td>
-                <span className="red">{r.redDuration} sec.</span>
-              </td>
-              <td>{r.cycleTime} sec.</td>
-              {r.notes ? <td>{r.notes}</td> : <td></td>}
-            </tr>
-          ))}
-        </table>
-        {/* <h3>Measured at {timestamp}</h3>
+        </thead>
+        <tbody>
+
+        {intersection.reports.map((r) => (
+          <tr key={r.osmId}>
+            <td>{r.timestamp}</td>
+            <td>
+              <span className="green">{r.greenDuration} sec.</span>
+            </td>
+            <td>
+              <span className="flashing_red">{r.flashingDuration} sec.</span>
+            </td>
+            <td>
+              <span className="red">{r.redDuration} sec.</span>
+            </td>
+            <td>{r.cycleTime} sec.</td>
+            {r.notes ? <td>{r.notes}</td> : <td></td>}
+          </tr>
+        ))}
+        </tbody>
+      </table>
+      {/* <h3>Measured at {timestamp}</h3>
         <br></br>
         <b>Green duration:</b> {greenDuration} seconds
         <br></br>
@@ -66,10 +70,9 @@ export default function IntersectionCard(props: {
         <b>Cycle time:</b> {cycleTime} seconds
         <br></br>
         {notes ? `Additional notes: ${notes}` : ""} */}
-        <br></br>
-        {/* Additional OpenStreetMap intersection info:
+      <br></br>
+      {/* Additional OpenStreetMap intersection info:
         <pre>{JSON.stringify(tags, null, 2)}</pre> */}
-      </p>
     </div>
   );
 }

@@ -6,7 +6,6 @@ function isStringInteger(str: string): boolean {
   return !isNaN(num) && parseInt(str, 10) === num;
 }
 
-
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
 export function isValidTrafficLightReport(formResponse: FormResponse): boolean {
   const rawOsmId = formResponse["Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"];
