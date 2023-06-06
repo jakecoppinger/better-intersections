@@ -35,6 +35,16 @@ const About: React.FC = () => {
 
         <h1>How to contribute</h1>
 
+        <iframe
+          width="315"
+          height="560"
+          src="https://www.youtube.com/embed/HJCyV1cQoqo"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
+
         <p>
           What you will need:
           <ol>
