@@ -1,5 +1,13 @@
 import * as React from "react";
-import ReactMapGL, { NavigationControl, MapboxMap, AttributionControl, FullscreenControl, GeolocateControl, Marker } from "react-map-gl";
+import ReactMapGL, {
+  NavigationControl,
+  MapboxMap,
+  AttributionControl,
+  FullscreenControl,
+  GeolocateControl,
+  Marker,
+  Popup,
+} from "react-map-gl";
 import "../App.css";
 import {
   drawIntersectionMarkers,
@@ -10,8 +18,9 @@ import { MapInfoBox } from "../components/MapInfoBox";
 import { IntersectionStats } from "../types";
 import { getIntersections } from "../api/google-sheets";
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import { IntersectionType } from "typescript";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
@@ -49,6 +58,100 @@ const initialState: State = {
 };
 
 type Viewport = typeof initialState.viewport;
+
+export function MapComponent() {
+  const [state, setState] = React.useState<State>(initialState);
+  const [popupIntersection, setPopupIntersection] = React.useState<
+    IntersectionStats | undefined
+  >(undefined);
+
+  React.useEffect(() => {
+    if (!state.map) {
+      return;
+    }
+
+    addMapControls(state.map);
+  }, [state.map]);
+
+  React.useEffect(() => {
+    async function getIntersectionsWrapper() {
+      const intersections = await getIntersections();
+      setState((s) => ({
+        ...s,
+        points: intersections.filter(
+          (intersection) => intersection.lat && intersection.lon
+        ),
+        // Initially, show all points
+        // filteredPoints: intersections,
+      }));
+    }
+    getIntersectionsWrapper();
+  }, []);
+
+  React.useEffect(() => {
+    if (!state.map || !state.filteredPoints) {
+      return;
+    }
+    if (!state.markers) {
+      console.log("Initial draw of map");
+      addMapControls(state.map);
+      const markers = drawIntersectionMarkers(state.map, state.filteredPoints);
+      setState({ ...state, markers });
+    }
+  }, [state.map, state.filteredPoints, state.markers]);
+
+  return (
+    <div id="container">
+      <div id="search_overlay">
+        <MapInfoBox />
+      </div>
+      <div id="map">
+        <ReactMapGL
+          initialViewState={state.viewport}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          style={{ width: "100vw", height: "100vh" }}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+          ref={(ref) =>
+            ref && !state.map && setState({ ...state, map: ref.getMap() })
+          }
+          attributionControl={false}
+        >
+          <AttributionControl compact={false} />
+          <FullscreenControl />
+          <GeolocateControl />
+          <NavigationControl />
+          {/* <Marker latitude={-33.8688} longitude={151.1593} /> */}
+
+          {state.points
+            ? state.points.map((intersection: IntersectionStats) => {
+                return (
+                  <Marker
+                    latitude={intersection.lat}
+                    longitude={intersection.lon}
+                    onClick={() => {
+                      setPopupIntersection(intersection);
+                    }}
+                    // <IntersectionCard intersection={intersection}
+                  />
+                );
+              })
+            : null}
+
+          {popupIntersection ? (
+            <Popup
+              latitude={popupIntersection.lat}
+              longitude={popupIntersection.lon}
+              onClose={() => setPopupIntersection(undefined)}
+            >
+              <h1>Hello</h1>
+            </Popup>
+          ) : null}
+          {/* Todo add search  */}
+        </ReactMapGL>
+      </div>
+    </div>
+  );
+}
 
 // export class Map extends React.Component<{}, State> {
 //   public state: State = initialState;
@@ -145,62 +248,3 @@ type Viewport = typeof initialState.viewport;
 //     );
 //   }
 // }
-
-export function MapComponent() {
-  const [state, setState] = React.useState<State>(initialState);
-
-  React.useEffect(() => {
-    if (!state.map) {
-      return;
-    }
-
-    addMapControls(state.map);
-  }, [state.map]);
-
-
-  React.useEffect(() => {
-    if (!state.map || !state.filteredPoints) {
-      return;
-    }
-    if (!state.markers) {
-      console.log("Initial draw of map");
-      addMapControls(state.map);
-      const markers = drawIntersectionMarkers(state.map, state.filteredPoints);
-      setState({ ...state, markers });
-    } 
-    // else {
-    //   console.log("Redrawing markers");
-    //   removeMarkers(state.markers);
-    //   const markers = drawIntersectionMarkers(state.map, state.filteredPoints);
-    //   setState({ ...state, markers });
-    // }
-  }, [state.map, state.filteredPoints, state.markers]);
-
-
-  return (
-    <div id="container">
-      <div id="search_overlay">
-        <MapInfoBox />
-      </div>
-      <div id="map">
-        <ReactMapGL
-          initialViewState={state.viewport}
-          mapboxAccessToken={MAPBOX_TOKEN}
-          style={{ width: "100vw", height: "100vh" }}
-          mapStyle="mapbox://styles/mapbox/streets-v9"
-          ref={(ref) =>
-            ref && !state.map && setState({ ...state, map: ref.getMap() })
-          }
-          attributionControl={false}
-        >
-          <AttributionControl compact={false}/>
-          <FullscreenControl />
-          <GeolocateControl />
-          <NavigationControl/>
-          <Marker latitude={-33.8688} longitude={151.1593}/>
-          {/* Todo add search  */}
-        </ReactMapGL>
-      </div>
-    </div>
-  );
-}
