@@ -97,23 +97,7 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
 }
 
 export function getColourForCycletime(cycleTime: number): string {
-
   const cycleColourCliffs: { [key: number]: string } = {
-    // Alternative colours
-    // 30: "#29FF08",
-    // 45: "#C5DE07",
-    // 60: "#F5CB13",
-    // 90: "#E08804",
-    // 120: "#FA5814",
-
-    // 30: "#ff0000",
-    // 45: "#fc4f00",
-    // 60: "#f27600",
-    // 90: "#e29700",
-    // 100: "#cab500",
-    // 120: "#aad000",
-    // 160: "#7de800",
-    // 180: "#00ff00",
     180: "#ff0000",
     160: "#fc4f00",
     120: "#f27600",

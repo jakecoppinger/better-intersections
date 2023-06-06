@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import ReactMapGL, {
   NavigationControl,
   MapboxMap,
@@ -8,12 +8,11 @@ import ReactMapGL, {
   Marker,
   Popup,
 } from "react-map-gl";
+// @ts-ignore
+import Geocoder from "react-map-gl-geocoder";
+import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "../App.css";
-import {
-  drawIntersectionMarkers,
-  removeMarkers,
-  addMapControls,
-} from "../drawmap";
+import { removeMarkers, addMapControls } from "../drawmap";
 import { MapInfoBox } from "../components/MapInfoBox";
 import { IntersectionStats } from "../types";
 import { getIntersections } from "../api/google-sheets";
@@ -26,17 +25,18 @@ import {
   averageIntersectionCycleTime,
   getColourForCycletime,
 } from "../utils/utils";
+
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
 interface State {
-  viewport: {
-    longitude: number;
-    latitude: number; // starting position
-    zoom: number;
-    // height: number;
-    // width: number;
-  };
+  // viewport: {
+  //   longitude: number;
+  //   latitude: number; // starting position
+  //   zoom: number;
+  //   // height: number;
+  //   // width: number;
+  // };
   map?: MapboxMap | undefined;
   points?: IntersectionStats[];
   markers?: mapboxgl.Marker[];
@@ -55,20 +55,31 @@ const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
 console.log({ lat: paramLat, lon: paramLon });
 
 const initialState: State = {
-  viewport: {
-    longitude,
-    latitude, // starting position
-    zoom,
-  },
+  // viewport: {
+  //   longitude,
+  //   latitude, // starting position
+  //   zoom,
+  // },
 };
 
-type Viewport = typeof initialState.viewport;
+// type Viewport = typeof initialState.viewport;
+type Viewport = {
+  longitude: number;
+  latitude: number; // starting position
+  zoom: number;
+};
 
 export function MapComponent() {
   const [state, setState] = React.useState<State>(initialState);
   const [popupIntersection, setPopupIntersection] = React.useState<
     IntersectionStats | undefined
   >(undefined);
+
+  const [viewport, setViewport] = React.useState<Viewport>({
+    longitude,
+    latitude, // starting position
+    zoom,
+  });
 
   React.useEffect(() => {
     if (!state.map) {
@@ -93,17 +104,20 @@ export function MapComponent() {
     getIntersectionsWrapper();
   }, []);
 
-  React.useEffect(() => {
-    if (!state.map || !state.filteredPoints) {
-      return;
-    }
-    if (!state.markers) {
-      console.log("Initial draw of map");
-      addMapControls(state.map);
-      const markers = drawIntersectionMarkers(state.map, state.filteredPoints);
-      setState({ ...state, markers });
-    }
-  }, [state.map, state.filteredPoints, state.markers]);
+  const handleViewportChange = useCallback(
+    (newViewport: Viewport) => setViewport(newViewport),
+    []
+  );
+
+  // if you are happy with Geocoder default settings, you can just use handleViewportChange directly
+  const handleGeocoderViewportChange = useCallback((newViewport: Viewport) => {
+    const geocoderDefaultOverrides = { transitionDuration: 1000 };
+
+    return handleViewportChange({
+      ...newViewport,
+      ...geocoderDefaultOverrides,
+    });
+  }, []);
 
   return (
     <div id="container">
@@ -112,7 +126,7 @@ export function MapComponent() {
       </div>
       <div id="map">
         <ReactMapGL
-          initialViewState={state.viewport}
+          initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}
           style={{ width: "100vw", height: "100vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v9"
@@ -121,6 +135,13 @@ export function MapComponent() {
           }
           attributionControl={false}
         >
+          {/* TODO: Broken with react map gl 7 */}
+          {/* <Geocoder
+            mapRef={state.map}
+            onViewportChange={handleGeocoderViewportChange}
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+            position="top-left"
+          /> */}
           <AttributionControl compact={false} />
           <FullscreenControl />
           <GeolocateControl />
@@ -146,6 +167,7 @@ export function MapComponent() {
               latitude={popupIntersection.lat}
               longitude={popupIntersection.lon}
               onClose={() => setPopupIntersection(undefined)}
+              offset={25}
             >
               <IntersectionCard intersection={popupIntersection} />
             </Popup>

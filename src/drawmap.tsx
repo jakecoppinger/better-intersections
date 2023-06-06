@@ -7,49 +7,10 @@ import IntersectionCard from "./components/IntersectionCard";
 
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 
-import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 import { IntersectionStats } from "./types";
 import { averageIntersectionCycleTime, moveEndCallback } from "./utils/utils";
 
-
-
-
-export function drawIntersectionMarker(
-  intersection: IntersectionStats,
-  map: MapboxMap
-): mapboxgl.Marker {
-  const { lat, lon } = intersection;
-  var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-    renderToString(<IntersectionCard intersection={intersection} />)
-  );
-
-  let markerOptions: { color?: string } = {};
-  
-  if (markerOptions.color === undefined) {
-    markerOptions.color = "black";
-  }
-
-  // First colours
-  // if (cycleTime < 30) {
-  //   markerOptions.color = "#29FF08";
-  // } else if (cycleTime < 45) {
-  //   markerOptions.color = "#C5DE07";
-  // } else if (cycleTime < 60) {
-  //   markerOptions.color = "#F5CB13";
-  // } else if (cycleTime < 90) {
-  //   markerOptions.color = "#E08804";
-  // } else if (cycleTime < 120) {
-  //   markerOptions.color = "#FA5814";
-  // } else if (cycleTime >= 120) {
-  //   markerOptions.color = "black";
-  // }
-
-  return new mapboxgl.Marker(markerOptions)
-    // .setLngLat({ lat, lon })
-    // .setPopup(popup) // sets a popup on this marker
-    // .addTo(map);
-}
 
 export function addMapControls(map: MapboxMap): void {
   console.log("addMapControls");
@@ -90,17 +51,4 @@ export function addMapControls(map: MapboxMap): void {
 
 export function removeMarkers(markers: mapboxgl.Marker[]): void {
   markers.map((marker) => marker.remove());
-}
-
-export function drawIntersectionMarkers(
-  map: MapboxMap,
-  points: IntersectionStats[]
-): mapboxgl.Marker[] {
-  const markers = points
-    .filter((intersection) => intersection.lat && intersection.lon)
-    .map((intersection: IntersectionStats) => {
-      return drawIntersectionMarker(intersection, map);
-    });
-
-  return markers;
 }
