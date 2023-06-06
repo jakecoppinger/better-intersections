@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMapGL, { NavigationControl, MapboxMap, Marker} from "react-map-gl";
 import { debounce } from "ts-debounce";
 import mapboxgl from "mapbox-gl";
 import { renderToString } from "react-dom/server";
@@ -13,7 +14,7 @@ import { averageIntersectionCycleTime, moveEndCallback } from "./utils/utils";
 
 export function drawIntersectionMarker(
   intersection: IntersectionStats,
-  map: mapboxgl.Map
+  map: MapboxMap
 ): mapboxgl.Marker {
   const { lat, lon } = intersection;
   const cycleTime = averageIntersectionCycleTime(intersection);
@@ -75,37 +76,38 @@ export function drawIntersectionMarker(
   // }
 
   return new mapboxgl.Marker(markerOptions)
-    .setLngLat({ lat, lon })
-    .setPopup(popup) // sets a popup on this marker
-    .addTo(map);
+    // .setLngLat({ lat, lon })
+    // .setPopup(popup) // sets a popup on this marker
+    // .addTo(map);
 }
 
-export function addMapControls(map: mapboxgl.Map): void {
-  map.addControl(
-    new mapboxgl.AttributionControl({
-      compact: false,
-    })
-  );
-  map.addControl(new mapboxgl.NavigationControl());
-  map.addControl(new mapboxgl.FullscreenControl());
+export function addMapControls(map: MapboxMap): void {
+  console.log("addMapControls");
+  // map.addControl(
+  //   new MapboxAttributionControl({
+  //     compact: false,
+  //   })
+  // );
+  // map.addControl(new mapboxgl.NavigationControl());
+  // map.addControl(new mapboxgl.FullscreenControl());
 
   // Add a mapbox search control to the map
-  map.addControl(
-    new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken,
-      mapboxgl: mapboxgl,
-    }),
-    "bottom-left"
-  );
+  // map.addControl(
+  //   new MapboxGeocoder({
+  //     accessToken: mapboxgl.accessToken,
+  //     mapboxgl: mapboxgl,
+  //   }),
+  //   "bottom-left"
+  // );
 
   // Add geolocate control to the map.
-  map.addControl(
-    new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-    })
-  );
+  // map.addControl(
+  //   new mapboxgl.GeolocateControl({
+  //     positionOptions: {
+  //       enableHighAccuracy: true,
+  //     },
+  //   })
+  // );
 
   const debouncedMoveEndCallback = debounce(moveEndCallback, 200, {});
 
@@ -121,7 +123,7 @@ export function removeMarkers(markers: mapboxgl.Marker[]): void {
 }
 
 export function drawIntersectionMarkers(
-  map: mapboxgl.Map,
+  map: MapboxMap,
   points: IntersectionStats[]
 ): mapboxgl.Marker[] {
   const markers = points

@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   margin: 0 auto;
 `;
 
-const HeaderAndFooter: React.FC = ({children}) => {
+const HeaderAndFooter: React.FC<React.PropsWithChildren> = ({children}) => {
   return (
     <Wrapper>
       <h1><Link to={`/`}>Better Intersections</Link></h1>

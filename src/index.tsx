@@ -5,7 +5,7 @@ import AboutPage from "./pages/about-page";
 import { render } from "react-dom";
 import React from "react";
 import "./index.css";
-import { Map as MapPage } from "./pages/map-page";
+import { MapComponent as MapPage } from "./pages/map-page";
 import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
