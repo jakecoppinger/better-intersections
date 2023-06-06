@@ -1,31 +1,11 @@
-import { FormResponse, IntersectionStats, TrafficLightReport } from "../types";
-import { parseStringPromise } from 'xml2js';
+import { getOsmNodePosition } from "../api/osm";
+import { FormResponse, IntersectionStats, OsmWayKeys, RawTag, TrafficLightReport } from "../types";
 
 function isStringInteger(str: string): boolean {
   const num = Number(str);
   return !isNaN(num) && parseInt(str, 10) === num;
 }
 
-async function getOsmNodePosition(osmNode: string): Promise<{ lat: number, lon: number, tags: Record<string, string> }> {
-  const response: string = await (await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)).text();
-  const osmApiResult = await parseStringPromise(response);
-
-  const lat = parseFloat(osmApiResult.osm.node[0].$.lat);
-  const lon = parseFloat(osmApiResult.osm.node[0].$.lon);
-
-  if (lat > 90 || lat < -90) {
-    throw new Error(`Invalid latitude: ${lat}`);
-  }
-
-  // Extract tags
-  const tags: Record<string, string> = {};
-  const tagArray = osmApiResult.osm.node[0].tag || [];
-  tagArray.forEach((tag: any) => {
-    tags[tag.$.k] = tag.$.v;
-  });
-
-  return { lat, lon, tags };
-}
 
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
 export function isValidTrafficLightReport(formResponse: FormResponse): boolean {
@@ -85,7 +65,6 @@ export function averageIntersectionCycleTime(intersection: IntersectionStats): n
   return totalCycleTime / intersection.reports.length;
 }
 
-
 interface MoveEndCallbackProps {
   centre: mapboxgl.LngLat;
   zoom: number;
@@ -104,4 +83,15 @@ export function moveEndCallback({ centre, zoom }: MoveEndCallbackProps) {
     "Home | My App",
     `${location}/?lat=${lat.toFixed(fractionDigits)}&lon=${lng.toFixed(fractionDigits)}&zoom=${zoom.toFixed(fractionDigits)}`
   );
+}
+
+/*
+Turns an array of tags into a record of all key-value pairs contained in the tags
+ */
+export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
+  const record: Record<OsmWayKeys, string> = {} as Record<OsmWayKeys, string>;
+  tagList.forEach((tag: RawTag) => {
+    record[tag.$.k] = tag.$.v;
+  });
+  return record;
 }

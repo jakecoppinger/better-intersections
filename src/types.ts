@@ -38,4 +38,34 @@ export interface IntersectionStats {
   tags: Record<string, string>;
 }
 
+export interface Way {
+  id: string;
+  timestamp: string;
+  tags: Record<OsmWayKeys, string>;
+}
 
+// Any key in OSM spec - very vague here
+export type OsmWayKeys =
+  | "busway"
+  | "cycleway"
+  | "highway"
+  | "lanes"
+  | "maxspeed"
+  | "name"
+  | "oneway"
+  | "sidewalk"
+  | "source"
+  | "surface";
+
+export interface RawWayObject {
+  $: {
+    changeset: string;
+  };
+}
+
+export interface RawTag {
+  $: {
+    k: OsmWayKeys;
+    v: "no";
+  };
+}

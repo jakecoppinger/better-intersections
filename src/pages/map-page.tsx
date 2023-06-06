@@ -3,18 +3,13 @@ import ReactMapGL, { NavigationControl } from "react-map-gl";
 import mapboxgl from "mapbox-gl";
 import "../App.css";
 import {
-  getDataFromSheet,
   drawIntersectionMarkers,
   removeMarkers,
   addMapControls,
 } from "../drawmap";
 import { MapInfoBox } from "../components/MapInfoBox";
-import {
-  convertToTrafficLightReport,
-  isValidTrafficLightReport,
-  summariseReportsByIntersection,
-} from "../utils/utils";
-import { IntersectionStats, TrafficLightReport } from "../types";
+import { IntersectionStats} from "../types";
+import { getIntersections } from "../api/google-sheets";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -59,23 +54,7 @@ export class Map extends React.Component<{}, State> {
   async componentDidMount() {
     window.addEventListener("resize", this.resize);
     this.resize();
-    const data = await getDataFromSheet();
-
-    const safeData = data.filter(
-      (report) =>
-        report[
-          "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
-        ]
-    );
-
-    const reports: TrafficLightReport[] = await Promise.all(
-      safeData
-        .filter(isValidTrafficLightReport)
-        .map(convertToTrafficLightReport)
-    );
-    const intersections: IntersectionStats[] =
-      summariseReportsByIntersection(reports);
-    console.log({ reports });
+    const intersections = await getIntersections();
     this.setState({
       points: intersections,
       // Initially, show all points

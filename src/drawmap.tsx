@@ -8,33 +8,8 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-import GSheetReader from "g-sheets-api";
-import { FormResponse, IntersectionStats } from "./types";
+import { IntersectionStats } from "./types";
 import { averageIntersectionCycleTime, moveEndCallback } from "./utils/utils";
-
-const options = {
-  apiKey: "AIzaSyCr3HYpVAJ1iBlb_IjbK_KbltnC0T8C6hY",
-  // This is a public Google Sheet, with results copied from a private sheet (excluding emails)
-  sheetId: "1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM",
-  sheetName: "Sheet1",
-  returnAllResults: true,
-};
-export function getDataFromSheet(): Promise<FormResponse[]> {
-  return new Promise((resolve, reject) => {
-    GSheetReader(
-      options,
-      (results: any) => {
-        resolve(results);
-      },
-      (error: any) => {
-        reject(error);
-      }
-    );
-  });
-}
-
-const clamp = (num: number, min: number, max: number) =>
-  Math.min(Math.max(num, min), max);
 
 export function drawIntersectionMarker(
   intersection: IntersectionStats,

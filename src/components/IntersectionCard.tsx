@@ -25,6 +25,10 @@ export default function IntersectionCard(props: {
           {numMeasurements === 1 ? "measurement" : "measurements"} at this
           intersection.
         </p>
+        {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
+        <a href={`/intersection/node/${intersection.osmId}`}>
+          View more stats about this intersection
+        </a>
         <table>
           <tr>
             <th>Time</th>
