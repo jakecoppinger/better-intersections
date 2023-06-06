@@ -12,50 +12,20 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import { IntersectionStats } from "./types";
 import { averageIntersectionCycleTime, moveEndCallback } from "./utils/utils";
 
+
+
+
 export function drawIntersectionMarker(
   intersection: IntersectionStats,
   map: MapboxMap
 ): mapboxgl.Marker {
   const { lat, lon } = intersection;
-  const cycleTime = averageIntersectionCycleTime(intersection);
   var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
     renderToString(<IntersectionCard intersection={intersection} />)
   );
 
   let markerOptions: { color?: string } = {};
   
-  const cycleColourCliffs: { [key: number]: string } = {
-    // Alternative colours
-    // 30: "#29FF08",
-    // 45: "#C5DE07",
-    // 60: "#F5CB13",
-    // 90: "#E08804",
-    // 120: "#FA5814",
-
-    30: "#ff0000",
-    45: "#fc4f00",
-    60: "#f27600",
-    90: "#e29700",
-    100: "#cab500",
-    120: "#aad000",
-    160: "#7de800",
-    180: "#00ff00",
-  };
-
-  // Cliffs keys sorted low to high
-  const cycleColourCliffKeys: number[] = Object.keys(cycleColourCliffs)
-    .map((key) => parseInt(key))
-    // Sort by smallest to largest number
-    .sort((a, b) => a - b);
-
-  // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
-  for (let i = 0; i < cycleColourCliffKeys.length; i++) {
-    const key = cycleColourCliffKeys[i];
-    if (cycleTime <= key) {
-      markerOptions.color = cycleColourCliffs[key];
-      break;
-    }
-  }
   if (markerOptions.color === undefined) {
     markerOptions.color = "black";
   }

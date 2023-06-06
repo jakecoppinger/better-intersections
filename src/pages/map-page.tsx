@@ -21,6 +21,11 @@ import { getIntersections } from "../api/google-sheets";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import { IntersectionType } from "typescript";
+import IntersectionCard from "../components/IntersectionCard";
+import {
+  averageIntersectionCycleTime,
+  getColourForCycletime,
+} from "../utils/utils";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
@@ -120,10 +125,9 @@ export function MapComponent() {
           <FullscreenControl />
           <GeolocateControl />
           <NavigationControl />
-          {/* <Marker latitude={-33.8688} longitude={151.1593} /> */}
-
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
+                const cycleTime = averageIntersectionCycleTime(intersection);
                 return (
                   <Marker
                     latitude={intersection.lat}
@@ -131,7 +135,7 @@ export function MapComponent() {
                     onClick={() => {
                       setPopupIntersection(intersection);
                     }}
-                    // <IntersectionCard intersection={intersection}
+                    color={getColourForCycletime(cycleTime)}
                   />
                 );
               })
@@ -143,7 +147,7 @@ export function MapComponent() {
               longitude={popupIntersection.lon}
               onClose={() => setPopupIntersection(undefined)}
             >
-              <h1>Hello</h1>
+              <IntersectionCard intersection={popupIntersection} />
             </Popup>
           ) : null}
           {/* Todo add search  */}

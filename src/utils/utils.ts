@@ -95,3 +95,47 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   });
   return record;
 }
+
+export function getColourForCycletime(cycleTime: number): string {
+
+  const cycleColourCliffs: { [key: number]: string } = {
+    // Alternative colours
+    // 30: "#29FF08",
+    // 45: "#C5DE07",
+    // 60: "#F5CB13",
+    // 90: "#E08804",
+    // 120: "#FA5814",
+
+    // 30: "#ff0000",
+    // 45: "#fc4f00",
+    // 60: "#f27600",
+    // 90: "#e29700",
+    // 100: "#cab500",
+    // 120: "#aad000",
+    // 160: "#7de800",
+    // 180: "#00ff00",
+    180: "#ff0000",
+    160: "#fc4f00",
+    120: "#f27600",
+    100: "#e29700",
+    90: "#cab500",
+    60: "#aad000",
+    45: "#7de800",
+    30: "#00ff00",
+  };
+
+  // Cliffs keys sorted low to high
+  const cycleColourCliffKeys: number[] = Object.keys(cycleColourCliffs)
+    .map((key) => parseInt(key))
+    // Sort by smallest to largest number
+    .sort((a, b) => a - b);
+
+  // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
+  for (let i = 0; i < cycleColourCliffKeys.length; i++) {
+    const key = cycleColourCliffKeys[i];
+    if (cycleTime <= key) {
+      return cycleColourCliffs[key];
+    }
+  }
+  return 'black';
+}
