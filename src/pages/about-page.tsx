@@ -8,7 +8,7 @@ const About: React.FC = () => {
         <h1>About</h1>
         <p>
           Better Intersections is a tool to record and visualise timing details
-          for pedestrain and bicycle signals. It's focused on Sydney & NSW,
+          for pedestrian and bicycle signals. It's focused on Sydney & NSW,
           Australia, but is adaptable for anywhere in the world. This website is
           open source on{" "}
           <a
@@ -87,7 +87,7 @@ const About: React.FC = () => {
           .
         </p>
         <p>
-          In the absense of traffic light timing data, and as we hold hope for
+          In the absence of traffic light timing data, and as we hold hope for
           it to become publicly available; the aim of this project is to
           crowdsource measurements and inform where positive changes could be
           made.
@@ -177,9 +177,16 @@ const About: React.FC = () => {
           can be used to determine if the timing is variable.
         </p>
         <p>
-          Gehl Architects have a great methodology for measuring the overall
-          impact of traffic light delays on pedestrians. At its most basic you
-          walk along a street with two stopwatches;
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.gehlpeople.com/"
+          >
+            Gehl Architects
+          </a>{" "}
+          have a great methodology for measuring the overall impact of traffic
+          light delays on pedestrians. At its most basic you walk along a street
+          with two stopwatches;
           <ul>
             <li>one you pause only when you're walking;</li>
             <li>one you pause only when you're waiting at a traffic light.</li>
