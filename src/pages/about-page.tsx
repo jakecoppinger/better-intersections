@@ -1,5 +1,7 @@
 import React from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
+// @ts-ignore
+import { HashLink } from "react-router-hash-link";
 
 const About: React.FC = () => {
   return (
@@ -8,9 +10,11 @@ const About: React.FC = () => {
         <h1>About</h1>
         <p>
           Better Intersections is a tool to record and visualise timing details
-          for pedestrian and bicycle signals. It's focused on Sydney & NSW,
-          Australia, but is adaptable for anywhere in the world. This website is
-          open source on{" "}
+          for pedestrian and bicycle signals. You can contribute{" "}
+          <HashLink to="#contributing">timing measurements</HashLink> yourself,
+          see the instructions below. It's focused on Sydney & NSW, Australia,
+          but is adaptable for anywhere in the world. This website is open
+          source on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -224,7 +228,9 @@ const About: React.FC = () => {
           projects, I am always open to collaboration. If you have any ideas,
           iterations or improvements, please drop me a line!
         </p>
-        <h1><a id="contributing">How to contribute measurements</a></h1>
+        <h1>
+          <a id="contributing">How to contribute measurements</a>
+        </h1>
         <iframe
           width="315"
           height="560"
