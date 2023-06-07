@@ -35,9 +35,9 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
     timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"],
     tags: tags
   }
-  const cycleTime = val.greenDuration + val.flashingDuration + val.redDuration;
+  const totalRedDuration = val.flashingDuration + val.redDuration;
 
-  return { ...val, cycleTime };
+  return { ...val, totalRedDuration };
 }
 
 export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
@@ -59,8 +59,8 @@ export function summariseReportsByIntersection(reports: TrafficLightReport[]): I
   return Object.values(stats);
 }
 
-export function averageIntersectionCycleTime(intersection: IntersectionStats): number {
-  const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.cycleTime, 0);
+export function averageIntersectionTotalRedDuration(intersection: IntersectionStats): number {
+  const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.totalRedDuration, 0);
   return totalCycleTime / intersection.reports.length;
 }
 
@@ -95,15 +95,14 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
-export function getColourForCycletime(cycleTime: number): string {
+export function getColourForTotalRedDuration(totalRedDuration: number): string {
   const cycleColourCliffs: { [key: number]: string } = {
-    180: "#ff0000",
-    160: "#fc4f00",
-    120: "#f27600",
-    100: "#e29700",
-    90: "#cab500",
-    60: "#aad000",
-    45: "#7de800",
+    130: "#ff0000",
+    120: "#fc4f00",
+    110: "#f27600",
+    90: "#e29700",
+    60: "#cab500",
+    45: "#aad000",
     30: "#00ff00",
   };
 
@@ -116,7 +115,7 @@ export function getColourForCycletime(cycleTime: number): string {
   // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
   for (let i = 0; i < cycleColourCliffKeys.length; i++) {
     const key = cycleColourCliffKeys[i];
-    if (cycleTime <= key) {
+    if (totalRedDuration <= key) {
       return cycleColourCliffs[key];
     }
   }

@@ -35,7 +35,7 @@ export default function IntersectionCard(props: {
             <th>Green</th>
             <th>Flashing red</th>
             <th>Red</th>
-            <th>Cycle</th>
+            <th>Total red duration</th>
             <th>Notes</th>
           </tr>
         </thead>
@@ -53,7 +53,7 @@ export default function IntersectionCard(props: {
             <td>
               <span className="red">{r.redDuration} sec.</span>
             </td>
-            <td>{r.cycleTime} sec.</td>
+            <td>{r.totalRedDuration} sec.</td>
             {r.notes ? <td>{r.notes}</td> : <td></td>}
           </tr>
         ))}

@@ -21,8 +21,8 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import { IntersectionType } from "typescript";
 import IntersectionCard from "../components/IntersectionCard";
 import {
-  averageIntersectionCycleTime,
-  getColourForCycletime,
+  averageIntersectionTotalRedDuration,
+  getColourForTotalRedDuration,
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
 
@@ -136,20 +136,19 @@ export function MapComponent() {
           <NavigationControl position="bottom-right" />
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
-                const cycleTime = averageIntersectionCycleTime(intersection);
+                const totalRedDuration = averageIntersectionTotalRedDuration(intersection);
                 return (
                   <Marker
                     key={intersection.osmId}
                     latitude={intersection.lat}
                     longitude={intersection.lon}
                     onClick={() => {
-                console.log("marker firing onclick");
                       setPopupIntersection(intersection);
                       if(!showPopup) {
                         setShowPopup(true);
                       }
                     }}
-                    color={getColourForCycletime(cycleTime)}
+                    color={getColourForTotalRedDuration(totalRedDuration)}
                   />
                 );
               })
@@ -160,7 +159,6 @@ export function MapComponent() {
               latitude={popupIntersection.lat}
               longitude={popupIntersection.lon}
               onClose={() => {
-                console.log("popup firing onclose");
                 setPopupIntersection(undefined)
                 setShowPopup(false)
               }}

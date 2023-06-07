@@ -15,21 +15,28 @@ export interface FormResponse {
 }
 
 export interface TrafficLightReport {
+  /** Timestamp of the Google Form submission, or timestamp given if provided */
   timestamp: string;
+  /** OpenStreetMap node ID of the intersection */
   osmId: string;
   lat: number;
   lon: number;
+  /** How long is the traffic light solid green for */
   greenDuration: number,
+  /** How long is the traffic flashing red/orange countdown/flashing orange (bicycle lanterns) for */
   flashingDuration: number,
+  /** How long is the traffic light solid red for until the next green light*/
   redDuration: number,
   notes?: string,
-  /** Derived field */
-  cycleTime: number,
+  /** Derived field. Sum of flashing red and solid red durations */
+  totalRedDuration: number,
+  /** OSM tags on the intersection node */
   tags: Record<string, string>
 }
 
 
 export interface IntersectionStats {
+  /** OpenStreetMap node ID of the intersection */
   osmId: string;
   lat: number,
   lon: number,
