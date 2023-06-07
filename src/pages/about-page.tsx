@@ -224,7 +224,7 @@ const About: React.FC = () => {
           projects, I am always open to collaboration. If you have any ideas,
           iterations or improvements, please drop me a line!
         </p>
-        <h1>How to contribute measurements</h1>
+        <h1><a id="contributing">How to contribute measurements</a></h1>
         <iframe
           width="315"
           height="560"

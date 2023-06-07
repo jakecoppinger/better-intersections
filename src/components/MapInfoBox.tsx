@@ -1,5 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
+// @ts-ignore
+import { HashLink } from "react-router-hash-link";
 
 export const MapInfoBox: FunctionComponent = () => {
   return (
@@ -10,7 +12,7 @@ export const MapInfoBox: FunctionComponent = () => {
       <Link to={`/about`}>Read more about this map and data</Link>
       <p>
         You can contribute data with a simple form -{" "}
-        <Link to={`/about`}>See the instructions!</Link>
+        <HashLink to={`/about#contributing`}>See the instructions!</HashLink>
       </p>
       <p>
         <Link to={`/longest-and-shortest-waits`}>
