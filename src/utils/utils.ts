@@ -1,5 +1,5 @@
 import { getOsmNodePosition } from "../api/osm";
-import { FormResponse, IntersectionStats, OsmWayKeys, RawTag, TrafficLightReport } from "../types";
+import { FormResponse, IntersectionStats, OsmWayKeys, RawTag, TrafficLightReport, Way } from "../types";
 
 function isStringInteger(str: string): boolean {
   const num = Number(str);
@@ -120,4 +120,10 @@ export function getColourForTotalRedDuration(totalRedDuration: number): string {
     }
   }
   return 'black';
+}
+
+export function getMainWayForIntersection(ways: Way[]): Way {
+  // Usually 2 ways left after filtering out footpaths
+  const adjacentRoad = ways[0];
+  return adjacentRoad;
 }

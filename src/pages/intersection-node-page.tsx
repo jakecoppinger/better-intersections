@@ -8,16 +8,11 @@ import {
   generateGeohackQueryParam,
   googleStreetViewUrl,
 } from "../utils/url-formatting";
+import { getMainWayForIntersection } from "../utils/utils";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;
   return { nodeId };
-}
-
-function getMainWayForIntersection(ways: Way[]): Way {
-  // Usually 2 ways left after filtering out footpaths
-  const adjacentRoad = ways[0];
-  return adjacentRoad;
 }
 
 export default function IntersectionNodePage() {

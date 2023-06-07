@@ -13,6 +13,11 @@ export const MapInfoBox: FunctionComponent = () => {
         <Link to={`/about`}>See the instructions!</Link>
       </p>
       <p>
+        <Link to={`/longest-and-shortest-waits`}>
+          See the longest and shortest waits measured!
+        </Link>
+      </p>
+      <p>
         A side project by{" "}
         <a
           target="_blank"
