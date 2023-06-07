@@ -70,6 +70,10 @@ export function MapComponent() {
     IntersectionStats | undefined
   >(undefined);
 
+  const [showPopup, setShowPopup] = React.useState(false);
+
+
+  
   const [viewport, setViewport] = React.useState<Viewport>({
     longitude,
     latitude, // starting position
@@ -139,7 +143,11 @@ export function MapComponent() {
                     latitude={intersection.lat}
                     longitude={intersection.lon}
                     onClick={() => {
+                console.log("marker firing onclick");
                       setPopupIntersection(intersection);
+                      if(!showPopup) {
+                        setShowPopup(true);
+                      }
                     }}
                     color={getColourForCycletime(cycleTime)}
                   />
@@ -147,11 +155,15 @@ export function MapComponent() {
               })
             : null}
 
-          {popupIntersection ? (
+          {showPopup && popupIntersection ? (
             <Popup
               latitude={popupIntersection.lat}
               longitude={popupIntersection.lon}
-              onClose={() => setPopupIntersection(undefined)}
+              onClose={() => {
+                console.log("popup firing onclose");
+                setPopupIntersection(undefined)
+                setShowPopup(false)
+              }}
               offset={25}
             >
               <IntersectionCard intersection={popupIntersection} />

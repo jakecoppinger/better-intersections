@@ -29,6 +29,7 @@ export function getDataFromSheet(): Promise<FormResponse[]> {
 }
 
 export async function getIntersections(): Promise<IntersectionStats[]> {
+  try {
   const data = await getDataFromSheet();
 
   const safeData = data.filter(
@@ -46,4 +47,9 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
   const intersections: IntersectionStats[] =
     summariseReportsByIntersection(reports);
   return intersections;
+  } catch(e) {
+    alert('Unable to fetch data from Google Sheets. Please try again later or contact Jake.');
+    // alert(JSON.stringify(e));
+    return [];
+  } 
 }
