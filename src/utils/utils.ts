@@ -127,3 +127,9 @@ export function getMainWayForIntersection(ways: Way[]): Way {
   const adjacentRoad = ways[0];
   return adjacentRoad;
 }
+
+export function filterOutNonRoadWays(ways: Way[]): Way[] {
+  return ways.filter(
+    (way) => way.tags.highway !== "footway" && way.tags.highway !== "cycleway"
+  );
+}

@@ -8,7 +8,10 @@ import {
   generateGeohackQueryParam,
   googleStreetViewUrl,
 } from "../utils/url-formatting";
-import { getMainWayForIntersection } from "../utils/utils";
+import {
+  filterOutNonRoadWays,
+  getMainWayForIntersection,
+} from "../utils/utils";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;
@@ -30,9 +33,7 @@ export default function IntersectionNodePage() {
       if (nodeId === undefined) {
         return;
       }
-      const ways = (await fetchOsmWaysForNode(nodeId)).filter(
-        (way) => way.tags.highway !== "footway"
-      );
+      const ways = filterOutNonRoadWays(await fetchOsmWaysForNode(nodeId));
 
       setAdjacentWays(ways);
     }

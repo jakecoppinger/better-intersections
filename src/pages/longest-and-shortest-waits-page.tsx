@@ -4,7 +4,12 @@ import { fetchOsmWaysForNode } from "../api/osm";
 import { IntersectionStats, Way } from "../types";
 import { getIntersections } from "../api/google-sheets";
 import HeaderAndFooter from "../components/HeaderAndFooter";
-import { averageIntersectionTotalRedDuration, getMainWayForIntersection } from "../utils/utils";
+import {
+  averageIntersectionTotalRedDuration,
+  filterOutNonRoadWays,
+  getMainWayForIntersection,
+} from "../utils/utils";
+import { Link } from "react-router-dom";
 
 const IntersectionTableRow = ({
   intersection,
@@ -17,8 +22,8 @@ const IntersectionTableRow = ({
 
   useEffect(() => {
     async function getAdjacentWays() {
-      const ways = (await fetchOsmWaysForNode(intersection.osmId)).filter(
-        (way) => way.tags.highway !== "footway"
+      const ways = filterOutNonRoadWays(
+        await fetchOsmWaysForNode(intersection.osmId)
       );
 
       setAdjacentWays(ways);
@@ -26,36 +31,53 @@ const IntersectionTableRow = ({
     getAdjacentWays();
   }, [intersection.osmId]);
 
-  const mainWay: Way | undefined = adjacentWays !== undefined
-    ? getMainWayForIntersection(adjacentWays)
-    : undefined;
+  const mainWay: Way | undefined =
+    adjacentWays !== undefined
+      ? getMainWayForIntersection(adjacentWays)
+      : undefined;
 
   return (
     <tr>
-      <td>{mainWay ? mainWay.tags.name: 'Loading...'}</td>
-      <td>{intersection.osmId}</td>
-      <td>{intersection.averageTotalRedDuration}</td>
+      <td>
+        <Link to={`/intersection/node/${intersection.osmId}`}>
+          {mainWay ? mainWay.tags.name : "Loading..."}
+        </Link>
+      </td>
+      <td>
+        <Link to={`/intersection/node/${intersection.osmId}`}>
+          {intersection.osmId}
+        </Link>
+      </td>
+      <td>{intersection.averageTotalRedDuration} sec.</td>
     </tr>
   );
 };
 const IntersectionTable = ({
   intersections,
 }: {
-  intersections: (IntersectionStats & { averageTotalRedDuration: number })[];
+  intersections:
+    | (IntersectionStats & { averageTotalRedDuration: number })[]
+    | undefined;
 }) => {
   return (
     <table>
       <thead>
         <tr>
           <th>Adjacent road name</th>
-          <th>Intersection id</th>
-          <th>Total red duration</th>
+          <th>Intersection OSM id</th>
+          <th>Average total red duration</th>
         </tr>
       </thead>
       <tbody>
-        {intersections !== undefined
-          ? intersections.map((i) => <IntersectionTableRow intersection={i} />)
-          : null}
+        {intersections !== undefined ? (
+          intersections.map((i) => (
+            <IntersectionTableRow key={i.osmId} intersection={i} />
+          ))
+        ) : (
+          <tr>
+            <td>Loading...</td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
@@ -81,17 +103,17 @@ export default function LongestAndShortestWaits() {
           averageTotalRedDuration: averageIntersectionTotalRedDuration(i),
         };
       })
-    : [];
+    : undefined;
   const longestIntersectionsFirst = intersectionsWithAverageTotalRedDuration
     ? intersectionsWithAverageTotalRedDuration
         .sort((a, b) => b.averageTotalRedDuration - a.averageTotalRedDuration)
         .slice(0, Math.max(5))
-    : [];
+    : undefined;
   const shortestIntersectionsFirst = intersectionsWithAverageTotalRedDuration
     ? intersectionsWithAverageTotalRedDuration
         .sort((a, b) => a.averageTotalRedDuration - b.averageTotalRedDuration)
         .slice(0, Math.max(5))
-    : [];
+    : undefined;
 
   return (
     <HeaderAndFooter>
