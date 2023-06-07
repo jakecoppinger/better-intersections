@@ -12,15 +12,13 @@ export const MapInfoBox: FunctionComponent = () => {
       <Link to={`/about`}>Read more about this map and data</Link>
       <p>
         You can contribute data with a simple form -{" "}
-        <HashLink to={`/about#contributing`}>See the instructions!</HashLink>
+        <HashLink to={`/about#contributing`}>see the instructions</HashLink>
       </p>
-      {/* 
-      // in development :) 
       <p>
         <Link to={`/longest-and-shortest-waits`}>
-          See the longest and shortest waits measured!
+          See the longest and shortest waits measured
         </Link>
-      </p> */}
+      </p>
       <p>
         A side project by{" "}
         <a

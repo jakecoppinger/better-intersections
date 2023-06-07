@@ -10,6 +10,8 @@ import {
   getMainWayForIntersection,
 } from "../utils/utils";
 import { Link } from "react-router-dom";
+// @ts-ignore
+import { HashLink } from "react-router-hash-link";
 
 const IntersectionTableRow = ({
   intersection,
@@ -49,6 +51,7 @@ const IntersectionTableRow = ({
         </Link>
       </td>
       <td>{intersection.averageTotalRedDuration} sec.</td>
+      <td>{intersection.reports.length} </td>
     </tr>
   );
 };
@@ -65,7 +68,8 @@ const IntersectionTable = ({
         <tr>
           <th>Adjacent road name</th>
           <th>Intersection OSM id</th>
-          <th>Average total red duration</th>
+          <th>Average max wait</th>
+          <th># of samples</th>
         </tr>
       </thead>
       <tbody>
@@ -117,10 +121,33 @@ export default function LongestAndShortestWaits() {
 
   return (
     <HeaderAndFooter>
-      <h1>Longest intersection wait times</h1>
+      <h1>Longest pedestrian intersection wait times in Sydney</h1>
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <IntersectionTable intersections={shortestIntersectionsFirst} />
-      <div></div>
+      <p>
+        Know of any intersections that should be on this list? See the{" "}
+        <HashLink to={`/about#contributing`}>
+          instructions for contributing!
+        </HashLink>
+      </p>
+      {intersections ? (
+        <p>
+          These examples pulled from {intersections.length} intersections which
+          have a measurement - definitely not every intersection in Sydney.
+        </p>
+      ) : null}
+
+      <p>
+        View the data on{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit?usp=sharing"
+        >
+          Google Sheets
+        </a>
+        .
+      </p>
     </HeaderAndFooter>
   );
 }
