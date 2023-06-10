@@ -111,6 +111,7 @@ export default function IntersectionNodePage() {
               <th>Flashing red</th>
               <th>Red</th>
               <th>Total red duration</th>
+              <th>Unprotected when flashing red?</th>
               <th>Notes</th>
             </tr>
           </thead>
@@ -135,6 +136,7 @@ export default function IntersectionNodePage() {
                     <span className="red">{r.redDuration} sec.</span>
                   </td>
                   <td>{r.totalRedDuration} sec.</td>
+                  <td>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
                   {r.notes ? <td>{r.notes}</td> : <td></td>}
                 </tr>
               ))

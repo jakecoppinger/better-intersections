@@ -1,10 +1,6 @@
 import React from "react";
 import { IntersectionStats } from "../types";
 
-interface Props {
-  intersection: IntersectionStats;
-}
-
 export default function IntersectionCard(props: {
   intersection: IntersectionStats;
 }) {
@@ -23,56 +19,58 @@ export default function IntersectionCard(props: {
         {numMeasurements}{" "}
         {numMeasurements === 1 ? "measurement" : "measurements"} at this
         intersection.
+
       </p>
       {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
       <a href={`/intersection/node/${intersection.osmId}`}>
         View more stats about this intersection
       </a>
       <table>
-        <thead>
+        <tbody>
           <tr>
             <th>Time</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}>{r.timestamp}</td>
+            ))}
+          </tr>
+          <tr>
             <th>Green</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}><span className="green">{r.greenDuration} sec.</span></td>
+            ))}
+          </tr>
+          <tr>
             <th>Flashing red</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}><span className="flashing_red">{r.flashingDuration} sec.</span></td>
+            ))}
+          </tr>
+          <tr>
             <th>Red</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}><span className="red">{r.redDuration} sec.</span></td>
+            ))}
+          </tr>
+          <tr>
             <th>Total red duration</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}>{r.totalRedDuration} sec.</td>
+            ))}
+          </tr>
+          <tr>
+            <th>Unprotected when flashing red?</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
+            ))}
+          </tr>
+          <tr>
             <th>Notes</th>
+            {intersection.reports.map((r) => (
+              <td key={r.osmId}>{r.notes ? r.notes : ''}</td>
+            ))}
           </tr>
-        </thead>
-        <tbody>
-
-        {intersection.reports.map((r) => (
-          <tr key={r.osmId}>
-            <td>{r.timestamp}</td>
-            <td>
-              <span className="green">{r.greenDuration} sec.</span>
-            </td>
-            <td>
-              <span className="flashing_red">{r.flashingDuration} sec.</span>
-            </td>
-            <td>
-              <span className="red">{r.redDuration} sec.</span>
-            </td>
-            <td>{r.totalRedDuration} sec.</td>
-            {r.notes ? <td>{r.notes}</td> : <td></td>}
-          </tr>
-        ))}
         </tbody>
       </table>
-      {/* <h3>Measured at {timestamp}</h3>
-        <br></br>
-        <b>Green duration:</b> {greenDuration} seconds
-        <br></br>
-        <b>Flashing red duration:</b> {flashingDuration} seconds
-        <br></br>
-        <b>Solid red duration:</b> {redDuration} seconds
-        <br></br>
-        <b>Cycle time:</b> {cycleTime} seconds
-        <br></br>
-        {notes ? `Additional notes: ${notes}` : ""} */}
-      <br></br>
-      {/* Additional OpenStreetMap intersection info:
-        <pre>{JSON.stringify(tags, null, 2)}</pre> */}
     </div>
   );
 }

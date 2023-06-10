@@ -12,6 +12,7 @@ export interface FormResponse {
   "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)": string,
   "What sort of crossing is this?": string,
   "Optional: Any other notes or observations?\n(possible improvements)": string,
+  "Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)": "Yes" | "No" | ""
 }
 
 export interface TrafficLightReport {
@@ -32,6 +33,8 @@ export interface TrafficLightReport {
   totalRedDuration: number,
   /** OSM tags on the intersection node */
   tags: Record<string, string>
+  /** Is the crossing unprotected when flashing red? Boolean or null when unknown */
+  unprotectedOnFlashingRed: boolean | null
 }
 
 

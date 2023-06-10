@@ -18,6 +18,8 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
 
   /** May be empty string */
   const timestampOverride: string = formResponse["Optional: What time (to the nearest 15 min) did you measure this?\nIf not specified assumes current time."]
+  const rawUnprotectedOnFlashingRed = formResponse["Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)"]
+  const unprotectedOnFlashingRed = rawUnprotectedOnFlashingRed === "Yes" ? true : (rawUnprotectedOnFlashingRed === "No" ? false : null);
 
   const osmId: string | undefined = rawOsmId && rawOsmId.length > 0 && isStringInteger(rawOsmId) ? rawOsmId : undefined;
   if (osmId === undefined) {
@@ -33,7 +35,8 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
     redDuration: parseInt(formResponse["How many seconds was the pedestrian light solid red for?"]),
     notes: formResponse["Optional: Any other notes or observations?\n(possible improvements)"],
     timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"],
-    tags: tags
+    tags: tags,
+    unprotectedOnFlashingRed,
   }
   const totalRedDuration = val.flashingDuration + val.redDuration;
 
