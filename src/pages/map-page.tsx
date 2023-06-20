@@ -7,6 +7,7 @@ import ReactMapGL, {
   GeolocateControl,
   Marker,
   Popup,
+  ViewStateChangeEvent,
 } from "react-map-gl";
 // @ts-ignore
 import Geocoder from "react-map-gl-geocoder";
@@ -55,7 +56,7 @@ const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
 console.log({ lat: paramLat, lon: paramLon });
 
 // TODO: Consolidate or break out state
-const initialState: State = { };
+const initialState: State = {};
 
 // type Viewport = typeof initialState.viewport;
 type Viewport = {
@@ -72,8 +73,6 @@ export function MapComponent() {
 
   const [showPopup, setShowPopup] = React.useState(false);
 
-
-  
   const [viewport, setViewport] = React.useState<Viewport>({
     longitude,
     latitude, // starting position
@@ -110,6 +109,25 @@ export function MapComponent() {
     });
   }, []);
 
+  const onMoveEnd = (e: ViewStateChangeEvent) => {
+    const { latitude, longitude, zoom } = e.viewState;
+
+    const location = window.location.origin;
+    const fractionDigits = 4;
+
+    window.history.pushState(
+      {
+        id: "homepage",
+      },
+      "",
+      `${location}/?lat=${latitude.toFixed(
+        fractionDigits
+      )}&lon=${longitude.toFixed(fractionDigits)}&zoom=${zoom.toFixed(
+        fractionDigits
+      )}`
+    );
+  };
+
   return (
     <div id="container">
       <div id="search_overlay">
@@ -124,6 +142,7 @@ export function MapComponent() {
           ref={(ref) =>
             ref && !state.map && setState({ ...state, map: ref.getMap() })
           }
+          onMoveEnd={onMoveEnd}
           attributionControl={false}
         >
           <GeocoderControl
@@ -136,7 +155,8 @@ export function MapComponent() {
           <NavigationControl position="bottom-right" />
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
-                const totalRedDuration = averageIntersectionTotalRedDuration(intersection);
+                const totalRedDuration =
+                  averageIntersectionTotalRedDuration(intersection);
                 return (
                   <Marker
                     key={intersection.osmId}
@@ -144,7 +164,7 @@ export function MapComponent() {
                     longitude={intersection.lon}
                     onClick={() => {
                       setPopupIntersection(intersection);
-                      if(!showPopup) {
+                      if (!showPopup) {
                         setShowPopup(true);
                       }
                     }}
@@ -159,8 +179,8 @@ export function MapComponent() {
               latitude={popupIntersection.lat}
               longitude={popupIntersection.lon}
               onClose={() => {
-                setPopupIntersection(undefined)
-                setShowPopup(false)
+                setPopupIntersection(undefined);
+                setShowPopup(false);
               }}
               offset={25}
             >
@@ -173,4 +193,3 @@ export function MapComponent() {
     </div>
   );
 }
-
