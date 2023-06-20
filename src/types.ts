@@ -29,8 +29,8 @@ export interface TrafficLightReport {
   /** How long is the traffic light solid red for until the next green light*/
   redDuration: number,
   notes?: string,
-  /** Derived field. Sum of flashing red and solid red durations */
-  totalRedDuration: number,
+  /** Derived field. Length of full cycle */
+  cycleLength: number,
   /** OSM tags on the intersection node */
   tags: Record<string, string>
   /** Is the crossing unprotected when flashing red? Boolean or null when unknown */

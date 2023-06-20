@@ -52,9 +52,9 @@ export default function IntersectionCard(props: {
             ))}
           </tr>
           <tr>
-            <th>Total red duration</th>
+            <th>Cycle length</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp}>{r.totalRedDuration} sec.</td>
+              <td key={r.timestamp}>{r.cycleLength} sec.</td>
             ))}
           </tr>
           <tr>

@@ -38,9 +38,9 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
     tags: tags,
     unprotectedOnFlashingRed,
   }
-  const totalRedDuration = val.flashingDuration + val.redDuration;
+  const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
 
-  return { ...val, totalRedDuration };
+  return { ...val, cycleLength};
 }
 
 export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
@@ -63,7 +63,7 @@ export function summariseReportsByIntersection(reports: TrafficLightReport[]): I
 }
 
 export function averageIntersectionTotalRedDuration(intersection: IntersectionStats): number {
-  const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.totalRedDuration, 0);
+  const totalCycleTime = intersection.reports.reduce((acc, report) => acc + report.cycleLength, 0);
   return totalCycleTime / intersection.reports.length;
 }
 
