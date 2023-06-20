@@ -30,43 +30,43 @@ export default function IntersectionCard(props: {
           <tr>
             <th>Time</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}>{r.timestamp}</td>
+              <td key={r.timestamp}>{r.timestamp}</td>
             ))}
           </tr>
           <tr>
             <th>Green</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}><span className="green">{r.greenDuration} sec.</span></td>
+              <td key={r.timestamp}><span className="green">{r.greenDuration} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Flashing red</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}><span className="flashing_red">{r.flashingDuration} sec.</span></td>
+              <td key={r.timestamp}><span className="flashing_red">{r.flashingDuration} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Red</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}><span className="red">{r.redDuration} sec.</span></td>
+              <td key={r.timestamp}><span className="red">{r.redDuration} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Total red duration</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}>{r.totalRedDuration} sec.</td>
+              <td key={r.timestamp}>{r.totalRedDuration} sec.</td>
             ))}
           </tr>
           <tr>
             <th>Unprotected when flashing red?</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
+              <td key={r.timestamp}>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
             ))}
           </tr>
           <tr>
             <th>Notes</th>
             {intersection.reports.map((r) => (
-              <td key={r.osmId}>{r.notes ? r.notes : ''}</td>
+              <td key={r.timestamp}>{r.notes ? r.notes : ''}</td>
             ))}
           </tr>
         </tbody>
