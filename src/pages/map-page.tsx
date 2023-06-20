@@ -22,6 +22,7 @@ import { IntersectionType } from "typescript";
 import IntersectionCard from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
+  coordinateFloatTolerance,
   getColourForTotalRedDuration,
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
@@ -55,7 +56,7 @@ const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
 console.log({ lat: paramLat, lon: paramLon });
 
 // TODO: Consolidate or break out state
-const initialState: State = { };
+const initialState: State = {};
 
 // type Viewport = typeof initialState.viewport;
 type Viewport = {
@@ -66,14 +67,18 @@ type Viewport = {
 
 export function MapComponent() {
   const [state, setState] = React.useState<State>(initialState);
-  const [popupIntersection, setPopupIntersection] = React.useState<
-    IntersectionStats | undefined
-  >(undefined);
+  // const [popupIntersection, setPopupIntersection] = React.useState<
+  //   IntersectionStats | undefined
+  // >(undefined);
 
-  const [showPopup, setShowPopup] = React.useState(false);
+  /** Either the intersection id of an active popup, or null if popup closed */
+  const [activePopup, setActivePopup] =
+    React.useState<IntersectionStats | null>(null);
 
+  /** If we click on a new marker, set this so we know not to close instantly */
+  const [ignoreNextPopupClose, setIgnoreNextPopupClose] =
+    React.useState<boolean>(false);
 
-  
   const [viewport, setViewport] = React.useState<Viewport>({
     longitude,
     latitude, // starting position
@@ -136,17 +141,20 @@ export function MapComponent() {
           <NavigationControl position="bottom-right" />
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
-                const totalRedDuration = averageIntersectionTotalRedDuration(intersection);
+                const totalRedDuration =
+                  averageIntersectionTotalRedDuration(intersection);
                 return (
                   <Marker
                     key={intersection.osmId}
                     latitude={intersection.lat}
                     longitude={intersection.lon}
                     onClick={() => {
-                      setPopupIntersection(intersection);
-                      if(!showPopup) {
-                        setShowPopup(true);
+                      console.log("In marker onclick for ", intersection.osmId);
+                      if (activePopup !== null) {
+                        setIgnoreNextPopupClose(true);
                       }
+                      console.log('setting active popup to ', intersection.osmId);
+                      setActivePopup(intersection);
                     }}
                     color={getColourForTotalRedDuration(totalRedDuration)}
                   />
@@ -154,17 +162,22 @@ export function MapComponent() {
               })
             : null}
 
-          {showPopup && popupIntersection ? (
+          {activePopup ? (
             <Popup
-              latitude={popupIntersection.lat}
-              longitude={popupIntersection.lon}
-              onClose={() => {
-                setPopupIntersection(undefined)
-                setShowPopup(false)
+              latitude={activePopup.lat}
+              longitude={activePopup.lon}
+              closeOnClick={false}
+              onClose={(m) => {
+                console.log("In marker onclose ");
+                console.log({ ignoreNextPopupClose });
+                if (ignoreNextPopupClose) {
+                  setIgnoreNextPopupClose(false);
+                }
+                // setActivePopup(null);
               }}
               offset={25}
             >
-              <IntersectionCard intersection={popupIntersection} />
+              <IntersectionCard intersection={activePopup} />
             </Popup>
           ) : null}
           {/* Todo add search  */}
@@ -173,4 +186,3 @@ export function MapComponent() {
     </div>
   );
 }
-

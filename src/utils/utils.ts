@@ -136,3 +136,9 @@ export function filterOutNonRoadWays(ways: Way[]): Way[] {
     (way) => way.tags.highway !== "footway" && way.tags.highway !== "cycleway"
   );
 }
+
+/** 
+ * If floats differ by this much, they are considered different numbers.
+ * Not too small as we are dealing with lat/lon coordinates so there are two comparisons.
+*/
+export const coordinateFloatTolerance = 0.00001
