@@ -135,7 +135,7 @@ export function MapComponent() {
         <MapInfoBox />
       </div>
       <div id="map">
-        {state.map === undefined && <LoadingTag>Loading data...</LoadingTag>}
+        {state.points === undefined && <LoadingTag>Loading data...</LoadingTag>}
         <ReactMapGL
           initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}
