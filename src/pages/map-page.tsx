@@ -26,6 +26,7 @@ import {
   getColourForTotalRedDuration,
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
+import { LoadingTag } from "../styles/map-page.style";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -134,6 +135,7 @@ export function MapComponent() {
         <MapInfoBox />
       </div>
       <div id="map">
+        {state.points === undefined && <LoadingTag>Loading data...</LoadingTag>}
         <ReactMapGL
           initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}
