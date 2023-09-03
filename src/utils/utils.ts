@@ -43,6 +43,8 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   return { ...val, cycleLength};
 }
 
+
+
 export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
   const stats: Record<string, IntersectionStats> = {};
   reports.forEach(report => {
@@ -98,31 +100,57 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
-export function getColourForTotalRedDuration(totalRedDuration: number): string {
-  const cycleColourCliffs: { [key: number]: string } = {
-    130: "#ff0000",
-    120: "#fc4f00",
-    110: "#f27600",
-    90: "#e29700",
-    60: "#cab500",
-    45: "#aad000",
-    30: "#00ff00",
-  };
+function rgbToHex(r: number, g: number, b: number): string {
+  return ((r << 16) | (g << 8) | b).toString(16);
+}
 
-  // Cliffs keys sorted low to high
-  const cycleColourCliffKeys: number[] = Object.keys(cycleColourCliffs)
-    .map((key) => parseInt(key))
-    // Sort by smallest to largest number
-    .sort((a, b) => a - b);
+/* 
+Creates colour gradient for marker pins
+*/
+export function createCanvasContext(): CanvasRenderingContext2D| null  {
 
-  // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
-  for (let i = 0; i < cycleColourCliffKeys.length; i++) {
-    const key = cycleColourCliffKeys[i];
-    if (totalRedDuration <= key) {
-      return cycleColourCliffs[key];
-    }
+  const canvas = document.createElement("canvas");
+  canvas.id = 'marker-colour-canvas';
+  canvas.width = 150;
+  canvas.height = 1;
+
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+
+  if (context !== null) {
+    context.rect(0, 0, canvas.width, canvas.height);
+
+    const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, '#00FF00');
+    gradient.addColorStop(0.5, '#FFA500');
+    gradient.addColorStop(1, '#000000');
+  
+    context.fillStyle = gradient;
+    context.fill();
+
+    return context;
+
+  } else {
+
+    return null;
   }
-  return 'black';
+
+}
+
+/*
+Returns colour for markers based on average cycle time
+*/
+export function getMarkerColour(avgCycleLegth : number, context: CanvasRenderingContext2D| null): string {
+
+  if (context !== null) {
+    const rgbValues = context.getImageData(avgCycleLegth, 0, 1, 1).data;
+    let color = "#" + ("000000" + rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2])).slice(-6);
+
+    return color;
+  } else {
+
+    return '#00FF00';
+  }
+
 }
 
 export function getMainWayForIntersection(ways: Way[]): Way {

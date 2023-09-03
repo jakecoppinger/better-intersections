@@ -23,7 +23,8 @@ import { IntersectionType } from "typescript";
 import IntersectionCard from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
-  getColourForTotalRedDuration,
+  createCanvasContext,
+  getMarkerColour,
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
 import { LoadingTag } from "../styles/map-page.style";
@@ -71,6 +72,8 @@ export function MapComponent() {
   const [popupIntersection, setPopupIntersection] = React.useState<
     IntersectionStats | undefined
   >(undefined);
+
+  const context = createCanvasContext(); // Create canvas for colour of markers
 
   const [showPopup, setShowPopup] = React.useState(false);
 
@@ -156,9 +159,11 @@ export function MapComponent() {
           <GeolocateControl position="bottom-right" />
           <NavigationControl position="bottom-right" />
           {state.points
+          
             ? state.points.map((intersection: IntersectionStats) => {
                 const totalRedDuration =
                   averageIntersectionTotalRedDuration(intersection);
+                
                 return (
                   <Marker
                     key={intersection.osmId}
@@ -170,7 +175,7 @@ export function MapComponent() {
                         setShowPopup(true);
                       }
                     }}
-                    color={getColourForTotalRedDuration(totalRedDuration)}
+                    color={getMarkerColour(totalRedDuration, context)}
                   />
                 );
               })
