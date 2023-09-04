@@ -100,57 +100,29 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
-function rgbToHex(r: number, g: number, b: number): string {
-  return ((r << 16) | (g << 8) | b).toString(16);
-}
-
-/* 
-Creates colour gradient for marker pins
-*/
-export function createCanvasContext(): CanvasRenderingContext2D| null  {
-
-  const canvas = document.createElement("canvas");
-  canvas.id = 'marker-colour-canvas';
-  canvas.width = 150;
-  canvas.height = 1;
-
-  const context = canvas.getContext('2d', { willReadFrequently: true });
-
-  if (context !== null) {
-    context.rect(0, 0, canvas.width, canvas.height);
-
-    const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#00FF00');
-    gradient.addColorStop(0.5, '#FFA500');
-    gradient.addColorStop(1, '#000000');
-  
-    context.fillStyle = gradient;
-    context.fill();
-
-    return context;
-
-  } else {
-
-    return null;
-  }
-
-}
-
 /*
 Returns colour for markers based on average cycle time
+if time > 150, returns black 
+else returns a gradient between green and red
 */
-export function getMarkerColour(avgCycleLegth : number, context: CanvasRenderingContext2D| null): string {
-
-  if (context !== null) {
-    const rgbValues = context.getImageData(avgCycleLegth, 0, 1, 1).data;
-    let color = "#" + ("000000" + rgbToHex(rgbValues[0], rgbValues[1], rgbValues[2])).slice(-6);
-
-    return color;
-  } else {
-
-    return '#00FF00';
+export function getMarkerColour(avgCycleLegth : number): string {
+  
+  if (avgCycleLegth >= 150) {
+    return 'hsl(0deg 0% 0%)';
   }
 
+  let hueVal: number = 120 - avgCycleLegth;
+  let colour: string = '';
+
+  if (hueVal < 0) { 
+    let lightness: number = 50 - (hueVal * -1);
+    colour = `hsl(0deg 100% ${lightness}%)`;
+
+  } else {   
+    colour = `hsl(${hueVal}deg 100% 50%)`; 
+  }
+
+  return colour;
 }
 
 export function getMainWayForIntersection(ways: Way[]): Way {
