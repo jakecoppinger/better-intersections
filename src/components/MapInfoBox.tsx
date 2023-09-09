@@ -7,27 +7,43 @@ export const MapInfoBox: FunctionComponent = () => {
   return (
     <>
       <h2>Better Intersections</h2>
-      <h3>A pedestrian traffic light timing map</h3>
+      <h3>A crowdsourced pedestrian traffic light timing map</h3>
 
-      <Link to={`/about`}>Read more about this map and data</Link>
       <p>
-        You can contribute data with a simple form -{" "}
-        <HashLink to={`/about#contributing`}>see the instructions</HashLink>
+        <Link to={`/about`}>Read more</Link> about this project or{" "}
+        <HashLink to={`/about#contributing`}>contribute measurments</HashLink>.
       </p>
       <p>
+        See the{" "}
         <Link to={`/longest-and-shortest-waits`}>
-          See the longest and shortest waits measured
-        </Link>
+          longest and shortest waits measured
+        </Link>.
       </p>
       <p>
-        A side project by{" "}
+        Started by{" "}
         <a
           target="_blank"
           rel="noopener noreferrer"
           href="https://jakecoppinger.com"
         >
           Jake Coppinger
-        </a>
+        </a>{" "}
+        with contributions by{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/Uzaif-Sheikh"
+        >
+          Uzaif Sheikh
+        </a>{" "}
+        and{" "}
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/17Ayaan28"
+        >
+          Ayaan Adil
+        </a>.
       </p>
     </>
   );
