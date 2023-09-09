@@ -43,6 +43,8 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   return { ...val, cycleLength};
 }
 
+
+
 export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
   const stats: Record<string, IntersectionStats> = {};
   reports.forEach(report => {
@@ -98,31 +100,29 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
-export function getColourForTotalRedDuration(totalRedDuration: number): string {
-  const cycleColourCliffs: { [key: number]: string } = {
-    130: "#ff0000",
-    120: "#fc4f00",
-    110: "#f27600",
-    90: "#e29700",
-    60: "#cab500",
-    45: "#aad000",
-    30: "#00ff00",
-  };
-
-  // Cliffs keys sorted low to high
-  const cycleColourCliffKeys: number[] = Object.keys(cycleColourCliffs)
-    .map((key) => parseInt(key))
-    // Sort by smallest to largest number
-    .sort((a, b) => a - b);
-
-  // Iterate over the colour cliff keys and to find the smallest one larger than the cycle time
-  for (let i = 0; i < cycleColourCliffKeys.length; i++) {
-    const key = cycleColourCliffKeys[i];
-    if (totalRedDuration <= key) {
-      return cycleColourCliffs[key];
-    }
+/*
+Returns colour for markers based on average cycle time
+if time > 150, returns black 
+else returns a gradient between green and red
+*/
+export function getMarkerColour(avgCycleLegth : number): string {
+  
+  if (avgCycleLegth >= 150) {
+    return 'hsl(0deg 0% 0%)';
   }
-  return 'black';
+
+  let hueVal: number = 120 - avgCycleLegth;
+  let colour: string = '';
+
+  if (hueVal < 0) { 
+    let lightness: number = 50 - (hueVal * -1);
+    colour = `hsl(0deg 100% ${lightness}%)`;
+
+  } else {   
+    colour = `hsl(${hueVal}deg 100% 50%)`; 
+  }
+
+  return colour;
 }
 
 export function getMainWayForIntersection(ways: Way[]): Way {
