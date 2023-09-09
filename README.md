@@ -1,16 +1,25 @@
 Better Intersections
-=================
+====================
 
-Very work in progress! PRs very welcome.
+A map of pedestrian and bicycle traffic light timings using crowdsourced measurements and OpenStreetMap. Measurments are currently focused on Sydney, Australia, but it will work anywhere in the world. 
 
-Please forgive the bad code - I built this in an afternoon.
+It is live at https://betterintersections.jakecoppinger.com/
 
-# Contributing new data
+See the blog post at https://jakecoppinger.com/2023/06/mapping-pedestrian-traffic-light-timing-in-sydney-australia/
+introducing the project. It's also featured at https://bicyclensw.org.au/pedestrians-are-fed-up-with-begging/
+
+PRs very welcome!
+
+# How do I contribute a measurment of a signal?
 
 See http://betterintersections.jakecoppinger.com/about
 
 # Developing
-Basically create react app development.
+Basically create react app development. It's currently a staticly build Typescript app hosted
+on Cloudflare pages for simplicity. It has a performance overhead loading the pins for the first
+time but ensures the data is as fresh as possible (to encourage community contributions).
+
+The below sections are from the create react app README.
 
 ### `yarn start`
 
@@ -50,3 +59,13 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+# Authors
+
+Started by Jake Coppinger. Google Form, Spreadsheet (public), hosting (Cloudflare Pages) and domain under his name.
+
+See contributions on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
+
+# License
+
+GNU AGPLv3. See LICENSE.
