@@ -25,6 +25,7 @@
     "react-router-dom": "^6.11.2",
     "react-router-hash-link": "^2.4.3",
     "react-scripts": "5.0.1",
+    "rsuite": "^5.39.0",
     "stream": "0.0.2",
     "styled-components": "^5.3.11",
     "timers": "^0.1.1",

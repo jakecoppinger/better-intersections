@@ -27,6 +27,7 @@ import {
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
 import { LoadingTag } from "../styles/map-page.style";
+import FilterBox from "../components/FilterBox";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -80,6 +81,8 @@ export function MapComponent() {
     zoom,
   });
 
+  const [value, setValue] = React.useState<[number, number]>([20, 150]);
+
   React.useEffect(() => {
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
@@ -129,11 +132,21 @@ export function MapComponent() {
     );
   };
 
+  const maxRange = state.points ? state.points.reduce((acc, value) => {
+    const cycleLenOfreports = value.reports.map(x => x.cycleLength);
+    return acc = Math.max(...cycleLenOfreports);
+  }, 0) : 0;
+
   return (
     <div id="container">
       <div id="search_overlay">
         <MapInfoBox />
       </div>
+      <FilterBox 
+        maxRange={maxRange}
+        value={value}
+        setValue={setValue}
+      />
       <div id="map">
         {state.points === undefined && <LoadingTag>Loading data...</LoadingTag>}
         <ReactMapGL
@@ -161,20 +174,22 @@ export function MapComponent() {
                 const totalRedDuration =
                   averageIntersectionTotalRedDuration(intersection);
                 
-                return (
-                  <Marker
-                    key={intersection.osmId}
-                    latitude={intersection.lat}
-                    longitude={intersection.lon}
-                    onClick={() => {
-                      setPopupIntersection(intersection);
-                      if (!showPopup) {
-                        setShowPopup(true);
-                      }
-                    }}
-                    color={getMarkerColour(totalRedDuration)}
-                  />
-                );
+                if (totalRedDuration >= value[0] && totalRedDuration <= value[1]) {
+                  return (
+                    <Marker
+                      key={intersection.osmId}
+                      latitude={intersection.lat}
+                      longitude={intersection.lon}
+                      onClick={() => {
+                        setPopupIntersection(intersection);
+                        if (!showPopup) {
+                          setShowPopup(true);
+                        }
+                      }}
+                      color={getMarkerColour(totalRedDuration)}
+                    />
+                  );
+                }
               })
             : null}
 
