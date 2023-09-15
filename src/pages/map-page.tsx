@@ -14,20 +14,21 @@ import Geocoder from "react-map-gl-geocoder";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
-import { IntersectionStats } from "../types";
+import { IntersectionFilterState, IntersectionStats } from "../types";
 import { getIntersections } from "../api/google-sheets";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
-import { IntersectionType } from "typescript";
 import IntersectionCard from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
-  getMarkerColour
+  getMarkerColour,
+  getMaxCycleTime,
+  getNextLargestMultipleOf5,
 } from "../utils/utils";
 import GeocoderControl from "../utils/geocoder-control";
 import { LoadingTag } from "../styles/map-page.style";
-import FilterBox from "../components/FilterBox";
+import IntersectionFilter from "../components/IntersectionFilter";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -60,7 +61,6 @@ console.log({ lat: paramLat, lon: paramLon });
 // TODO: Consolidate or break out state
 const initialState: State = {};
 
-// type Viewport = typeof initialState.viewport;
 type Viewport = {
   longitude: number;
   latitude: number; // starting position
@@ -80,8 +80,10 @@ export function MapComponent() {
     latitude, // starting position
     zoom,
   });
+  const defaultMinMax = { min: 20, max: 150 };
 
-  const [value, setValue] = React.useState<[number, number]>([20, 150]);
+  const [{ min, max }, setCycleTimeFilter] =
+    React.useState<IntersectionFilterState>(defaultMinMax);
 
   React.useEffect(() => {
     async function getIntersectionsWrapper() {
@@ -132,20 +134,23 @@ export function MapComponent() {
     );
   };
 
-  const maxRange = state.points ? state.points.reduce((acc, value) => {
-    const cycleLenOfreports = value.reports.map(x => x.cycleLength);
-    return acc = Math.max(...cycleLenOfreports);
-  }, 0) : 0;
+  const minMaxCycleTimes = {
+    min: 15,
+    max: getNextLargestMultipleOf5(
+      state.points ? getMaxCycleTime(state.points) || 180 : 180
+    ),
+  };
 
   return (
     <div id="container">
       <div id="search_overlay">
         <MapInfoBox />
       </div>
-      <FilterBox 
-        maxRange={maxRange}
-        value={value}
-        setValue={setValue}
+      <IntersectionFilter
+        filterRange={minMaxCycleTimes}
+        min={min}
+        max={max}
+        updateFilter={setCycleTimeFilter}
       />
       <div id="map">
         {state.points === undefined && <LoadingTag>Loading data...</LoadingTag>}
@@ -169,12 +174,12 @@ export function MapComponent() {
           <GeolocateControl position="bottom-right" />
           <NavigationControl position="bottom-right" />
           {state.points
-          
             ? state.points.map((intersection: IntersectionStats) => {
                 const totalRedDuration =
                   averageIntersectionTotalRedDuration(intersection);
-                
-                if (totalRedDuration >= value[0] && totalRedDuration <= value[1]) {
+
+                /* Check that the current intersection is within the cycle time filter range */
+                if (totalRedDuration >= min && totalRedDuration <= max) {
                   return (
                     <Marker
                       key={intersection.osmId}
@@ -190,6 +195,7 @@ export function MapComponent() {
                     />
                   );
                 }
+                return null;
               })
             : null}
 

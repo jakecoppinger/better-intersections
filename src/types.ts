@@ -79,3 +79,13 @@ export interface RawTag {
     v: "no";
   };
 }
+/**
+ * Object to store the current filter state
+ */
+export interface IntersectionFilterState {
+  /** Minimum cycle time to show on the map */
+  min: number;
+
+  /** Maximum cycle time to show on the map */
+  max: number;
+}
