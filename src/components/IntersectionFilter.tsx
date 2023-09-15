@@ -2,7 +2,6 @@ import React from "react";
 import { RangeSlider } from "rsuite";
 import {
   FilterContainer,
-  FilterHeader,
   FilterText,
 } from "../styles/filter.style";
 import "rsuite/dist/rsuite-no-reset.min.css";
