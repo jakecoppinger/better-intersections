@@ -25,6 +25,9 @@ as possible (to encourage community contributions).
 - Use correct node version from `.nvmrc`: `nvm use`
 - Install packages: `npm install`
 
+## Auth
+See docs at https://clerk.com/docs/quickstarts/react
+
 ## Dev server
 
 `npm run start`

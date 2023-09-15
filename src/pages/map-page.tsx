@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React from "react";
 import ReactMapGL, {
   MapboxMap,
   AttributionControl,
@@ -62,6 +62,9 @@ type Viewport = {
 };
 
 export function MapComponent() {
+  if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
+    throw new Error("Missing Publishable Key");
+  }
   const [state, setState] = React.useState<State>(initialState);
   const [popupIntersection, setPopupIntersection] = React.useState<
     IntersectionStats | undefined
