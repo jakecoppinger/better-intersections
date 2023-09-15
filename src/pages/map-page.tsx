@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
 import ReactMapGL, {
-  NavigationControl,
   MapboxMap,
   AttributionControl,
   FullscreenControl,
@@ -9,16 +8,12 @@ import ReactMapGL, {
   Popup,
   ViewStateChangeEvent,
 } from "react-map-gl";
-// @ts-ignore
-import Geocoder from "react-map-gl-geocoder";
-import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
 import { IntersectionFilterState, IntersectionStats } from "../types";
 import { getIntersections } from "../api/google-sheets";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import IntersectionCard from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
@@ -26,7 +21,6 @@ import {
   getMaxCycleTime,
   getNextLargestMultipleOf5,
 } from "../utils/utils";
-import GeocoderControl from "../utils/geocoder-control";
 import { LoadingTag } from "../styles/map-page.style";
 import IntersectionFilter from "../components/IntersectionFilter";
 
@@ -80,7 +74,7 @@ export function MapComponent() {
     latitude, // starting position
     zoom,
   });
-  const defaultMinMax = { min: 20, max: 150 };
+  const defaultMinMax = { min: 15, max: 185 };
 
   const [{ min, max }, setCycleTimeFilter] =
     React.useState<IntersectionFilterState>(defaultMinMax);
@@ -98,21 +92,6 @@ export function MapComponent() {
       }));
     }
     getIntersectionsWrapper();
-  }, []);
-
-  const handleViewportChange = useCallback(
-    (newViewport: Viewport) => setViewport(newViewport),
-    []
-  );
-
-  // if you are happy with Geocoder default settings, you can just use handleViewportChange directly
-  const handleGeocoderViewportChange = useCallback((newViewport: Viewport) => {
-    const geocoderDefaultOverrides = { transitionDuration: 1000 };
-
-    return handleViewportChange({
-      ...newViewport,
-      ...geocoderDefaultOverrides,
-    });
   }, []);
 
   const onMoveEnd = (e: ViewStateChangeEvent) => {
@@ -135,9 +114,11 @@ export function MapComponent() {
   };
 
   const minMaxCycleTimes = {
-    min: 15,
+    min: defaultMinMax.min,
     max: getNextLargestMultipleOf5(
-      state.points ? getMaxCycleTime(state.points) || 180 : 180
+      state.points
+        ? getMaxCycleTime(state.points) || defaultMinMax.max
+        : defaultMinMax.max
     ),
   };
 
@@ -165,14 +146,10 @@ export function MapComponent() {
           onMoveEnd={onMoveEnd}
           attributionControl={false}
         >
-          <GeocoderControl
-            mapboxAccessToken={MAPBOX_TOKEN}
-            position="bottom-left"
-          />
           <AttributionControl compact={false} />
           <FullscreenControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
-          <NavigationControl position="bottom-right" />
+          {/* <NavigationControl position="bottom-right" /> */}
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
                 const totalRedDuration =

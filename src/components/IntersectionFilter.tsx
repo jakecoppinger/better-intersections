@@ -31,10 +31,9 @@ export default function IntersectionFilter(props: {
   const { filterRange, min, max, updateFilter } = props;
 
   return (
-    <>
+    <div data-testid="intersection-filter-container">
       <FilterContainer>
-        <FilterHeader>Filter intersections</FilterHeader>
-        <FilterText>Average total cycle time (seconds):</FilterText>
+        <FilterText>Filter by cycle time (avg, seconds):</FilterText>
         <RangeSlider
           value={[min, max]}
           max={filterRange.max}
@@ -57,6 +56,6 @@ export default function IntersectionFilter(props: {
           }}
         />
       </FilterContainer>
-    </>
+    </div>
   );
 }

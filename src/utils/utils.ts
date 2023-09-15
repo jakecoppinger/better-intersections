@@ -157,7 +157,7 @@ export function getMaxCycleTime(intersections: IntersectionStats[]): number | un
     }
     return acc;
   }, undefined);
-} 
+}
 
 export function getNextLargestMultipleOf5(val: number) {
   return Math.ceil(val / 5) * 5;
