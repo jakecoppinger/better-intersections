@@ -6,20 +6,12 @@ import { render } from "react-dom";
 import React from "react";
 import "./index.css";
 import { MapComponent as MapPage } from "./pages/map-page";
-import ContributeMeasurement from "./pages/contribute-measurment";
+import {ContributeMeasurementPage} from "./pages/contribute-measurement-page";
 import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
 import LongestAndShortestWaits from "./pages/longest-and-shortest-waits-page";
-import {
-  ClerkProvider,
-} from "@clerk/clerk-react";
 
-if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key");
-}
-
-const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/contribute-measurement",
-    element: <ContributeMeasurement />,
+    element: <ContributeMeasurementPage />,
   },
   {
     path: "/intersection/node/:nodeId",
@@ -46,9 +38,7 @@ const router = createBrowserRouter([
 
 render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={clerkPubKey}>
       <RouterProvider router={router} />
-    </ClerkProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
