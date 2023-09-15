@@ -40,7 +40,7 @@ export async function convertToTrafficLightReport(formResponse: FormResponse): P
   }
   const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
 
-  return { ...val, cycleLength};
+  return { ...val, cycleLength };
 }
 
 
@@ -105,8 +105,8 @@ Returns colour for markers based on average cycle time
 if time > 150, returns black 
 else returns a gradient between green and red
 */
-export function getMarkerColour(avgCycleLegth : number): string {
-  
+export function getMarkerColour(avgCycleLegth: number): string {
+
   if (avgCycleLegth >= 150) {
     return 'hsl(0deg 0% 0%)';
   }
@@ -114,12 +114,12 @@ export function getMarkerColour(avgCycleLegth : number): string {
   let hueVal: number = 120 - avgCycleLegth;
   let colour: string = '';
 
-  if (hueVal < 0) { 
+  if (hueVal < 0) {
     let lightness: number = 50 - (hueVal * -1);
     colour = `hsl(0deg 100% ${lightness}%)`;
 
-  } else {   
-    colour = `hsl(${hueVal}deg 100% 50%)`; 
+  } else {
+    colour = `hsl(${hueVal}deg 100% 50%)`;
   }
 
   return colour;
@@ -135,4 +135,30 @@ export function filterOutNonRoadWays(ways: Way[]): Way[] {
   return ways.filter(
     (way) => way.tags.highway !== "footway" && way.tags.highway !== "cycleway"
   );
+}
+
+/** Calculate average of an array */
+const average = (array: number[]) => array.reduce((a, b) => a + b) / array.length;
+
+/**
+  * Iterate over all intersections, and find the highest *average* cycle times across
+  * all intersections.
+  * Returns undefined if no intersections have been measured.
+  */
+export function getMaxCycleTime(intersections: IntersectionStats[]): number | undefined {
+  return intersections.reduce<number | undefined>((acc, value) => {
+    const measuredCycleLengths = value.reports.map(x => x.cycleLength);
+    const avgCycleLength = average(measuredCycleLengths);
+    if (!acc) {
+      return avgCycleLength;
+    }
+    if (avgCycleLength > acc) {
+      return avgCycleLength;
+    }
+    return acc;
+  }, undefined);
+}
+
+export function getNextLargestMultipleOf5(val: number) {
+  return Math.ceil(val / 5) * 5;
 }
