@@ -11,29 +11,30 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session } = props;
 
   const [loading, setLoading] = useState(false);
-  const [website, setWebsite] = useState<string | undefined>();
+  const [data, setData] = useState<any | undefined>();
 
   useEffect(() => {
-    async function getProfile() {
+    async function getMeasurements() {
       setLoading(true);
-      const { user } = session;
+      // const { user } = session;
 
-      let { data, error } = await supabase
-        .from("profiles")
-        .select(`website`)
-        .eq("id", user.id)
-        .single();
+      const { data, error } = await supabase
+        .from("measurements")
+        .select(
+          `id,updated_at,location_description,green_light_duration,flashing_red_light_duration,solid_red_light_duration,osm_node_id,crossing_lantern_type,can_cars_cross_while_flashing_red,intersection_id,is_scramble_crossing,notes`
+        );
+      // .eq("id", user.id)
 
       if (error) {
         console.warn(error);
       } else if (data) {
-        setWebsite(data.website);
+        setData(data);
       }
 
       setLoading(false);
     }
 
-    getProfile();
+    getMeasurements();
   }, [session]);
 
   const updateProfile: any = async (event: any, avatarUrl: any) => {
@@ -45,7 +46,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
     const updates = {
       id: user.id,
-      website,
+      website: data,
       updated_at: new Date(),
     };
 
@@ -59,30 +60,34 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   };
 
   return (
-    <form onSubmit={updateProfile} className="form-widget">
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="website">Website</label>
-        <input
-          id="website"
-          type="text"
-          value={website || ""}
-          onChange={(e) => setWebsite(e.target.value)}
-        />
-      </div>
+    <>
+      <p>Measurements: {JSON.stringify(data)}</p>
 
-      <div>
-        <button
-          className="button block primary"
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Loading ..." : "Update"}
-        </button>
-      </div>
-    </form>
+      <form onSubmit={updateProfile} className="form-widget">
+        <div>
+          <label htmlFor="email">Email</label>
+          <input id="email" type="text" value={session.user.email} disabled />
+        </div>
+        <div>
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            type="text"
+            value={data || ""}
+            onChange={(e) => setData(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <button
+            className="button block primary"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Loading ..." : "Update"}
+          </button>
+        </div>
+      </form>
+    </>
   );
 };

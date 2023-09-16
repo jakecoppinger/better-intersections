@@ -89,3 +89,51 @@ export interface IntersectionFilterState {
   /** Maximum cycle time to show on the map */
   max: number;
 }
+
+interface SQLFormResponse {
+  /** UUID references auth.users on delete cascade. */
+  id: string;
+
+  /** Timestamp with time zone. */
+  updatedAt: Date;
+
+  /** 
+   * Describe the location (road you're crossing & nearest feature, 
+   * adjacent road if traffic lights, or coordinates).
+   */
+  locationDescription: string | null;
+
+  /** How many seconds was the pedestrian light green for? */
+  greenLightDuration: number;
+
+  /** How many seconds was the pedestrian light flashing red for? */
+  flashingRedLightDuration: number;
+
+  /** How many seconds was the pedestrian light solid red for? */
+  solidRedLightDuration: number;
+
+  /** 
+   * Optional: What is the OpenStreetMap node ID of the intersection? 
+   * (exact crossing node preferable).
+   * TODO: Separate intersection into a different table.
+   */
+  osmNodeId: number | null;
+
+  /** What sort of crossing is this? */
+  crossingLanternType: "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+
+  /** 
+   * Can cars cross while the light is flashing red? 
+   * (is the crossing unprotected when flashing red?)
+   */
+  canCarsCrossWhileFlashingRed: "yes" | "no" | "delayed" | "not_sure";
+
+  /** Intersection ID. */
+  intersectionId: string | null;
+
+  /** Is it a scramble crossing? */
+  isScrambleCrossing: "yes" | "no" | "unknown";
+
+  /** Additional notes. */
+  notes: string | null;
+}
