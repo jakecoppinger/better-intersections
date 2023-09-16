@@ -25,8 +25,10 @@ as possible (to encourage community contributions).
 - Use correct node version from `.nvmrc`: `nvm use`
 - Install packages: `npm install`
 
-## Auth
-See docs at https://clerk.com/docs/quickstarts/react
+## DB notes
+
+https://supabase.com/blog/postgresql-views
+https://supabase.com/docs/guides/getting-started/tutorials/with-react
 
 ## Dev server
 

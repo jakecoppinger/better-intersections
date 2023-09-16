@@ -11,27 +11,23 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session } = props;
 
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState<string | undefined>();
   const [website, setWebsite] = useState<string | undefined>();
-  const [avatar_url, setAvatarUrl] = useState<string | undefined>();
 
   useEffect(() => {
     async function getProfile() {
       setLoading(true);
       const { user } = session;
-
+        
       let { data, error } = await supabase
         .from("profiles")
-        .select(`username, website, avatar_url`)
+        .select(`website`)
         .eq("id", user.id)
         .single();
 
       if (error) {
         console.warn(error);
       } else if (data) {
-        setUsername(data.username);
         setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
       }
 
       setLoading(false);
@@ -49,9 +45,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
     const updates = {
       id: user.id,
-      username,
       website,
-      avatarUrl,
       updated_at: new Date(),
     };
 
@@ -60,7 +54,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     if (error) {
       alert(error.message);
     } else {
-      setAvatarUrl(avatarUrl);
     }
     setLoading(false);
   }
@@ -70,16 +63,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       <div>
         <label htmlFor="email">Email</label>
         <input id="email" type="text" value={session.user.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="username">Name</label>
-        <input
-          id="username"
-          type="text"
-          required
-          value={username || ""}
-          onChange={(e) => setUsername(e.target.value)}
-        />
       </div>
       <div>
         <label htmlFor="website">Website</label>
