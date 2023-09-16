@@ -17,7 +17,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     async function getProfile() {
       setLoading(true);
       const { user } = session;
-        
+
       let { data, error } = await supabase
         .from("profiles")
         .select(`website`)
@@ -38,7 +38,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
   const updateProfile: any = async (event: any, avatarUrl: any) => {
     event.preventDefault();
-    console.log({event});
+    console.log({ event });
 
     setLoading(true);
     const { user } = session;
@@ -56,7 +56,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     } else {
     }
     setLoading(false);
-  }
+  };
 
   return (
     <form onSubmit={updateProfile} className="form-widget">
@@ -68,7 +68,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <label htmlFor="website">Website</label>
         <input
           id="website"
-          type="url"
+          type="text"
           value={website || ""}
           onChange={(e) => setWebsite(e.target.value)}
         />
@@ -81,16 +81,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           disabled={loading}
         >
           {loading ? "Loading ..." : "Update"}
-        </button>
-      </div>
-
-      <div>
-        <button
-          className="button block"
-          type="button"
-          onClick={() => supabase.auth.signOut()}
-        >
-          Sign Out
         </button>
       </div>
     </form>
