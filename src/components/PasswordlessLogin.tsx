@@ -23,55 +23,58 @@ export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
   const [verificationCode, setVerificationCode] = useState("");
   if (session) {
     return (
-      <button
-        className="button block"
-        type="button"
-        onClick={() => supabase.auth.signOut()}
-      >
-        Sign Out
-      </button>
+      <>
+        <p>Logged in as {session.user.email}</p>
+        <button
+          className="button block"
+          type="button"
+          onClick={() => supabase.auth.signOut()}
+        >
+          Sign Out
+        </button>
+      </>
     );
   }
 
   if (authState === "no-login-email-sent" || authState === "sending-email") {
     return (
       <>
-      <h1>Verify your email</h1>
-      <form
-        className="form-widget"
-        onSubmit={async (event: any) => {
-          event.preventDefault();
-          setAuthState("sending-email");
-          const { error } = await supabase.auth.signInWithOtp({ email });
-          if (error) {
-            alert(error.message);
-          }
-          setAuthState("waiting-on-code");
-        }}
-      >
-        <div>
-          <input
-            className="inputField"
-            type="email"
-            placeholder="Your email"
-            value={email}
-            required={true}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <button
-            className={"button block"}
-            disabled={authState === "sending-email"}
-          >
-            {authState === "sending-email" ? (
-              <span>Sending code...</span>
-            ) : (
-              <span>Send login code</span>
-            )}
-          </button>
-        </div>
-      </form>
+        <h1>Verify your email</h1>
+        <form
+          className="form-widget"
+          onSubmit={async (event: any) => {
+            event.preventDefault();
+            setAuthState("sending-email");
+            const { error } = await supabase.auth.signInWithOtp({ email });
+            if (error) {
+              alert(error.message);
+            }
+            setAuthState("waiting-on-code");
+          }}
+        >
+          <div>
+            <input
+              className="inputField"
+              type="email"
+              placeholder="Your email"
+              value={email}
+              required={true}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <button
+              className={"button block"}
+              disabled={authState === "sending-email"}
+            >
+              {authState === "sending-email" ? (
+                <span>Sending code...</span>
+              ) : (
+                <span>Send login code</span>
+              )}
+            </button>
+          </div>
+        </form>
       </>
     );
   }

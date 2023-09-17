@@ -90,50 +90,58 @@ export interface IntersectionFilterState {
   max: number;
 }
 
-interface SQLFormResponse {
-  /** UUID references auth.users on delete cascade. */
-  id: string;
+type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+type CanCarsCrossWhileFlashingRed = "yes" | "no" | "delayed" | "not_sure";
 
-  /** Timestamp with time zone. */
-  updatedAt: Date;
+export interface IntersectionForm {
+  // /** UUID references auth.users on delete cascade. */
+  // id: string;
+
+  // /** Timestamp with time zone. */
+  // updated_at: Date;
 
   /** 
    * Describe the location (road you're crossing & nearest feature, 
    * adjacent road if traffic lights, or coordinates).
    */
-  locationDescription: string | null;
+  location_description: string | null;
 
   /** How many seconds was the pedestrian light green for? */
-  greenLightDuration: number;
+  green_light_duration: number;
 
   /** How many seconds was the pedestrian light flashing red for? */
-  flashingRedLightDuration: number;
+  flashing_red_light_duration: number;
 
   /** How many seconds was the pedestrian light solid red for? */
-  solidRedLightDuration: number;
+  solid_red_light_duration: number;
 
   /** 
    * Optional: What is the OpenStreetMap node ID of the intersection? 
    * (exact crossing node preferable).
    * TODO: Separate intersection into a different table.
    */
-  osmNodeId: number | null;
+  osm_node_id: number | null;
 
   /** What sort of crossing is this? */
-  crossingLanternType: "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+  crossing_lantern_type: CrossingLanternType
 
   /** 
    * Can cars cross while the light is flashing red? 
    * (is the crossing unprotected when flashing red?)
    */
-  canCarsCrossWhileFlashingRed: "yes" | "no" | "delayed" | "not_sure";
+  can_cars_cross_while_flashing_red: CanCarsCrossWhileFlashingRed;
 
   /** Intersection ID. */
-  intersectionId: string | null;
+  intersection_id: string | null;
 
   /** Is it a scramble crossing? */
-  isScrambleCrossing: "yes" | "no" | "unknown";
+  is_scramble_crossing: "yes" | "no" | "unknown";
 
   /** Additional notes. */
   notes: string | null;
+}
+
+export interface SQLIntersection extends IntersectionForm {
+  id: string; // Using string for uuid
+  updated_at: Date; // timestamp with time zone is mapped to JavaScript's Date
 }
