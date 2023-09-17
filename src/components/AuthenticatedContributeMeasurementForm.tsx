@@ -2,7 +2,46 @@ import React, { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "../utils/supabase-client";
-import { IntersectionForm, SQLIntersection } from "../types";
+import {
+  CanCarsCrossWhileFlashingRed,
+  CrossingLanternType,
+  IntersectionForm,
+  IsScrambleCrossing,
+  SQLIntersection,
+} from "../types";
+
+interface CheckboxProps {
+  checkboxLabel: string;
+  initialValue: boolean;
+  onToggle: (value: boolean) => void;
+}
+
+const CheckboxWithLabel: React.FC<CheckboxProps> = ({
+  initialValue,
+  onToggle,
+  checkboxLabel,
+}) => {
+  const [checked, setChecked] = useState(initialValue);
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedValue = e.target.checked;
+    setChecked(updatedValue);
+    onToggle(updatedValue);
+  };
+
+  return (
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={handleCheckboxChange}
+        />
+        {checkboxLabel}
+      </label>
+    </div>
+  );
+};
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -48,67 +87,38 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     | { data: IntersectionForm; error: false; message?: undefined }
     | { data?: undefined; error: true; message: string };
 
-  type CrossingLanternType =
-    | "pedestrian"
-    | "pedestrian_and_bicycle"
-    | "bicycle";
-
-  interface RadioButtonComponentProps {
-    value: CrossingLanternType;
-    callback: (val: CrossingLanternType) => void;
+  interface RadioButtonComponentProps<T> {
+    selectedButton: T | undefined;
+    callback: (val: T) => void;
+    options: { value: T; label: string }[];
   }
 
-  const RadioButtonComponent: React.FC<RadioButtonComponentProps> = ({
-    value,
+  function RadioButtonComponent<T extends string>({
+    selectedButton,
     callback,
-  }: RadioButtonComponentProps) => {
+    options,
+  }: RadioButtonComponentProps<T>) {
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newVal: CrossingLanternType = event.target
-        .value as CrossingLanternType;
+      const newVal: T = event.target.value as T;
       callback(newVal);
     };
 
     return (
       <div>
-        <h2>Crossing Lantern Type</h2>
-        <p>What sort of crossing is this?</p>
-        <label>
-          <input
-            type="radio"
-            name="crossing_lantern_type"
-            value="pedestrian"
-            checked={formState.crossing_lantern_type === "pedestrian"}
-            onChange={handleRadioChange}
-          />
-          Pedestrian
-        </label>
-
-        <label>
-          <input
-            type="radio"
-            name="crossing_lantern_type"
-            value="pedestrian_and_bicycle"
-            checked={
-              formState.crossing_lantern_type === "pedestrian_and_bicycle"
-            }
-            onChange={handleRadioChange}
-          />
-          Pedestrian and Bicycle
-        </label>
-
-        <label>
-          <input
-            type="radio"
-            name="crossing_lantern_type"
-            value="bicycle"
-            checked={formState.crossing_lantern_type === "bicycle"}
-            onChange={handleRadioChange}
-          />
-          Bicycle
-        </label>
+        {options.map((option) => (
+          <label key={option.value}>
+            <input
+              type="radio"
+              value={option.value}
+              checked={selectedButton === option.value}
+              onChange={handleRadioChange}
+            />
+            {option.label}
+          </label>
+        ))}
       </div>
     );
-  };
+  }
 
   function validateFormState(): FormValidatorOutput {
     const raw = formState;
@@ -282,12 +292,91 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
           required={true}
         />
-        <RadioButtonComponent
-          value={formState.crossing_lantern_type || "pedestrian"}
+
+        <h2>Crossing Lantern Type</h2>
+        <p>What sort of crossing is this?</p>
+
+        <RadioButtonComponent<CrossingLanternType>
+          selectedButton={formState.crossing_lantern_type}
+          options={
+            [
+              {
+                value: "pedestrian",
+                label: "Pedestrian",
+              },
+              {
+                value: "pedestrian_and_bicycle",
+                label: "Pedestrian and Bicycle",
+              },
+              {
+                value: "bicycle",
+                label: "Bicycle",
+              },
+            ] as { value: CrossingLanternType; label: string }[]
+          }
           callback={(val: CrossingLanternType) => {
             setFormState((prev) => ({
               ...prev,
               crossing_lantern_type: val,
+            }));
+          }}
+        />
+
+        <h2>Is crossing protected?</h2>
+        <p>Can cars cross when light is flashing red?</p>
+
+        <RadioButtonComponent<CanCarsCrossWhileFlashingRed>
+          selectedButton={formState.can_cars_cross_while_flashing_red}
+          options={
+            [
+              {
+                value: "yes",
+                label: "Yes",
+              },
+              {
+                value: "no",
+                label: "No",
+              },
+              {
+                value: "unknown",
+                label: "Unknown",
+              },
+            ] as { value: CanCarsCrossWhileFlashingRed; label: string }[]
+          }
+          callback={(
+            can_cars_cross_while_flashing_red: CanCarsCrossWhileFlashingRed
+          ) => {
+            setFormState((prev) => ({
+              ...prev,
+              can_cars_cross_while_flashing_red,
+            }));
+          }}
+        />
+        <h2>Is it a scamble crossing?</h2>
+        <p>A scramble crossing is when all pedestrians on each side cross at the same time.</p>
+
+        <RadioButtonComponent<IsScrambleCrossing>
+          selectedButton={formState.is_scramble_crossing}
+          options={
+            [
+              {
+                value: "yes",
+                label: "Yes",
+              },
+              {
+                value: "no",
+                label: "No",
+              },
+              {
+                value: "unknown",
+                label: "Unknown",
+              },
+            ] as { value: IsScrambleCrossing; label: string }[]
+          }
+          callback={(is_scramble_crossing: IsScrambleCrossing) => {
+            setFormState((prev) => ({
+              ...prev,
+              is_scramble_crossing,
             }));
           }}
         />

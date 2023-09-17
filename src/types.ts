@@ -90,9 +90,9 @@ export interface IntersectionFilterState {
   max: number;
 }
 
-type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
-type CanCarsCrossWhileFlashingRed = "yes" | "no" | "delayed" | "not_sure";
-
+export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+export type CanCarsCrossWhileFlashingRed = "yes" | "no" | "delayed" | "not_sure";
+export type IsScrambleCrossing = "yes" | "no" | "unknown";
 export interface IntersectionForm {
   // /** UUID references auth.users on delete cascade. */
   // id: string;
@@ -135,7 +135,7 @@ export interface IntersectionForm {
   intersection_id: string | null;
 
   /** Is it a scramble crossing? */
-  is_scramble_crossing: "yes" | "no" | "unknown";
+  is_scramble_crossing: IsScrambleCrossing;
 
   /** Additional notes. */
   notes: string | null;
