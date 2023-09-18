@@ -54,7 +54,7 @@ export default function IntersectionNodePage() {
       }
 
       const intersections = await getIntersections();
-      const intersection = intersections.find((i) => i.osmId === nodeId);
+      const intersection = intersections.find((i) => i.osmId.toString() === nodeId);
       setIntersection(intersection);
     }
     getIntersectionData();
