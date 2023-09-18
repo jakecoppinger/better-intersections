@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "../utils/supabase-client";
@@ -10,40 +10,12 @@ import {
   IsScrambleCrossing,
   SQLIntersection,
 } from "../types";
+import { FormTextInput, RadioButtonComponent } from "./form-components";
 
 export interface AuthenticatedFormProps {
   session: Session;
 }
 
-function FormTextInput({
-  title,
-  description,
-  value,
-  setValue,
-  required = false,
-}: {
-  title: string;
-  description: string;
-  value?: string | undefined;
-  setValue: (value: string) => void;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <h2>{(!required ? 'Optional: ': ' ') + title}</h2>
-      <p>{description}</p>
-      <input
-        // id={id}
-        type="text"
-        required={required}
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
-    </div>
-  );
-}
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session } = props;
 
@@ -53,39 +25,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   type FormValidatorOutput =
     | { data: IntersectionForm; error: false; message?: undefined }
     | { data?: undefined; error: true; message: string };
-
-  interface RadioButtonComponentProps<T> {
-    selectedButton: T | undefined;
-    callback: (val: T) => void;
-    options: { value: T; label: string }[];
-  }
-
-  function RadioButtonComponent<T extends string>({
-    selectedButton,
-    callback,
-    options,
-  }: RadioButtonComponentProps<T>) {
-    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newVal: T = event.target.value as T;
-      callback(newVal);
-    };
-
-    return (
-      <div>
-        {options.map((option) => (
-          <label key={option.value}>
-            <input
-              type="radio"
-              value={option.value}
-              checked={selectedButton === option.value}
-              onChange={handleRadioChange}
-            />
-            {option.label}
-          </label>
-        ))}
-      </div>
-    );
-  }
 
   function validateFormState(): FormValidatorOutput {
     const raw = formState;
@@ -180,25 +119,18 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
-        <div>
-          <h2>Location</h2>
-          <p>
-            Describe the location (road you're crossing & nearest feature,
-            adjacent road if traffic lights, or coordinates)
-          </p>
-          <input
-            id="location"
-            type="text"
-            required
-            value={formState.location_description || ""}
-            onChange={(e) =>
-              setFormState((prev) => ({
-                ...prev,
-                location_description: e.target.value,
-              }))
-            }
-          />
-        </div>
+        <FormTextInput
+          title="Location"
+          description="Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)"
+          value={formState.location_description || ""}
+          setValue={(location_description) =>
+            setFormState((prev) => ({
+              ...prev,
+              location_description,
+            }))
+          }
+          required={true}
+        />
 
         <FormTextInput
           title="Green light duration"
@@ -243,10 +175,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           required={true}
         />
 
-        <h2>Crossing Lantern Type</h2>
-        <p>What sort of crossing is this?</p>
-
         <RadioButtonComponent<CrossingLanternType>
+          title="Crossing Lantern Type"
+          description="What sort of crossing is this?"
+          id="crossing_lantern_type"
           selectedButton={formState.crossing_lantern_type}
           options={
             [
@@ -272,10 +204,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
-        <h2>Is crossing protected?</h2>
-        <p>Can cars cross when light is flashing red?</p>
-
         <RadioButtonComponent<ProtectedCrossing>
+          title="Is crossing protected?"
+          description="Can cars cross when light is flashing red?"
+          id="protected_crossing"
           selectedButton={formState.protected_crossing}
           options={
             [
@@ -300,13 +232,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             }));
           }}
         />
-        <h2>Is it a scamble crossing?</h2>
-        <p>
-          A scramble crossing is when all pedestrians on each side cross at the
-          same time.
-        </p>
 
         <RadioButtonComponent<IsScrambleCrossing>
+          title="Is it a scramble crossing?"
+          description="A scramble crossing is when all pedestrians on each side cross at the same time."
+          id="is_scramble_crossing"
           selectedButton={formState.is_scramble_crossing || undefined}
           options={
             [
@@ -331,7 +261,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             }));
           }}
         />
-
 
         <FormTextInput
           title="OpenStreetMap node ID"
