@@ -138,6 +138,7 @@ export function MapComponent() {
         <ReactMapGL
           initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}
+          id={"react-map"}
           style={{ width: "100vw", height: "100vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v9"
           ref={(ref) =>
