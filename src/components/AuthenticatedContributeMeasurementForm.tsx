@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "../utils/supabase-client";
+
 import {
   ProtectedCrossing,
   CrossingLanternType,
@@ -10,55 +11,20 @@ import {
   SQLIntersection,
 } from "../types";
 
-interface CheckboxProps {
-  checkboxLabel: string;
-  initialValue: boolean;
-  onToggle: (value: boolean) => void;
-}
-
-const CheckboxWithLabel: React.FC<CheckboxProps> = ({
-  initialValue,
-  onToggle,
-  checkboxLabel,
-}) => {
-  const [checked, setChecked] = useState(initialValue);
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedValue = e.target.checked;
-    setChecked(updatedValue);
-    onToggle(updatedValue);
-  };
-
-  return (
-    <div>
-      <label>
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={handleCheckboxChange}
-        />
-        {checkboxLabel}
-      </label>
-    </div>
-  );
-};
-
 export interface AuthenticatedFormProps {
   session: Session;
 }
 
 function FormTextInput({
   title,
-  // id,
   description,
   value,
   setValue,
   required = false,
 }: {
   title: string;
-  // id: string;
   description: string;
-  value: string | undefined;
+  value?: string | undefined;
   setValue: (value: string) => void;
   required?: boolean;
 }) {
@@ -70,8 +36,10 @@ function FormTextInput({
         // id={id}
         type="text"
         required={required}
-        value={value || ""}
-        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
       />
     </div>
   );
@@ -79,8 +47,7 @@ function FormTextInput({
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session } = props;
 
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
   type FormValidatorOutput =
@@ -125,22 +92,35 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     if (raw.green_light_duration === undefined) {
       return {
         error: true,
-        message: "Green light duration is required",
+        message:
+          "Please input a valid green light duration in seconds (without letters)",
       };
     }
-    if (raw.flashing_red_light_duration === undefined) {
+    if (
+      raw.flashing_red_light_duration === undefined ||
+      isNaN(raw.flashing_red_light_duration)
+    ) {
       return {
         error: true,
-        message: "Flashing red light duration is required",
+        message:
+          "Please input a valid flashing red light duration in seconds (without letters)",
       };
     }
-    if (raw.solid_red_light_duration === undefined) {
+    console.log({ solid_red_light_duration: raw.solid_red_light_duration });
+    if (
+      raw.solid_red_light_duration === undefined ||
+      isNaN(raw.solid_red_light_duration)
+    ) {
       return {
         error: true,
-        message: "Solid red light duration is required",
+        message:
+          "Please input a valid red light duration in seconds (without letters)",
       };
     }
-    if (raw.location_description === undefined) {
+    if (
+      raw.location_description === undefined ||
+      isNaN(raw.solid_red_light_duration)
+    ) {
       return {
         error: true,
         message: "Location description is required",
@@ -155,7 +135,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     if (raw.protected_crossing === undefined) {
       return {
         error: true,
-        message: "Can cars cross while flashing red is required",
+        message: "Missing info if it's a protected crossing",
       };
     }
     if (raw.is_scramble_crossing === undefined) {
@@ -170,15 +150,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
   const submitMeasurement: any = async (event: any, avatarUrl: any) => {
     event.preventDefault();
-    console.log({ event });
 
-    setLoading(true);
+    setIsSubmitting(true);
     const { user } = session;
 
     const { data, error: validateError, message } = validateFormState();
     if (validateError || data === undefined) {
       alert(message);
-      setLoading(false);
+      setIsSubmitting(false);
       return;
     }
     const update: SQLIntersection = {
@@ -192,15 +171,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     if (error) {
       alert(error.message);
     } else {
-      console.log("success");
+      alert("Measurement submitted, thanks! 🙏");
     }
-    setLoading(false);
+    setFormState({});
+    setIsSubmitting(false);
   };
 
   return (
     <>
-      <p>Measurements: {JSON.stringify(data)}</p>
-
       <form onSubmit={submitMeasurement} className="form-widget">
         <div>
           <h2>Location</h2>
@@ -225,7 +203,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <FormTextInput
           title="Green light duration"
           description="How many seconds was the pedestrian light green for?"
-          value={formState.green_light_duration?.toString()}
           setValue={(newVal: string) => {
             try {
               const green_light_duration = parseFloat(newVal);
@@ -240,7 +217,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <FormTextInput
           title="Flashing red light duration"
           description="How many seconds was the pedestrian light flashing red for?"
-          value={formState.flashing_red_light_duration?.toString()}
           setValue={(newVal: string) => {
             try {
               const flashing_red_light_duration = parseFloat(newVal);
@@ -255,7 +231,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <FormTextInput
           title="Solid red light duration"
           description="How many seconds was the pedestrian light solid red for?"
-          value={formState.solid_red_light_duration?.toString()}
           setValue={(newVal: string) => {
             try {
               const solid_red_light_duration = parseFloat(newVal);
@@ -318,10 +293,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               },
             ] as { value: ProtectedCrossing; label: string }[]
           }
-          callback={(can_cars_cross_while_flashing_red: ProtectedCrossing) => {
+          callback={(protected_crossing: ProtectedCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              can_cars_cross_while_flashing_red,
+              protected_crossing,
             }));
           }}
         />
@@ -360,9 +335,9 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <button
           className="button block primary"
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
         >
-          {loading ? "Loading ..." : "Submit"}
+          {isSubmitting ? "Loading ..." : "Submit"}
         </button>
       </form>
     </>
