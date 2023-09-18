@@ -14,7 +14,7 @@ export function isValidTrafficLightReport(formResponse: SQLIntersectionWithId): 
   return rawOsmId !== null;
 }
 
-export async function convertToTrafficLightReport(formResponse: SQLIntersectionWithId): Promise<TrafficLightReport> {
+export async function convertToTrafficLightReport(formResponse: SQLIntersectionWithId): Promise<TrafficLightReport | null> {
   const { osm_node_id, custom_updated_at, protected_crossing,
     green_light_duration,
     flashing_red_light_duration,
@@ -30,23 +30,28 @@ export async function convertToTrafficLightReport(formResponse: SQLIntersectionW
   if (osm_node_id === null) {
     throw new Error(`No osm id in field: ${osm_node_id}`);
   }
-  // TODO: We shouldn't hit OSM API on first paint of the pins
-  const { lat, lon, tags } = await getOsmNodePosition(osm_node_id)
-  const val = {
-    osmId: osm_node_id,
-    lat: lat,
-    lon: lon,
-    greenDuration: green_light_duration,
-    flashingDuration: flashing_red_light_duration,
-    redDuration: solid_red_light_duration,
-    notes: notes || undefined,
-    timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : updated_at,
-    tags: tags,
-    unprotectedOnFlashingRed,
-  }
-  const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
+  try {
+    // TODO: We shouldn't hit OSM API on first paint of the pins
+    const { lat, lon, tags } = await getOsmNodePosition(osm_node_id)
+    const val = {
+      osmId: osm_node_id,
+      lat: lat,
+      lon: lon,
+      greenDuration: green_light_duration,
+      flashingDuration: flashing_red_light_duration,
+      redDuration: solid_red_light_duration,
+      notes: notes || undefined,
+      timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : updated_at,
+      tags: tags,
+      unprotectedOnFlashingRed,
+    }
+    const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
 
-  return { ...val, cycleLength };
+    return { ...val, cycleLength };
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
 
 
@@ -182,11 +187,15 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
   const safeData = data.filter(measurement => measurement.osm_node_id);
 
   try {
-    const reports: TrafficLightReport[] = await Promise.all(
+    const reportsOrNull: (TrafficLightReport | null)[] = await Promise.all(
       safeData
         .filter(isValidTrafficLightReport)
         .map(convertToTrafficLightReport)
     );
+
+    const reports: TrafficLightReport[] = reportsOrNull.filter(
+      (report): report is TrafficLightReport => report !== null);
+
     const intersections: IntersectionStats[] =
       summariseReportsByIntersection(reports);
     return intersections;

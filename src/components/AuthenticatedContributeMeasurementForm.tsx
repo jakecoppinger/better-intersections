@@ -277,6 +277,18 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           required={false}
         />
 
+        <FormTextInput
+          title="Notes"
+          description="Any other notes or observations? (possible improvements)"
+          setValue={(val) =>
+            setFormState((prev) => ({
+              ...prev,
+              notes: val,
+            }))
+          }
+          required={false}
+        />
+
         <br></br>
 
         <button
