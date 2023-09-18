@@ -30,7 +30,7 @@ function FormTextInput({
 }) {
   return (
     <div>
-      <h2>{title}</h2>
+      <h2>{(!required ? 'Optional: ': ' ') + title}</h2>
       <p>{description}</p>
       <input
         // id={id}
@@ -331,6 +331,23 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             }));
           }}
         />
+
+
+        <FormTextInput
+          title="OpenStreetMap node ID"
+          description="What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
+          setValue={(newVal: string) => {
+            try {
+              const osm_node_id = parseInt(newVal);
+              return setFormState((prev) => ({
+                ...prev,
+                osm_node_id,
+              }));
+            } catch (e) {}
+          }}
+          required={false}
+        />
+
         <br></br>
 
         <button
