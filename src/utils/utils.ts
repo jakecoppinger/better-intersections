@@ -170,10 +170,18 @@ export function getNextLargestMultipleOf5(val: number) {
 }
 
 export async function getIntersections(): Promise<IntersectionStats[]> {
+  let data: SQLIntersectionWithId[] = []
   try {
-    const data = await getIntersectionMeasurements();
-    const safeData = data.filter(measurement => measurement.osm_node_id);
+    data = await getIntersectionMeasurements();
+  } catch (e) {
+    // TODO: Adding logging
+    alert('Unable to fetch intersection measurements. Please try again later or contact Jake.');
+    console.log(e);
+    return [];
+  }
+  const safeData = data.filter(measurement => measurement.osm_node_id);
 
+  try {
     const reports: TrafficLightReport[] = await Promise.all(
       safeData
         .filter(isValidTrafficLightReport)
@@ -183,8 +191,9 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
       summariseReportsByIntersection(reports);
     return intersections;
   } catch (e) {
-    alert('Unable to fetch data. Please try again later or contact Jake.');
-    // alert(JSON.stringify(e));
+    // TODO: Adding logging to DB
+    alert('Unable to fetch intersection positions. Please try again later or contact Jake.');
+    console.log(e);
     return [];
   }
 }
