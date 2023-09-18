@@ -1,7 +1,6 @@
-Better Intersections
-====================
+# Better Intersections
 
-A map of pedestrian and bicycle traffic light timings using crowdsourced measurements and OpenStreetMap. Measurments are currently focused on Sydney, Australia, but it will work anywhere in the world. 
+A map of pedestrian and bicycle traffic light timings using crowdsourced measurements and OpenStreetMap. Measurments are currently focused on Sydney, Australia, but it will work anywhere in the world.
 
 It is live at https://betterintersections.jakecoppinger.com/
 
@@ -15,20 +14,32 @@ PRs very welcome!
 See http://betterintersections.jakecoppinger.com/about
 
 # Architecture
-It's currently a statically build Typescript app hosted on Cloudflare pages for simplicity. It has
-a performance overhead loading the pins for the first time but ensures the data is as fresh
+
+Better Intersections is a statically build Typescript app hosted on Cloudflare pages.
+
+Data is stored in a Postgres database in Supabase. Pin locations are looked up using the
+OpenStreetMap API.
+
+It has a performance overhead loading the pins for the first time but ensures the data is as fresh
 as possible (to encourage community contributions).
 
 # Development
+
 ## Setup
+
 - Install Node Version Manager (nvm) (https://github.com/nvm-sh/nvm)
 - Use correct node version from `.nvmrc`: `nvm use`
 - Install packages: `npm install`
 
-## DB notes
+## Setting up database
 
-https://supabase.com/blog/postgresql-views
+You'll need to get a supabase project. Follow
 https://supabase.com/docs/guides/getting-started/tutorials/with-react
+
+Once you have a project, get your `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment
+keys and place them in your `.env` file.
+
+More DB notes: https://supabase.com/blog/postgresql-views
 
 ## Dev server
 
@@ -41,6 +52,7 @@ The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
 ## Production build
+
 `yarn build`
 
 Builds the app for production to the `build` folder.<br />
@@ -55,10 +67,9 @@ The build is minified and the filenames include the hashes.<br />
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-
 # Authors
 
-Started by Jake Coppinger. Google Form, Spreadsheet (public), hosting (Cloudflare Pages) and domain under his name.
+Started by Jake Coppinger. Hosting (Cloudflare Pages, Supabase) and domain under his name.
 
 See contributions on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
 
