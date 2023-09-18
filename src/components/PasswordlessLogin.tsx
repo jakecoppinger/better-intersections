@@ -48,6 +48,7 @@ export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
             const { error } = await supabase.auth.signInWithOtp({ email });
             if (error) {
               alert(error.message);
+              setAuthState("no-login-email-sent");
             }
             setAuthState("waiting-on-code");
           }}
@@ -56,7 +57,7 @@ export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
             <input
               className="inputField"
               type="email"
-              placeholder="Your email"
+              placeholder={"Your email"}
               value={email}
               required={true}
               onChange={(e) => setEmail(e.target.value)}
@@ -105,7 +106,8 @@ export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
               });
               if (secondError) {
                 alert(error.message);
-                setAuthState("waiting-on-code");
+                setAuthState("no-login-email-sent");
+                setVerificationCode("");
                 return;
               }
               // alert("You're logged in!");
