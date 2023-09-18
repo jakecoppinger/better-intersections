@@ -231,6 +231,7 @@ const About: React.FC = () => {
         <h1>
           <a id="contributing">How to contribute measurements</a>
         </h1>
+        <h2><a href="/contribute-measurement">Open the form</a> and follow the steps!</h2>
         <iframe
           width="315"
           height="560"
@@ -240,6 +241,50 @@ const About: React.FC = () => {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         ></iframe>
+
+        <h2>If you have a smartphone (or smartwatch)</h2>
+        <ul>
+          <li>
+            Submit the location of the intersection and exactly which crossing
+            if there are multiple nearby
+            <ul>
+              <li>eg. George st and Cleveland st, east side</li>
+            </ul>
+          </li>
+          <li>
+            Start the stopwatch on your watch (or phone) when the
+            pedestrian/bicycle lantern turns green
+          </li>
+          <li>
+            Press lap when the light starts flashing red, or:
+            <ul>
+              <li>if it has a number counting down, when that starts</li>
+              <li>if it's a bicycle lantern, when it turns orange</li>
+            </ul>
+          </li>
+          <li>Press lap when the light turns solid red</li>
+          <li>
+            Press the crossing button to request the lights to change
+            <ul>
+              <li>
+                if you're inside the{" "}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://transportnsw.info/document/6231/gs_2402_automated_pedestrian_crossings_map_v004_15dec22.pdf"
+                >
+                  Sydney CBD automated signal area
+                </a>
+                , you won't need to do this
+              </li>
+            </ul>
+          </li>
+          <li>Press lap when the light turns green again</li>
+          <li>
+            Submit the <a href="/contribute-measurement">form</a> with your
+            measurement!
+          </li>
+        </ul>
         <h2>If you have a stopwatch and paper</h2>
         <ul>
           <li>
@@ -289,56 +334,6 @@ const About: React.FC = () => {
             </a>{" "}
             and submit the measurements.
           </li>
-        </ul>
-        <h2>If you have a smartphone (or smartwatch)</h2>
-        <ul>
-          <li>
-            Open the Google Form:{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://forms.gle/3FFGD5Jk14wUS22n6"
-            >
-              forms.gle/3FFGD5Jk14wUS22n6
-            </a>
-          </li>
-          <li>
-            Submit the location of the intersection and exactly which crossing
-            if there are multiple nearby
-            <ul>
-              <li>eg. George st and Cleveland st, east side</li>
-            </ul>
-          </li>
-          <li>
-            Start the stopwatch on your watch (or phone) when the
-            pedestrian/bicycle lantern turns green
-          </li>
-          <li>
-            Press lap when the light starts flashing red, or:
-            <ul>
-              <li>if it has a number counting down, when that starts</li>
-              <li>if it's a bicycle lantern, when it turns orange</li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns solid red</li>
-          <li>
-            Press the crossing button to request the lights to change
-            <ul>
-              <li>
-                if you're inside the{" "}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://transportnsw.info/document/6231/gs_2402_automated_pedestrian_crossings_map_v004_15dec22.pdf"
-                >
-                  Sydney CBD automated signal area
-                </a>
-                , you won't need to do this
-              </li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns green again</li>
-          <li>Submit the Google Form</li>
         </ul>
         <h1>Further reading</h1>
         <ul>

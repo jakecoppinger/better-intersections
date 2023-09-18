@@ -331,6 +331,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             }));
           }}
         />
+        <br></br>
 
         <button
           className="button block primary"

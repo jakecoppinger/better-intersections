@@ -39,7 +39,7 @@ export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
   if (authState === "no-login-email-sent" || authState === "sending-email") {
     return (
       <>
-        <h1>Verify your email</h1>
+        <h1>Verify your email to submit a measurement</h1>
         <form
           className="form-widget"
           onSubmit={async (event: any) => {

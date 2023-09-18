@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
-import { createClient, Session } from "@supabase/supabase-js";
+import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
 
-type AuthState =
-  | "no-login-email-sent"
-  | "sending-email"
-  | "waiting-on-code"
-  | "checking-code"
-  | "logged-in";
 export const ContributeMeasurementPage: React.FC = () => {
-  const [authState, setAuthState] = useState<AuthState>("no-login-email-sent");
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -28,9 +21,6 @@ export const ContributeMeasurementPage: React.FC = () => {
     }
     getDBSession();
   }, []);
-
-  const [email, setEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
 
   return (
     <HeaderAndFooter>
@@ -63,11 +53,33 @@ export const ContributeMeasurementPage: React.FC = () => {
           </a>
         </p>
 
+        <PasswordlessLogin session={session} />
+
         {session && (
           <AuthenticatedForm key={session.user.id} session={session} />
         )}
+        <br>
+        </br>
+        <iframe
+          width="315"
+          height="560"
+          src="https://www.youtube.com/embed/HJCyV1cQoqo"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        ></iframe>
 
-        <PasswordlessLogin session={session} />
+          <p>If you are unable to sign in or have other issues, try using the legacy Google Form:{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://forms.gle/3FFGD5Jk14wUS22n6"
+            >
+              forms.gle/3FFGD5Jk14wUS22n6
+            </a>
+            </p>
+
       </div>
     </HeaderAndFooter>
   );
