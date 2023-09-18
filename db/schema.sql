@@ -1,7 +1,9 @@
 -- Create a table for public measurements
 create table measurements (
-  id uuid references auth.users on delete cascade not null primary key,
+  id serial primary key,
+  user_id uuid references auth.users not null,
   updated_at timestamp with time zone,
+  custom_updated_at text,
 
   -- Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)
   location_description text,
@@ -17,15 +19,17 @@ create table measurements (
 
   -- Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)
   -- TODO: Separate intersection into a different table
-  osm_node_id integer,
+  osm_node_id bigint,
   -- What sort of crossing is this?
   crossing_lantern_type text, -- "pedestrian" | "pedestrian_and_bicycle" | "bicycle"
   -- Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)
-  can_cars_cross_while_flashing_red text, -- "yes" | "no" | "delayed" | "not_sure"
+  protected_crossing text, -- "yes" | "no" | "delayed" | "not_sure"
 
   intersection_id text,
 
   is_scramble_crossing text, -- "yes" | "no" | "unknown"
+
+  has_countdown_timer text, -- "yes" | "no" | "unknown"
 
   notes text
 );

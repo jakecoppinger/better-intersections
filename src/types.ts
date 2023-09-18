@@ -93,6 +93,7 @@ export interface IntersectionFilterState {
 export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
 export type CanCarsCrossWhileFlashingRed = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
+export type HasCountdownTimer = "yes" | "no" | "unknown";
 export interface IntersectionForm {
   // /** UUID references auth.users on delete cascade. */
   // id: string;
@@ -135,13 +136,21 @@ export interface IntersectionForm {
   intersection_id: string | null;
 
   /** Is it a scramble crossing? */
-  is_scramble_crossing: IsScrambleCrossing;
+  is_scramble_crossing: IsScrambleCrossing | null;
+
+  has_countdown_timer: HasCountdownTimer | null;
 
   /** Additional notes. */
   notes: string | null;
 }
 
 export interface SQLIntersection extends IntersectionForm {
-  id: string; // Using string for uuid
+  /** Which user submitted this measurement. Using string for uuid */
+  user_id: string;
   updated_at: Date; // timestamp with time zone is mapped to JavaScript's Date
+}
+
+export interface SQLIntersectionWithId extends SQLIntersection {
+  /** Unique serial id of intersection measurement */
+  id: string; // Using string for uuid
 }

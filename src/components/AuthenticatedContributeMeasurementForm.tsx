@@ -168,37 +168,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     return { data: raw as IntersectionForm, error: false };
   }
 
-  useEffect(() => {
-    async function getMeasurements() {
-      setLoading(true);
-      // const { user } = session;
-
-      const { data, error } = await supabase
-        .from("measurements")
-        .select(
-          `id,updated_at,location_description,green_light_duration,flashing_red_light_duration,solid_red_light_duration,osm_node_id,crossing_lantern_type,can_cars_cross_while_flashing_red,intersection_id,is_scramble_crossing,notes`
-        );
-      // .eq("id", user.id)
-
-      if (error) {
-        console.warn(error);
-      } else if (data) {
-        setData(data);
-      }
-
-      setLoading(false);
-    }
-
-    getMeasurements();
-  }, [session]);
-
   const submitMeasurement: any = async (event: any, avatarUrl: any) => {
     event.preventDefault();
     console.log({ event });
 
     setLoading(true);
     const { user } = session;
-    // TODO
 
     const { data, error: validateError, message } = validateFormState();
     if (validateError || data === undefined) {
@@ -207,7 +182,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       return;
     }
     const update: SQLIntersection = {
-      id: user.id,
+      user_id: user.id,
       updated_at: new Date(),
       ...data,
     };
@@ -353,10 +328,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
         <h2>Is it a scamble crossing?</h2>
-        <p>A scramble crossing is when all pedestrians on each side cross at the same time.</p>
+        <p>
+          A scramble crossing is when all pedestrians on each side cross at the
+          same time.
+        </p>
 
         <RadioButtonComponent<IsScrambleCrossing>
-          selectedButton={formState.is_scramble_crossing}
+          selectedButton={formState.is_scramble_crossing || undefined}
           options={
             [
               {
