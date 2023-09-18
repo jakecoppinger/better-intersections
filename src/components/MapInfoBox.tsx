@@ -13,23 +13,17 @@ export const MapInfoBox: FunctionComponent = () => {
       <h3>A crowdsourced pedestrian traffic light timing map</h3>
       <p>
         <Link to={`/about`}>Read more</Link> about this project or{" "}
-        <HashLink to={`/about#contributing`}>contribute measurments</HashLink>.
+        <Link to={`/contribute-measurement`}>contribute measurements</Link>.
       </p>
-      {showNewForm && (
-        <p>
-          <Link to={`/contribute-measurement`}>
-            [beta] Contribute a measurement
-          </Link>
-        </p>
-      )}
       <p>
         See the{" "}
         <Link to={`/longest-and-shortest-waits`}>
           longest and shortest waits measured
-        </Link>.
+        </Link>
+        .
       </p>
       <p>
-        Started by{" "}
+        Built by{" "}
         <a
           target="_blank"
           rel="noopener noreferrer"

@@ -58,8 +58,7 @@ export const ContributeMeasurementPage: React.FC = () => {
         {session && (
           <AuthenticatedForm key={session.user.id} session={session} />
         )}
-        <br>
-        </br>
+        <br></br>
         <iframe
           width="315"
           height="560"
@@ -70,16 +69,30 @@ export const ContributeMeasurementPage: React.FC = () => {
           allowFullScreen
         ></iframe>
 
-          <p>If you are unable to sign in or have other issues, try using the legacy Google Form:{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://forms.gle/3FFGD5Jk14wUS22n6"
-            >
-              forms.gle/3FFGD5Jk14wUS22n6
-            </a>
-            </p>
+        <p>
+          If you are unable to sign in or have other issues, try using the
+          legacy Google Form:{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://forms.gle/3FFGD5Jk14wUS22n6"
+          >
+            forms.gle/3FFGD5Jk14wUS22n6
+          </a>
+        </p>
 
+        <p>
+          If you hit an issue or find a bug, email Jake (
+          <a href="jake@jakecoppinger.com">jake@jakecoppinger.com</a>) or{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/jakecoppinger/better-intersections/issues"
+          >
+            raise an issue on Github
+          </a>
+          .
+        </p>
       </div>
     </HeaderAndFooter>
   );
