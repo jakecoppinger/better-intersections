@@ -14,7 +14,6 @@
     "@types/react-router-hash-link": "^2.4.6",
     "@types/styled-components": "^5.1.27",
     "buffer": "^6.0.3",
-    "g-sheets-api": "^2.2.0",
     "mapbox-gl": "^2.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

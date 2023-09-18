@@ -3,7 +3,7 @@ import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "../utils/supabase-client";
 import {
-  CanCarsCrossWhileFlashingRed,
+  ProtectedCrossing,
   CrossingLanternType,
   IntersectionForm,
   IsScrambleCrossing,
@@ -152,7 +152,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         message: "Crossing lantern type is required",
       };
     }
-    if (raw.can_cars_cross_while_flashing_red === undefined) {
+    if (raw.protected_crossing === undefined) {
       return {
         error: true,
         message: "Can cars cross while flashing red is required",
@@ -300,8 +300,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <h2>Is crossing protected?</h2>
         <p>Can cars cross when light is flashing red?</p>
 
-        <RadioButtonComponent<CanCarsCrossWhileFlashingRed>
-          selectedButton={formState.can_cars_cross_while_flashing_red}
+        <RadioButtonComponent<ProtectedCrossing>
+          selectedButton={formState.protected_crossing}
           options={
             [
               {
@@ -316,11 +316,9 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                 value: "unknown",
                 label: "Unknown",
               },
-            ] as { value: CanCarsCrossWhileFlashingRed; label: string }[]
+            ] as { value: ProtectedCrossing; label: string }[]
           }
-          callback={(
-            can_cars_cross_while_flashing_red: CanCarsCrossWhileFlashingRed
-          ) => {
+          callback={(can_cars_cross_while_flashing_red: ProtectedCrossing) => {
             setFormState((prev) => ({
               ...prev,
               can_cars_cross_while_flashing_red,

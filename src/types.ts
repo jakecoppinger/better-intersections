@@ -17,9 +17,9 @@ export interface FormResponse {
 
 export interface TrafficLightReport {
   /** Timestamp of the Google Form submission, or timestamp given if provided */
-  timestamp: string;
+  timestamp: Date | string;
   /** OpenStreetMap node ID of the intersection */
-  osmId: string;
+  osmId: string | number;
   lat: number;
   lon: number;
   /** How long is the traffic light solid green for */
@@ -40,7 +40,7 @@ export interface TrafficLightReport {
 
 export interface IntersectionStats {
   /** OpenStreetMap node ID of the intersection */
-  osmId: string;
+  osmId: string | number;
   lat: number,
   lon: number,
   reports: TrafficLightReport[];
@@ -91,7 +91,7 @@ export interface IntersectionFilterState {
 }
 
 export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
-export type CanCarsCrossWhileFlashingRed = "yes" | "no" | "delayed" | "not_sure";
+export type ProtectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
 export type HasCountdownTimer = "yes" | "no" | "unknown";
 export interface IntersectionForm {
@@ -101,6 +101,7 @@ export interface IntersectionForm {
   // /** Timestamp with time zone. */
   // updated_at: Date;
 
+  custom_updated_at: string | null;
   /** 
    * Describe the location (road you're crossing & nearest feature, 
    * adjacent road if traffic lights, or coordinates).
@@ -130,7 +131,7 @@ export interface IntersectionForm {
    * Can cars cross while the light is flashing red? 
    * (is the crossing unprotected when flashing red?)
    */
-  can_cars_cross_while_flashing_red: CanCarsCrossWhileFlashingRed;
+  protected_crossing: ProtectedCrossing;
 
   /** Intersection ID. */
   intersection_id: string | null;

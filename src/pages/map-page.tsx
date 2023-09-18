@@ -11,12 +11,12 @@ import ReactMapGL, {
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
 import { IntersectionFilterState, IntersectionStats } from "../types";
-import { getIntersections } from "../api/google-sheets";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import IntersectionCard from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
+  getIntersections,
   getMarkerColour,
   getMaxCycleTime,
   getNextLargestMultipleOf5,
