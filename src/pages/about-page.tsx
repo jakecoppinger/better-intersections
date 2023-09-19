@@ -201,15 +201,6 @@ const About: React.FC = () => {
           <a href="/contribute-measurement">Open the form</a> and follow the
           steps!
         </h2>
-        <iframe
-          width="315"
-          height="560"
-          src="https://www.youtube.com/embed/HJCyV1cQoqo"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
 
         <ul>
           <li>

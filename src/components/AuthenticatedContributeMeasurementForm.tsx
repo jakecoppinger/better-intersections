@@ -256,6 +256,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               notes: val,
             }))
           }
+          textarea={true}
           required={false}
         />
 
