@@ -52,7 +52,6 @@ export const ContributeMeasurementPage: React.FC = () => {
           Read more on the <Link to="/about">about page</Link>.
         </p>
 
-        <PasswordlessLogin session={session} />
 
         {session && (
           <AuthenticatedForm key={session.user.id} session={session} />
@@ -83,6 +82,7 @@ export const ContributeMeasurementPage: React.FC = () => {
           </a>
           .
         </p>
+        <PasswordlessLogin session={session} />
       </div>
     </HeaderAndFooter>
   );

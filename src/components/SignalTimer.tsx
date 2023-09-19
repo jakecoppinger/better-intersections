@@ -124,7 +124,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   return (
     <p>
-      {greenStartTime === null && <span>Ready</span>}
+      {/* {greenStartTime === null && <span>Ready</span>} */}
       {greenStartTime !== null && (
         <span>
           Green for {((flashingRedStartTime || now) - greenStartTime) / 1000}s
@@ -243,12 +243,7 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
 
   return (
     <>
-      <TimeDisplay
-        greenStartTime={greenStartTime}
-        flashingRedStartTime={flashingRedStartTime}
-        solidRedStartTime={solidRedStartTime}
-        nextCycleStartTime={nextCycleStartTime}
-      />
+    <h3>Time intersection</h3>
       <TrafficSignal onclick={handleClick} signalState={signalState} />
       <button
         autoFocus={true}
@@ -257,6 +252,12 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
       >
         {generateButtonText()}
       </button>
+      <TimeDisplay
+        greenStartTime={greenStartTime}
+        flashingRedStartTime={flashingRedStartTime}
+        solidRedStartTime={solidRedStartTime}
+        nextCycleStartTime={nextCycleStartTime}
+      />
     </>
   );
 };
