@@ -169,7 +169,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       <form onSubmit={submitMeasurement} className="form-widget">
         <br></br>
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             setGeolocationStatus("Attempting to find location...");
             if (!navigator.geolocation) {
               setGeolocationAllowed(false);
@@ -190,10 +191,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               }
             );
           }}
+          autoFocus={true}
         >
           Find intersections near me
         </button>
-        <p>{geolocationStatus} {geolocationStatus === "Recorded intersection ID." ? "🎉" : null}</p>
+        <p>
+          {geolocationStatus}{" "}
+          {geolocationStatus === "Recorded intersection ID." ? "🎉" : null}
+        </p>
 
         {geolocationAllowed === true &&
           location &&
@@ -201,7 +206,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             <>
               <h2>Select the intersection</h2>
               <ReactMapGL
-
                 initialViewState={{
                   longitude: location.longitude,
                   latitude: location.latitude,
@@ -355,14 +359,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           value={formState.osm_node_id?.toString() || ""}
           setValue={(newVal: string) => {
             try {
-              if(newVal === "") {
+              if (newVal === "") {
                 return setFormState((prev) => ({
                   ...prev,
                   osm_node_id: undefined,
                 }));
               }
               const osm_node_id = parseInt(newVal);
-              if (!isNaN(osm_node_id) ) {
+              if (!isNaN(osm_node_id)) {
                 return setFormState((prev) => ({
                   ...prev,
                   osm_node_id,
