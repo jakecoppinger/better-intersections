@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const PaddedLabel = styled.label`
   margin-left: 5px;
