@@ -58,6 +58,7 @@ export function FormTextInput({
           type="text"
           required={required}
           value={value}
+          style={{width:'300px'}}
           onChange={(e) => {
             setValue(e.target.value);
           }}

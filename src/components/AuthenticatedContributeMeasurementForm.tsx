@@ -4,7 +4,7 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 
 import {
-  ProtectedCrossing,
+  UnprotectedCrossing,
   CrossingLanternType,
   IntersectionForm,
   IsScrambleCrossing,
@@ -73,7 +73,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         message: "Crossing lantern type is required",
       };
     }
-    if (raw.protected_crossing === undefined) {
+    if (raw.unprotected_crossing === undefined) {
       return {
         error: true,
         message: "Missing info if it's a protected crossing",
@@ -174,11 +174,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
-        <RadioButtonComponent<ProtectedCrossing>
-          title="Is crossing protected?"
-          description="Can cars cross when light is flashing red?"
-          id="protected_crossing"
-          selectedButton={formState.protected_crossing}
+        <RadioButtonComponent<UnprotectedCrossing>
+          title="Is crossing unprotected?"
+          description="Can cars cross when the light is flashing red?"
+          id="unprotected_crossing"
+          selectedButton={formState.unprotected_crossing}
           options={
             [
               {
@@ -193,12 +193,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                 value: "unknown",
                 label: "Unknown",
               },
-            ] as { value: ProtectedCrossing; label: string }[]
+            ] as { value: UnprotectedCrossing; label: string }[]
           }
-          callback={(protected_crossing: ProtectedCrossing) => {
+          callback={(unprotected_crossing: UnprotectedCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              protected_crossing,
+              unprotected_crossing,
             }));
           }}
         />
