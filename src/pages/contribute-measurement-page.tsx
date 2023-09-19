@@ -42,12 +42,22 @@ export const ContributeMeasurementPage: React.FC = () => {
             href="https://opendatacommons.org/licenses/odbl/"
           >
             ODbL
-          </a> license.
+          </a>{" "}
+          license.
         </p>
 
         <p>
-          Email address is required to identify and remove spam submissions, however email will not be published.
-          Read more on the <Link to="/about">about page</Link>.
+          Email address is required to identify and remove spam submissions,
+          however email will not be published. Location is not saved. Read more
+          on the <Link to="/about">about page</Link>. Code is open source on{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/jakecoppinger/better-intersections"
+          >
+            Github
+          </a>
+          .
         </p>
 
         <PasswordlessLogin session={session} />
