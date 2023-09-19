@@ -1,13 +1,13 @@
-import styled from "styled-components";
+import styled from "@emotion/styled";
 export const FilterContainer = styled.div`
   position: absolute;
   right: 10px;
   top: 0.63rem;
-  background-color: rgba(255, 255, 255, 0.62);
+  background-color:white;
   border-radius: 0.6rem;
   margin-right: 0.8rem;
   padding: 10px 12px;
-  z-index: 100;
+  z-index: 1;
   width: calc(100vw - 60px);
   max-width: 400px;
   border: 2px solid white;

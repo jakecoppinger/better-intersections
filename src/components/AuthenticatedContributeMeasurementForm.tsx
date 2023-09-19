@@ -4,13 +4,14 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 
 import {
-  ProtectedCrossing,
+  UnprotectedCrossing,
   CrossingLanternType,
   IntersectionForm,
   IsScrambleCrossing,
   SQLIntersection,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
+import { SignalTimer } from "./SignalTimer";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -29,6 +30,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   function validateFormState(): FormValidatorOutput {
     const raw = formState;
     if (raw.green_light_duration === undefined) {
+      debugger;
       return {
         error: true,
         message:
@@ -71,7 +73,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         message: "Crossing lantern type is required",
       };
     }
-    if (raw.protected_crossing === undefined) {
+    if (raw.unprotected_crossing === undefined) {
       return {
         error: true,
         message: "Missing info if it's a protected crossing",
@@ -119,6 +121,17 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
+        <SignalTimer
+          callback={(times) => {
+            setFormState((prev) => ({
+              ...prev,
+              green_light_duration: times.green,
+              flashing_red_light_duration: times.flashing,
+              solid_red_light_duration: times.red,
+            }));
+          }}
+        />
+
         <FormTextInput
           title="Location"
           description="Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)"
@@ -129,49 +142,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               location_description,
             }))
           }
-          required={true}
-        />
-
-        <FormTextInput
-          title="Green light duration"
-          description="How many seconds was the pedestrian light green for?"
-          setValue={(newVal: string) => {
-            try {
-              const green_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                green_light_duration,
-              }));
-            } catch (e) {}
-          }}
-          required={true}
-        />
-        <FormTextInput
-          title="Flashing red light duration"
-          description="How many seconds was the pedestrian light flashing red for?"
-          setValue={(newVal: string) => {
-            try {
-              const flashing_red_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                flashing_red_light_duration,
-              }));
-            } catch (e) {}
-          }}
-          required={true}
-        />
-        <FormTextInput
-          title="Solid red light duration"
-          description="How many seconds was the pedestrian light solid red for?"
-          setValue={(newVal: string) => {
-            try {
-              const solid_red_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                solid_red_light_duration,
-              }));
-            } catch (e) {}
-          }}
           required={true}
         />
 
@@ -204,11 +174,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
-        <RadioButtonComponent<ProtectedCrossing>
-          title="Is crossing protected?"
-          description="Can cars cross when light is flashing red?"
-          id="protected_crossing"
-          selectedButton={formState.protected_crossing}
+        <RadioButtonComponent<UnprotectedCrossing>
+          title="Is crossing unprotected?"
+          description="Can cars cross when the light is flashing red?"
+          id="unprotected_crossing"
+          selectedButton={formState.unprotected_crossing}
           options={
             [
               {
@@ -223,12 +193,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                 value: "unknown",
                 label: "Unknown",
               },
-            ] as { value: ProtectedCrossing; label: string }[]
+            ] as { value: UnprotectedCrossing; label: string }[]
           }
-          callback={(protected_crossing: ProtectedCrossing) => {
+          callback={(unprotected_crossing: UnprotectedCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              protected_crossing,
+              unprotected_crossing,
             }));
           }}
         />
@@ -286,10 +256,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               notes: val,
             }))
           }
+          textarea={true}
           required={false}
         />
 
         <br></br>
+        {/* <p>Debug: formState: {JSON.stringify(formState)}</p> */}
 
         <button
           className="button block primary"

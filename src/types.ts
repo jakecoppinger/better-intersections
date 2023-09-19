@@ -91,7 +91,7 @@ export interface IntersectionFilterState {
 }
 
 export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
-export type ProtectedCrossing = "yes" | "no" | "delayed" | "not_sure";
+export type UnprotectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
 export type HasCountdownTimer = "yes" | "no" | "unknown";
 export interface IntersectionForm {
@@ -131,7 +131,7 @@ export interface IntersectionForm {
    * Can cars cross while the light is flashing red? 
    * (is the crossing unprotected when flashing red?)
    */
-  protected_crossing: ProtectedCrossing;
+  unprotected_crossing: UnprotectedCrossing;
 
   /** Intersection ID. */
   intersection_id: string | null;

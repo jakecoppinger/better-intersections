@@ -23,7 +23,7 @@ create table measurements (
   -- What sort of crossing is this?
   crossing_lantern_type text, -- "pedestrian" | "pedestrian_and_bicycle" | "bicycle"
   -- Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)
-  protected_crossing text, -- "yes" | "no" | "delayed" | "not_sure"
+  unprotected_crossing text, -- "yes" | "no" | "delayed" | "not_sure"
 
   intersection_id text,
 

@@ -53,8 +53,13 @@ const About: React.FC = () => {
           </a>
           .
         </p>
+        <h3>Downloading data</h3>
         <p>
-          View the data on{" "}
+          Better Intersections has recently moved from a Google Form / Google
+          Sheets architecture to a dedicated (Postgres) database.
+        </p>
+        <p>
+          View all data up to the transition on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -62,8 +67,18 @@ const About: React.FC = () => {
           >
             Google Sheets
           </a>
+          . CSV download coming soon (see{" "}
+          <Link
+            target="_blank"
+            to={
+              "https://github.com/jakecoppinger/better-intersections/issues/18"
+            }
+          >
+            Github issue
+          </Link>
           .
         </p>
+
         <h1>Why does the timing of pedestrian signals matter?</h1>
         <p>
           <a
@@ -180,21 +195,12 @@ const About: React.FC = () => {
           .
         </p>
         <h1>
-          <a id="contributing">How to contribute measurements</a>
+          <a  id="contributing">How to contribute measurements</a>
         </h1>
         <h2>
           <a href="/contribute-measurement">Open the form</a> and follow the
           steps!
         </h2>
-        <iframe
-          width="315"
-          height="560"
-          src="https://www.youtube.com/embed/HJCyV1cQoqo"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
 
         <ul>
           <li>

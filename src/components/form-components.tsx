@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 
 const PaddedLabel = styled.label`
   margin-left: 5px;
@@ -29,12 +29,14 @@ export function FormTextInput({
   value,
   setValue,
   required = false,
+  textarea,
 }: {
   title: string;
   description: string;
   value?: string | undefined;
   setValue: (value: string) => void;
   required?: boolean;
+  textarea?: boolean;
 }) {
   return (
     <FormSectionWrapper>
@@ -42,14 +44,26 @@ export function FormTextInput({
         {(!required ? "Optional: " : " ") + title}
       </FormSectionTitle>
       <FormSectionDescription>{description}</FormSectionDescription>
-      <input
-        type="text"
-        required={required}
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
+      {textarea ? (
+        <textarea
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          cols={35}
+          rows={3}
+        ></textarea>
+      ) : (
+        <input
+          type="text"
+          required={required}
+          value={value}
+          style={{width:'300px'}}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+        />
+      )}
     </FormSectionWrapper>
   );
 }

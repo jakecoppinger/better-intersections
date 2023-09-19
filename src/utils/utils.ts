@@ -15,7 +15,7 @@ export function isValidTrafficLightReport(formResponse: SQLIntersectionWithId): 
 }
 
 export async function convertToTrafficLightReport(formResponse: SQLIntersectionWithId): Promise<TrafficLightReport | null> {
-  const { osm_node_id, custom_updated_at, protected_crossing,
+  const { osm_node_id, custom_updated_at, unprotected_crossing,
     green_light_duration,
     flashing_red_light_duration,
     solid_red_light_duration,
@@ -25,7 +25,7 @@ export async function convertToTrafficLightReport(formResponse: SQLIntersectionW
 
   /** May be empty string */
   const timestampOverride = custom_updated_at;
-  const unprotectedOnFlashingRed = protected_crossing === "yes" ? true : (protected_crossing === "no" ? false : null);
+  const unprotectedOnFlashingRed = unprotected_crossing === "yes" ? true : (unprotected_crossing === "no" ? false : null);
 
   if (osm_node_id === null) {
     throw new Error(`No osm id in field: ${osm_node_id}`);

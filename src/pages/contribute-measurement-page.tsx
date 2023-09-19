@@ -59,15 +59,6 @@ export const ContributeMeasurementPage: React.FC = () => {
           <AuthenticatedForm key={session.user.id} session={session} />
         )}
         <br></br>
-        <iframe
-          width="315"
-          height="560"
-          src="https://www.youtube.com/embed/HJCyV1cQoqo"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        ></iframe>
 
         <p>
           If you are unable to sign in or have other issues, try using the
