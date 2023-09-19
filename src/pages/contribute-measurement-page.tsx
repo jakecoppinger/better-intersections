@@ -32,6 +32,8 @@ export const ContributeMeasurementPage: React.FC = () => {
           Help find intersections that need better priority for pedestrians and
           cyclists!
         </p>
+        <p>A reminder - <b><em>this website is a proof of concept</em></b> and is bare bones! 
+      Things may not work - and feel free to contact Jake if they don't.</p>
 
         <p>
           By submitting this form you are happy for your answers to be published
@@ -50,7 +52,6 @@ export const ContributeMeasurementPage: React.FC = () => {
           Read more on the <Link to="/about">about page</Link>.
         </p>
 
-        <PasswordlessLogin session={session} />
 
         {session && (
           <AuthenticatedForm key={session.user.id} session={session} />
@@ -81,6 +82,7 @@ export const ContributeMeasurementPage: React.FC = () => {
           </a>
           .
         </p>
+        <PasswordlessLogin session={session} />
       </div>
     </HeaderAndFooter>
   );
