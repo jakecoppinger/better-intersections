@@ -11,6 +11,7 @@ import {
   SQLIntersection,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
+import { CountingButton, SignalTimer } from "./SignalTimer";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -119,6 +120,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
+        <CountingButton/>
+
         <FormTextInput
           title="Location"
           description="Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)"
@@ -130,6 +133,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             }))
           }
           required={true}
+        />
+
+        
+        <SignalTimer
+          callback={(vals) => {
+            console.log({vals});
+          }}
         />
 
         <FormTextInput
