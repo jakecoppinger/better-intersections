@@ -1,28 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import styled from "@emotion/styled";
-import { css, SerializedStyles, keyframes } from "@emotion/react";
-
-const PaddedLabel = styled.label`
-  margin-left: 5px;
-`;
-
-const RadioButtonContainer = styled.div`
-  display: block;
-  margin-top: 5px;
-`;
-const FormSectionTitle = styled.h2`
-  margin-top: 0px;
-  margin-bottom: 5px;
-`;
-const FormSectionDescription = styled.p`
-  margin-top: 0px;
-  margin-bottom: 10px;
-`;
-
-const FormSectionWrapper = styled.div`
-  margin-top: 20px;
-  margin-bottom: 20px;
-`;
+import { css, keyframes } from "@emotion/react";
 
 export interface SignalTimerCallback {
   green: number;
@@ -34,11 +16,6 @@ export interface SignalTimerProps {
   callback: (vals: SignalTimerCallback) => void;
 }
 
-interface TimerState {
-  greenTime: number;
-  flashingRedTime: number;
-  solidRedTime: number;
-}
 type SignalStateOptions =
   | "before-cycle"
   | "green"
@@ -228,7 +205,8 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
     return textIndex[pressCount];
   }
 
-  const handleClick = (): void => {
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e): void => {
+    e.preventDefault();
     if (pressCount < 4) {
       setPressCount(pressCount + 1);
     }
@@ -244,7 +222,11 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
         nextCycleStartTime={nextCycleStartTime}
       />
       <TrafficSignal signalState={signalState} />
-      <button disabled={signalState === "next-cycle"} onClick={handleClick}>
+      <button
+        autoFocus={true}
+        disabled={signalState === "next-cycle"}
+        onClick={handleClick}
+      >
         {generateButtonText()}
       </button>
     </>

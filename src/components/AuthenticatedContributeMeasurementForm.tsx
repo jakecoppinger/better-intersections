@@ -123,7 +123,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       <form onSubmit={submitMeasurement} className="form-widget">
         <SignalTimer
           callback={(times) => {
-            console.log(`callback is called with ${times}`);
             setFormState((prev) => ({
               ...prev,
               green_light_duration: times.green,
