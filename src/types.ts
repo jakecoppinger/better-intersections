@@ -17,9 +17,9 @@ export interface FormResponse {
 
 export interface TrafficLightReport {
   /** Timestamp of the Google Form submission, or timestamp given if provided */
-  timestamp: string;
+  timestamp: Date | string;
   /** OpenStreetMap node ID of the intersection */
-  osmId: string;
+  osmId: string | number;
   lat: number;
   lon: number;
   /** How long is the traffic light solid green for */
@@ -40,7 +40,7 @@ export interface TrafficLightReport {
 
 export interface IntersectionStats {
   /** OpenStreetMap node ID of the intersection */
-  osmId: string;
+  osmId: string | number;
   lat: number,
   lon: number,
   reports: TrafficLightReport[];
@@ -88,4 +88,70 @@ export interface IntersectionFilterState {
 
   /** Maximum cycle time to show on the map */
   max: number;
+}
+
+export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+export type ProtectedCrossing = "yes" | "no" | "delayed" | "not_sure";
+export type IsScrambleCrossing = "yes" | "no" | "unknown";
+export type HasCountdownTimer = "yes" | "no" | "unknown";
+export interface IntersectionForm {
+  // /** UUID references auth.users on delete cascade. */
+  // id: string;
+
+  // /** Timestamp with time zone. */
+  // updated_at: Date;
+
+  custom_updated_at: string | null;
+  /** 
+   * Describe the location (road you're crossing & nearest feature, 
+   * adjacent road if traffic lights, or coordinates).
+   */
+  location_description: string | null;
+
+  /** How many seconds was the pedestrian light green for? */
+  green_light_duration: number;
+
+  /** How many seconds was the pedestrian light flashing red for? */
+  flashing_red_light_duration: number;
+
+  /** How many seconds was the pedestrian light solid red for? */
+  solid_red_light_duration: number;
+
+  /** 
+   * Optional: What is the OpenStreetMap node ID of the intersection? 
+   * (exact crossing node preferable).
+   * TODO: Separate intersection into a different table.
+   */
+  osm_node_id: number | null;
+
+  /** What sort of crossing is this? */
+  crossing_lantern_type: CrossingLanternType
+
+  /** 
+   * Can cars cross while the light is flashing red? 
+   * (is the crossing unprotected when flashing red?)
+   */
+  protected_crossing: ProtectedCrossing;
+
+  /** Intersection ID. */
+  intersection_id: string | null;
+
+  /** Is it a scramble crossing? */
+  is_scramble_crossing: IsScrambleCrossing | null;
+
+  has_countdown_timer: HasCountdownTimer | null;
+
+  /** Additional notes. */
+  notes: string | null;
+}
+
+export interface SQLIntersection extends IntersectionForm {
+  /** Which user submitted this measurement. Using string for uuid */
+  user_id: string;
+  updated_at: Date; // timestamp with time zone is mapped to JavaScript's Date
+}
+
+export interface SQLIntersectionWithId extends SQLIntersection {
+  /** Unique serial id of intersection measurement */
+  id: string; // Using string for uuid
 }

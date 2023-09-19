@@ -2,6 +2,7 @@ import React from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
+import { Link } from "react-router-dom";
 
 const About: React.FC = () => {
   return (
@@ -9,12 +10,17 @@ const About: React.FC = () => {
       <div>
         <h1>About</h1>
         <p>
-          Better Intersections is a tool to record and visualise timing details
-          for pedestrian and bicycle signals. You can contribute{" "}
-          <HashLink to="#contributing">timing measurements</HashLink> yourself,
-          see the instructions below. It's focused on Sydney & NSW, Australia,
-          but is adaptable for anywhere in the world. This website is open
-          source on{" "}
+          Better Intersections is a tool to record and visualise how long people
+          walking and on bikes have to wait at traffic lights. You can{" "}
+          <Link to={"/contribute-measurement"}>
+            contribute timing measurements
+          </Link>{" "}
+          yourself. It's focused on Sydney, Australia, but is adaptable for
+          anywhere in the world.
+        </p>
+
+        <p>
+          This website is open source on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -46,10 +52,6 @@ const About: React.FC = () => {
             Mastodon (@jakecoppinger@aus.social)
           </a>
           .
-        </p>
-        <p>
-          It's a work in progress! I've tinkered on it for a few afternoons and
-          started about a week ago.
         </p>
         <p>
           View the data on{" "}
@@ -164,73 +166,26 @@ const About: React.FC = () => {
           </a>
           )
         </p>
-        <h1>But isn't traffic light timing variable?</h1>
+        <h1>Further reading</h1>
         <p>
-          Sydney uses a system called{" "}
-          <a href="https://en.wikipedia.org/wiki/Sydney_Coordinated_Adaptive_Traffic_System">
-            Sydney Coordinated Adaptive Traffic System (SCATS){" "}
-          </a>{" "}
-          to control traffic signals, which makes use of many data feeds to
-          control timing data.
-        </p>
-        <p>
-          Neither the inputs used, or the algorithm used to weigh the input data
-          is public (as far as I know). This crowdsourced method of discrete
-          measurements provides shows the output of the black box. In the case
-          of outliers, multiple measurements (at different times of day/week)
-          can be used to determine if the timing is variable.
-        </p>
-        <p>
-          <a
+          Read more on Jake Coppinger's blog post,{" "}
+          <Link
             target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.gehlpeople.com/"
+            to={
+              "https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+            }
           >
-            Gehl Architects
-          </a>{" "}
-          have a great methodology for measuring the overall impact of traffic
-          light delays on pedestrians. At its most basic you walk along a street
-          with two stopwatches;
-          <ul>
-            <li>one you pause only when you're walking;</li>
-            <li>one you pause only when you're waiting at a traffic light.</li>
-          </ul>
-          Divide one by the other at the end, and you have a single number that
-          quantifies pedestrian delay walking along a street.
-        </p>
-        <img src="/img/gehl-methodology.png"></img>
-        <figcaption>
-          -{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.cityofsydney.nsw.gov.au/surveys-case-studies-reports/public-spaces-public-life-studies"
-          >
-            Public spaces & public life: Sydney 2020, Gehl Architects, pg 142
-          </a>
-        </figcaption>
-        <p>
-          The limitations of this method are that
-          <ul>
-            <li>it cannot inform the exact problematic intersections;</li>
-            <li>
-              paths must be long enough to gather a large enough sample size to
-              be statistically significant.
-            </li>
-          </ul>
-        </p>
-        <p>
-          I've experimented with automating this method by recording a GPX (GPS)
-          trace with a phone, uploading that file and getting a number
-          instantly. Unfortunately the urban canyon effect (GPS signal loss
-          caused by tall buildings) makes this method unreliable in cities, even
-          with the remarkable sensor fusion on modern phones. As with any of my
-          projects, I am always open to collaboration. If you have any ideas,
-          iterations or improvements, please drop me a line!
+            Shining a Light on the Traffic Signals of Sydney
+          </Link>
+          .
         </p>
         <h1>
           <a id="contributing">How to contribute measurements</a>
         </h1>
+        <h2>
+          <a href="/contribute-measurement">Open the form</a> and follow the
+          steps!
+        </h2>
         <iframe
           width="315"
           height="560"
@@ -240,68 +195,8 @@ const About: React.FC = () => {
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         ></iframe>
-        <h2>If you have a stopwatch and paper</h2>
+
         <ul>
-          <li>
-            Write down the location of the intersection (in the form or on
-            paper), and exactly which crossing if there are multiple nearby
-            <ul>
-              <li>eg. George st and Cleveland st, east side</li>
-            </ul>
-          </li>
-          <li>
-            Start the stopwatch when the pedestrian/bicycle lantern turns green
-          </li>
-          <li>
-            Press lap when the light starts flashing red, or:
-            <ul>
-              <li>if it has a number counting down, when that starts</li>
-              <li>if it's a bicycle lantern, when it turns orange</li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns solid red</li>
-          <li>
-            Press the crossing button to request the lights to change
-            <ul>
-              <li>
-                if you're inside the{" "}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://transportnsw.info/document/6231/gs_2402_automated_pedestrian_crossings_map_v004_15dec22.pdf"
-                >
-                  Sydney CBD automated signal area
-                </a>
-                , you won't need to do this
-              </li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns green again</li>
-          <li>Record the durations on your paper</li>
-          <li>
-            When you get back to a computer, open the{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://forms.gle/3FFGD5Jk14wUS22n6"
-            >
-              Google Form
-            </a>{" "}
-            and submit the measurements.
-          </li>
-        </ul>
-        <h2>If you have a smartphone (or smartwatch)</h2>
-        <ul>
-          <li>
-            Open the Google Form:{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://forms.gle/3FFGD5Jk14wUS22n6"
-            >
-              forms.gle/3FFGD5Jk14wUS22n6
-            </a>
-          </li>
           <li>
             Submit the location of the intersection and exactly which crossing
             if there are multiple nearby
@@ -329,7 +224,7 @@ const About: React.FC = () => {
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://transportnsw.info/document/6231/gs_2402_automated_pedestrian_crossings_map_v004_15dec22.pdf"
+                  href="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
                 >
                   Sydney CBD automated signal area
                 </a>
@@ -338,7 +233,10 @@ const About: React.FC = () => {
             </ul>
           </li>
           <li>Press lap when the light turns green again</li>
-          <li>Submit the Google Form</li>
+          <li>
+            Submit the <a href="/contribute-measurement">form</a> with your
+            measurement!
+          </li>
         </ul>
         <h1>Further reading</h1>
         <ul>

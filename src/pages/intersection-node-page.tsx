@@ -2,7 +2,6 @@ import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
 import { IntersectionStats, Way } from "../types";
-import { getIntersections } from "../api/google-sheets";
 import HeaderAndFooter from "../components/HeaderAndFooter";
 import {
   generateGeohackQueryParam,
@@ -10,6 +9,7 @@ import {
 } from "../utils/url-formatting";
 import {
   filterOutNonRoadWays,
+  getIntersections,
   getMainWayForIntersection,
 } from "../utils/utils";
 
@@ -54,7 +54,7 @@ export default function IntersectionNodePage() {
       }
 
       const intersections = await getIntersections();
-      const intersection = intersections.find((i) => i.osmId === nodeId);
+      const intersection = intersections.find((i) => i.osmId.toString() === nodeId);
       setIntersection(intersection);
     }
     getIntersectionData();
@@ -123,7 +123,7 @@ export default function IntersectionNodePage() {
             ) : (
               intersection.reports.map((r) => (
                 <tr key={r.osmId}>
-                  <td>{r.timestamp}</td>
+                  <td>{r.timestamp.toString()}</td>
                   <td>
                     <span className="green">{r.greenDuration} sec.</span>
                   </td>

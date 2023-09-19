@@ -1,5 +1,7 @@
+import { getIntersectionMeasurements } from "../api/db";
 import { getOsmNodePosition } from "../api/osm";
-import { FormResponse, IntersectionStats, OsmWayKeys, RawTag, TrafficLightReport, Way } from "../types";
+import { IntersectionStats, OsmWayKeys, RawTag, SQLIntersectionWithId, TrafficLightReport, Way } from "../types";
+
 
 function isStringInteger(str: string): boolean {
   const num = Number(str);
@@ -7,40 +9,49 @@ function isStringInteger(str: string): boolean {
 }
 
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
-export function isValidTrafficLightReport(formResponse: FormResponse): boolean {
-  const rawOsmId = formResponse["Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"];
-  const osmId: number | undefined = rawOsmId && rawOsmId.length > 0 && isStringInteger(rawOsmId) ? Number(rawOsmId) : undefined;
-  return osmId !== undefined;
+export function isValidTrafficLightReport(formResponse: SQLIntersectionWithId): boolean {
+  const rawOsmId = formResponse.osm_node_id;
+  return rawOsmId !== null;
 }
 
-export async function convertToTrafficLightReport(formResponse: FormResponse): Promise<TrafficLightReport> {
-  const rawOsmId = formResponse["Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"];
+export async function convertToTrafficLightReport(formResponse: SQLIntersectionWithId): Promise<TrafficLightReport | null> {
+  const { osm_node_id, custom_updated_at, protected_crossing,
+    green_light_duration,
+    flashing_red_light_duration,
+    solid_red_light_duration,
+    notes,
+    updated_at
+  } = formResponse;
 
   /** May be empty string */
-  const timestampOverride: string = formResponse["Optional: What time (to the nearest 15 min) did you measure this?\nIf not specified assumes current time."]
-  const rawUnprotectedOnFlashingRed = formResponse["Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)"]
-  const unprotectedOnFlashingRed = rawUnprotectedOnFlashingRed === "Yes" ? true : (rawUnprotectedOnFlashingRed === "No" ? false : null);
+  const timestampOverride = custom_updated_at;
+  const unprotectedOnFlashingRed = protected_crossing === "yes" ? true : (protected_crossing === "no" ? false : null);
 
-  const osmId: string | undefined = rawOsmId && rawOsmId.length > 0 && isStringInteger(rawOsmId) ? rawOsmId : undefined;
-  if (osmId === undefined) {
-    throw new Error(`No osm id in field: ${rawOsmId}`);
+  if (osm_node_id === null) {
+    throw new Error(`No osm id in field: ${osm_node_id}`);
   }
-  const { lat, lon, tags } = await getOsmNodePosition(osmId)
-  const val = {
-    osmId,
-    lat: lat,
-    lon: lon,
-    greenDuration: parseInt(formResponse["How many seconds was the pedestrian light green for?"]),
-    flashingDuration: parseInt(formResponse["How many seconds was the pedestrian light flashing red for?"]),
-    redDuration: parseInt(formResponse["How many seconds was the pedestrian light solid red for?"]),
-    notes: formResponse["Optional: Any other notes or observations?\n(possible improvements)"],
-    timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : formResponse["Timestamp"],
-    tags: tags,
-    unprotectedOnFlashingRed,
-  }
-  const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
+  try {
+    // TODO: We shouldn't hit OSM API on first paint of the pins
+    const { lat, lon, tags } = await getOsmNodePosition(osm_node_id)
+    const val = {
+      osmId: osm_node_id,
+      lat: lat,
+      lon: lon,
+      greenDuration: green_light_duration,
+      flashingDuration: flashing_red_light_duration,
+      redDuration: solid_red_light_duration,
+      notes: notes || undefined,
+      timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : updated_at,
+      tags: tags,
+      unprotectedOnFlashingRed,
+    }
+    const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
 
-  return { ...val, cycleLength };
+    return { ...val, cycleLength };
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
 }
 
 
@@ -161,4 +172,37 @@ export function getMaxCycleTime(intersections: IntersectionStats[]): number | un
 
 export function getNextLargestMultipleOf5(val: number) {
   return Math.ceil(val / 5) * 5;
+}
+
+export async function getIntersections(): Promise<IntersectionStats[]> {
+  let data: SQLIntersectionWithId[] = []
+  try {
+    data = await getIntersectionMeasurements();
+  } catch (e) {
+    // TODO: Adding logging
+    alert('Unable to fetch intersection measurements. Please try again later or contact Jake.');
+    console.log(e);
+    return [];
+  }
+  const safeData = data.filter(measurement => measurement.osm_node_id);
+
+  try {
+    const reportsOrNull: (TrafficLightReport | null)[] = await Promise.all(
+      safeData
+        .filter(isValidTrafficLightReport)
+        .map(convertToTrafficLightReport)
+    );
+
+    const reports: TrafficLightReport[] = reportsOrNull.filter(
+      (report): report is TrafficLightReport => report !== null);
+
+    const intersections: IntersectionStats[] =
+      summariseReportsByIntersection(reports);
+    return intersections;
+  } catch (e) {
+    // TODO: Adding logging to DB
+    alert('Unable to fetch intersection positions. Please try again later or contact Jake.');
+    console.log(e);
+    return [];
+  }
 }

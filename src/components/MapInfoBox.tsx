@@ -3,24 +3,27 @@ import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
 
+/** Pretend feature flag */
+const showNewForm = true;
+
 export const MapInfoBox: FunctionComponent = () => {
   return (
     <>
       <h2>Better Intersections</h2>
       <h3>A crowdsourced pedestrian traffic light timing map</h3>
-
       <p>
         <Link to={`/about`}>Read more</Link> about this project or{" "}
-        <HashLink to={`/about#contributing`}>contribute measurments</HashLink>.
+        <Link to={`/contribute-measurement`}>contribute measurements</Link>.
       </p>
       <p>
         See the{" "}
         <Link to={`/longest-and-shortest-waits`}>
           longest and shortest waits measured
-        </Link>.
+        </Link>
+        .
       </p>
       <p>
-        Started by{" "}
+        Built by{" "}
         <a
           target="_blank"
           rel="noopener noreferrer"
@@ -43,7 +46,8 @@ export const MapInfoBox: FunctionComponent = () => {
           href="https://github.com/17Ayaan28"
         >
           Ayaan Adil
-        </a>.
+        </a>
+        .
       </p>
     </>
   );

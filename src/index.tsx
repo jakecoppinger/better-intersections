@@ -6,6 +6,7 @@ import { render } from "react-dom";
 import React from "react";
 import "./index.css";
 import { MapComponent as MapPage } from "./pages/map-page";
+import {ContributeMeasurementPage} from "./pages/contribute-measurement-page";
 import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
     element: <AboutPage />,
   },
   {
+    path: "/contribute-measurement",
+    element: <ContributeMeasurementPage />,
+  },
+  {
     path: "/intersection/node/:nodeId",
     element: <IntersectionNodePage />,
     loader: nodeIdLoader,
@@ -33,7 +38,7 @@ const router = createBrowserRouter([
 
 render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+      <RouterProvider router={router} />
   </React.StrictMode>,
   document.getElementById("root")
 );
