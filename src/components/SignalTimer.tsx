@@ -97,6 +97,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   return (
     <p>
+      {greenStartTime === null && <span>Ready</span> }
       {greenStartTime !== null && (
         <span>
           Green for {((flashingRedStartTime || now) - greenStartTime) / 1000}s
