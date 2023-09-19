@@ -11,7 +11,7 @@ import {
   SQLIntersection,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
-import { CountingButton, SignalTimer } from "./SignalTimer";
+import { SignalTimer } from "./SignalTimer";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -30,6 +30,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   function validateFormState(): FormValidatorOutput {
     const raw = formState;
     if (raw.green_light_duration === undefined) {
+      debugger;
       return {
         error: true,
         message:
@@ -120,7 +121,17 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
-        <CountingButton/>
+        <SignalTimer
+          callback={(times) => {
+            console.log(`callback is called with ${times}`);
+            setFormState((prev) => ({
+              ...prev,
+              green_light_duration: times.green,
+              flashing_red_light_duration: times.flashing,
+              solid_red_light_duration: times.red,
+            }));
+          }}
+        />
 
         <FormTextInput
           title="Location"
@@ -132,56 +143,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               location_description,
             }))
           }
-          required={true}
-        />
-
-        
-        <SignalTimer
-          callback={(vals) => {
-            console.log({vals});
-          }}
-        />
-
-        <FormTextInput
-          title="Green light duration"
-          description="How many seconds was the pedestrian light green for?"
-          setValue={(newVal: string) => {
-            try {
-              const green_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                green_light_duration,
-              }));
-            } catch (e) {}
-          }}
-          required={true}
-        />
-        <FormTextInput
-          title="Flashing red light duration"
-          description="How many seconds was the pedestrian light flashing red for?"
-          setValue={(newVal: string) => {
-            try {
-              const flashing_red_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                flashing_red_light_duration,
-              }));
-            } catch (e) {}
-          }}
-          required={true}
-        />
-        <FormTextInput
-          title="Solid red light duration"
-          description="How many seconds was the pedestrian light solid red for?"
-          setValue={(newVal: string) => {
-            try {
-              const solid_red_light_duration = parseFloat(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                solid_red_light_duration,
-              }));
-            } catch (e) {}
-          }}
           required={true}
         />
 
@@ -300,6 +261,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         />
 
         <br></br>
+        <p>Debug: formState: {JSON.stringify(formState)}</p>
 
         <button
           className="button block primary"
