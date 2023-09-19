@@ -10,6 +10,8 @@ import ReactMapGL, {
 } from "react-map-gl";
 import { Session } from "@supabase/supabase-js";
 
+import { useGeolocated } from "react-geolocated";
+
 import { supabase } from "../utils/supabase-client";
 
 import {
@@ -169,9 +171,26 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       <form onSubmit={submitMeasurement} className="form-widget">
         <br></br>
         <button
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             setGeolocationStatus("Attempting to find location...");
+
+            if ('permissions' in navigator) {
+              try {
+                const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+
+                if (permissionStatus.state === 'denied') {
+                  setGeolocationStatus("Geolocation permission denied.");
+                  setGeolocationAllowed(false);
+                  return;
+                }
+
+              } catch (err) {
+                alert((err as any).toString());
+                console.error("Error checking permissions:", err);
+              }
+            }
+
             if (!navigator.geolocation) {
               setGeolocationAllowed(false);
               setGeolocationStatus("Geolocation not possible.");
@@ -189,6 +208,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                 setGeolocationStatus("Geolocation not possible.");
                 setGeolocationAllowed(false);
               }
+              ,{
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
             );
           }}
           autoFocus={true}
