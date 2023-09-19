@@ -23,6 +23,7 @@ import {
 } from "../utils/utils";
 import { LoadingTag } from "../styles/map-page.style";
 import IntersectionFilter from "../components/IntersectionFilter";
+import { LoadingIndicator } from "../components/LoadingIndicator";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -124,9 +125,7 @@ export function MapComponent() {
 
   return (
     <div id="container">
-      <div id="search_overlay">
-        <MapInfoBox />
-      </div>
+      <MapInfoBox />
       <IntersectionFilter
         filterRange={minMaxCycleTimes}
         min={min}
@@ -134,7 +133,7 @@ export function MapComponent() {
         updateFilter={setCycleTimeFilter}
       />
       <div id="map">
-        {state.points === undefined && <LoadingTag>Loading data...</LoadingTag>}
+        {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
         <ReactMapGL
           initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}

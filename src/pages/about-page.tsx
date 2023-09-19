@@ -195,7 +195,7 @@ const About: React.FC = () => {
           .
         </p>
         <h1>
-          <a id="contributing">How to contribute measurements</a>
+          <a  id="contributing">How to contribute measurements</a>
         </h1>
         <h2>
           <a href="/contribute-measurement">Open the form</a> and follow the
