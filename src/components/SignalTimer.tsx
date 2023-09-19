@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import { css, keyframes } from "@emotion/react";
 
@@ -25,50 +21,81 @@ type SignalStateOptions =
 
 interface TrafficSignalProps {
   signalState: SignalStateOptions;
+  onclick: React.MouseEventHandler<any>;
 }
 
 export const TrafficSignal: React.FC<TrafficSignalProps> = ({
   signalState,
+  onclick,
 }: TrafficSignalProps) => {
-  const getSignalCSS = () => {
-    const pulse = keyframes`
-    0% {
-      background-color: red;
-    }
-    100% {
-      background-color: white;
-    }
-  `;
-
+  const getSignalImage = () => {
     if (signalState === "before-cycle") {
-      return css({ backgroundColor: "grey" });
+      return (
+        <img
+          src="/img/red-dont-walk.png"
+          width="100px"
+          height="100px"
+          style={{ opacity: 0.5, filter: "saturate(0)" }}
+          alt="Before cycle"
+        />
+      );
     }
     if (signalState === "green") {
-      return css({ backgroundColor: "green" });
+      return (
+        <img
+          src="/img/green-walk.png"
+          width="100px"
+          height="100px"
+          alt="Green"
+        />
+      );
     }
     if (signalState === "flashingRed") {
-      return css({
-        backgroundColor: "red",
-        transition: "0.2s",
-        animation: `${pulse} 1s infinite alternate`,
-      });
+      return (
+        <img
+          src="/img/red-dont-walk.png"
+          width="100px"
+          height="100px"
+          style={{
+            animation: `fadeOpacity 1s infinite alternate`,
+          }}
+          alt="Flashing red"
+        />
+      );
     }
     if (signalState === "solidRed") {
-      return css({ backgroundColor: "red" });
+      return (
+        <img
+          src="/img/red-dont-walk.png"
+          width="100px"
+          height="100px"
+          alt="Solid red"
+        />
+      );
     }
     if (signalState === "next-cycle") {
-      return css({ backgroundColor: "grey" });
+      return (
+        <img
+          src="/img/red-dont-walk.png"
+          width="100px"
+          height="100px"
+          style={{ opacity: 0.5, filter: "saturate(0)" }}
+          alt="Next cycle"
+        />
+      );
     }
     return undefined;
   };
-  const SignalLamp = styled.div`
+  const TrafficLightContainer = styled.div`
     width: 100px;
     height: 100px;
-    border-radius: 50%;
-    ${getSignalCSS()}
+    background-color: black;
   `;
-
-  return <SignalLamp />;
+  return (
+    <TrafficLightContainer onClick={onclick}>
+      {getSignalImage()};
+    </TrafficLightContainer>
+  );
 };
 
 interface TimeDisplayProps {
@@ -97,7 +124,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   return (
     <p>
-      {greenStartTime === null && <span>Ready</span> }
+      {greenStartTime === null && <span>Ready</span>}
       {greenStartTime !== null && (
         <span>
           Green for {((flashingRedStartTime || now) - greenStartTime) / 1000}s
@@ -222,7 +249,7 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
         solidRedStartTime={solidRedStartTime}
         nextCycleStartTime={nextCycleStartTime}
       />
-      <TrafficSignal signalState={signalState} />
+      <TrafficSignal onclick={handleClick} signalState={signalState} />
       <button
         autoFocus={true}
         disabled={signalState === "next-cycle"}
