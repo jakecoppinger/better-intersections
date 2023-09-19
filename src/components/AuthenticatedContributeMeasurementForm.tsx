@@ -261,7 +261,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         />
 
         <br></br>
-        <p>Debug: formState: {JSON.stringify(formState)}</p>
+        {/* <p>Debug: formState: {JSON.stringify(formState)}</p> */}
 
         <button
           className="button block primary"
