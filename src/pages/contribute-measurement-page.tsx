@@ -4,6 +4,7 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
+import { Link } from "react-router-dom";
 
 export const ContributeMeasurementPage: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -34,23 +35,19 @@ export const ContributeMeasurementPage: React.FC = () => {
 
         <p>
           By submitting this form you are happy for your answers to be published
-          as open data under ODbL.
-        </p>
-
-        <p>
-          Email address is required to identify sources of spam (so that it can
-          be batch-removed by email), however email will not be published.
-        </p>
-
-        <p>
-          View all data on the{" "}
+          as open data under{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit#gid=0"
+            href="https://opendatacommons.org/licenses/odbl/"
           >
-            Google Sheet
-          </a>
+            ODbL
+          </a> license.
+        </p>
+
+        <p>
+          Email address is required to identify and remove spam submissions, however email will not be published.
+          Read more on the <Link to="/about">about page</Link>.
         </p>
 
         <PasswordlessLogin session={session} />
