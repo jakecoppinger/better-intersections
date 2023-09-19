@@ -21,7 +21,7 @@ import {
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
-import { getOSMCrossings } from "../api/overpass";
+import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
@@ -141,14 +141,22 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const [geolocationAllowed, setGeolocationAllowed] = useState<boolean | null>(
     null
   );
+  const [geolocationStatus, setGeolocationStatus] = useState<string | null>();
+  const [osmIntersections, setOSMIntersections] = useState<any[] | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const asyncFunc = async () => {
       if (geolocationAllowed && location?.latitude && location?.longitude) {
+        setGeolocationStatus("Fetching intersections...");
         const osmIntersections = await getOSMCrossings(
           { lat: location?.latitude, lon: location?.longitude },
-          100
+          200
         );
+
+        setOSMIntersections(osmIntersections);
+        setGeolocationStatus("Found intersections.");
         console.log({ osmIntersections });
       }
     };
@@ -159,10 +167,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
+        <br></br>
         <button
           onClick={() => {
+            setGeolocationStatus("Attempting to find location...");
             if (!navigator.geolocation) {
               setGeolocationAllowed(false);
+              setGeolocationStatus("Geolocation not possible.");
               return;
             }
 
@@ -171,8 +182,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                 const { latitude, longitude } = position.coords;
                 setLocation({ latitude, longitude });
                 setGeolocationAllowed(true);
+                setGeolocationStatus("Found location.");
               },
               (err) => {
+                setGeolocationStatus("Geolocation not possible.");
                 setGeolocationAllowed(false);
               }
             );
@@ -180,32 +193,50 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         >
           Find intersections near me
         </button>
+        <p>{geolocationStatus} {geolocationStatus === "Recorded intersection ID." ? "🎉" : null}</p>
 
-        {geolocationAllowed === true && location && (
-          <>
-            <h2>Select the intersection</h2>
-            <ReactMapGL
-              initialViewState={{
-                longitude: location.longitude,
-                latitude: location.latitude,
-                zoom: 18,
-              }}
-              mapboxAccessToken={MAPBOX_TOKEN}
-              id={"react-map"}
-              style={{ width: "100vw", height: "50vh" }}
-              mapStyle="mapbox://styles/mapbox/streets-v9"
-              // ref={(ref) =>
-              //   ref && !state.map && setState({ ...state, map: ref.getMap() })
-              // }
-              // onMoveEnd={onMoveEnd}
-              attributionControl={false}
-            >
-              <AttributionControl compact={false} />
-              <FullscreenControl position="bottom-right" />
-              <GeolocateControl position="bottom-right" />
-            </ReactMapGL>
-          </>
-        )}
+        {geolocationAllowed === true &&
+          location &&
+          geolocationStatus !== "Recorded intersection ID." && (
+            <>
+              <h2>Select the intersection</h2>
+              <ReactMapGL
+
+                initialViewState={{
+                  longitude: location.longitude,
+                  latitude: location.latitude,
+                  zoom: 18,
+                }}
+                mapboxAccessToken={MAPBOX_TOKEN}
+                id={"react-map"}
+                style={{ width: "90vw", height: "50vh" }}
+                mapStyle="mapbox://styles/mapbox/streets-v9"
+                attributionControl={false}
+              >
+                {osmIntersections !== undefined
+                  ? osmIntersections.map((intersection: RawOSMCrossing) => (
+                      <Marker
+                        key={intersection.id}
+                        latitude={intersection.lat}
+                        longitude={intersection.lon}
+                        onClick={() => {
+                          setFormState((prev) => ({
+                            ...prev,
+                            osm_node_id: intersection.id,
+                          }));
+                          setGeolocationStatus("Recorded intersection ID.");
+                        }}
+                        color={"red"}
+                      />
+                    ))
+                  : null}
+
+                <AttributionControl compact={false} />
+                <FullscreenControl position="bottom-right" />
+                <GeolocateControl position="bottom-right" />
+              </ReactMapGL>
+            </>
+          )}
 
         <SignalTimer
           callback={(times) => {
@@ -321,13 +352,22 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <FormTextInput
           title="OpenStreetMap node ID"
           description="What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
+          value={formState.osm_node_id?.toString() || ""}
           setValue={(newVal: string) => {
             try {
+              if(newVal === "") {
+                return setFormState((prev) => ({
+                  ...prev,
+                  osm_node_id: undefined,
+                }));
+              }
               const osm_node_id = parseInt(newVal);
-              return setFormState((prev) => ({
-                ...prev,
-                osm_node_id,
-              }));
+              if (!isNaN(osm_node_id) ) {
+                return setFormState((prev) => ({
+                  ...prev,
+                  osm_node_id,
+                }));
+              }
             } catch (e) {}
           }}
           required={false}

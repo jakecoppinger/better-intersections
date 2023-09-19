@@ -15,8 +15,7 @@ export async function getOSMCrossings(my_location: { lat: number; lon: number },
   const request_str = `
     [out:json][timeout:25];
     (
-        node["shop"="coffee"](around:${query_radius},${my_location.lat},${my_location.lon});
-        node["amenity"="cafe"](around:${query_radius},${my_location.lat},${my_location.lon});
+        node["crossing"="traffic_signals"](around:${query_radius},${my_location.lat},${my_location.lon});
     );
     out body;
     >;
