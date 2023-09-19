@@ -1,4 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import ReactMapGL, {
+  MapboxMap,
+  AttributionControl,
+  FullscreenControl,
+  GeolocateControl,
+  Marker,
+  Popup,
+  ViewStateChangeEvent,
+} from "react-map-gl";
 import { Session } from "@supabase/supabase-js";
 
 import { supabase } from "../utils/supabase-client";
@@ -12,6 +21,9 @@ import {
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
+import { getOSMCrossings } from "../api/overpass";
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -118,9 +130,83 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     setIsSubmitting(false);
   };
 
+  // const latitude = -33.8688;
+  // const longitude = 151.1593;
+  // const zoom: number = 11;
+
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+  const [geolocationAllowed, setGeolocationAllowed] = useState<boolean | null>(
+    null
+  );
+
+  useEffect(() => {
+    const asyncFunc = async () => {
+      if (geolocationAllowed && location?.latitude && location?.longitude) {
+        const osmIntersections = await getOSMCrossings(
+          { lat: location?.latitude, lon: location?.longitude },
+          100
+        );
+        console.log({ osmIntersections });
+      }
+    };
+
+    asyncFunc();
+  }, [geolocationAllowed, location]);
+
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
+        <button
+          onClick={() => {
+            if (!navigator.geolocation) {
+              setGeolocationAllowed(false);
+              return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                setLocation({ latitude, longitude });
+                setGeolocationAllowed(true);
+              },
+              (err) => {
+                setGeolocationAllowed(false);
+              }
+            );
+          }}
+        >
+          Find intersections near me
+        </button>
+
+        {geolocationAllowed === true && location && (
+          <>
+            <h2>Select the intersection</h2>
+            <ReactMapGL
+              initialViewState={{
+                longitude: location.longitude,
+                latitude: location.latitude,
+                zoom: 18,
+              }}
+              mapboxAccessToken={MAPBOX_TOKEN}
+              id={"react-map"}
+              style={{ width: "100vw", height: "50vh" }}
+              mapStyle="mapbox://styles/mapbox/streets-v9"
+              // ref={(ref) =>
+              //   ref && !state.map && setState({ ...state, map: ref.getMap() })
+              // }
+              // onMoveEnd={onMoveEnd}
+              attributionControl={false}
+            >
+              <AttributionControl compact={false} />
+              <FullscreenControl position="bottom-right" />
+              <GeolocateControl position="bottom-right" />
+            </ReactMapGL>
+          </>
+        )}
+
         <SignalTimer
           callback={(times) => {
             setFormState((prev) => ({
