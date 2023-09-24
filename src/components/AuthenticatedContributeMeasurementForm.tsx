@@ -10,8 +10,6 @@ import ReactMapGL, {
 } from "react-map-gl";
 import { Session } from "@supabase/supabase-js";
 
-import { useGeolocated } from "react-geolocated";
-
 import { supabase } from "../utils/supabase-client";
 
 import {
