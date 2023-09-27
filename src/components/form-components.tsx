@@ -30,6 +30,7 @@ export function FormTextInput({
   setValue,
   required = false,
   textarea,
+  placeholder,
 }: {
   title: string;
   description: string;
@@ -37,6 +38,7 @@ export function FormTextInput({
   setValue: (value: string) => void;
   required?: boolean;
   textarea?: boolean;
+  placeholder?: string;
 }) {
   return (
     <FormSectionWrapper>
@@ -50,6 +52,7 @@ export function FormTextInput({
           onChange={(e) => {
             setValue(e.target.value);
           }}
+          placeholder={placeholder}
           cols={35}
           rows={3}
         ></textarea>
@@ -58,7 +61,11 @@ export function FormTextInput({
           type="text"
           required={required}
           value={value}
-          style={{width:'300px'}}
+          placeholder={placeholder}
+          style={{
+            maxWidth: "100%",
+            width: "500px",
+          }}
           onChange={(e) => {
             setValue(e.target.value);
           }}

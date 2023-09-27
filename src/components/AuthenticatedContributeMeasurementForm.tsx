@@ -130,10 +130,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     setIsSubmitting(false);
   };
 
-  // const latitude = -33.8688;
-  // const longitude = 151.1593;
-  // const zoom: number = 11;
-
   const [location, setLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -149,7 +145,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   useEffect(() => {
     const asyncFunc = async () => {
       if (geolocationAllowed && location?.latitude && location?.longitude) {
-        setGeolocationStatus("Fetching intersections...");
+        setGeolocationStatus("Finding nearby intersections...");
         const osmIntersections = await getOSMCrossings(
           { lat: location?.latitude, lon: location?.longitude },
           200
@@ -173,16 +169,17 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             e.preventDefault();
             setGeolocationStatus("Attempting to find location...");
 
-            if ('permissions' in navigator) {
+            if ("permissions" in navigator) {
               try {
-                const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+                const permissionStatus = await navigator.permissions.query({
+                  name: "geolocation",
+                });
 
-                if (permissionStatus.state === 'denied') {
+                if (permissionStatus.state === "denied") {
                   setGeolocationStatus("Geolocation permission denied.");
                   setGeolocationAllowed(false);
                   return;
                 }
-
               } catch (err) {
                 alert((err as any).toString());
                 console.error("Error checking permissions:", err);
@@ -205,17 +202,17 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               (err) => {
                 setGeolocationStatus("Geolocation not possible.");
                 setGeolocationAllowed(false);
-              }
-              ,{
+              },
+              {
                 enableHighAccuracy: true,
                 timeout: 5000,
-                maximumAge: 0
-            }
+                maximumAge: 0,
+              }
             );
           }}
           autoFocus={true}
         >
-          Find intersections near me
+          Step 1: Find intersections near me
         </button>
         <p>
           {geolocationStatus}{" "}
@@ -226,7 +223,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           location &&
           geolocationStatus !== "Recorded intersection ID." && (
             <>
-              <h2>Select the intersection</h2>
+              <h2>Select intersection</h2>
+              <p>Select an intersection to take a measurement. If there is no pin at your desired location you
+                 you don't need to select a pin - but make sure to describe the location well in the textbox below.
+              </p>
               <ReactMapGL
                 initialViewState={{
                   longitude: location.longitude,
@@ -277,8 +277,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
         <FormTextInput
           title="Location"
-          description="Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)"
+          description="Describe the location. Include road you're crossing and the adjacent road, and specify which side of the road. Coordinates are also helpful!"
+          placeholder="eg. Castlereagh St & Bathurst St. Crossing Castlereagh St on south side."
           value={formState.location_description || ""}
+          textarea={true}
           setValue={(location_description) =>
             setFormState((prev) => ({
               ...prev,
@@ -348,7 +350,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
         <RadioButtonComponent<IsScrambleCrossing>
           title="Is it a scramble crossing?"
-          description="A scramble crossing is when all pedestrians on each side cross at the same time."
+          description="A scramble crossing is when pedestrians can cross either street (or diagonally) at the same time."
           id="is_scramble_crossing"
           selectedButton={formState.is_scramble_crossing || undefined}
           options={
@@ -377,8 +379,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
         <FormTextInput
           title="OpenStreetMap node ID"
-          description="What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)"
+          description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
           value={formState.osm_node_id?.toString() || ""}
+          placeholder="Optional. Eg: 11221625370"
+          
           setValue={(newVal: string) => {
             try {
               if (newVal === "") {

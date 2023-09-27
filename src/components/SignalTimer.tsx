@@ -243,7 +243,7 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
 
   return (
     <>
-    <h3>Time intersection</h3>
+    <h3>Step 2: Time intersection</h3>
       <TrafficSignal onclick={handleClick} signalState={signalState} />
       <button
         autoFocus={true}
