@@ -155,3 +155,15 @@ export interface SQLIntersectionWithId extends SQLIntersection {
   /** Unique serial id of intersection measurement */
   id: string; // Using string for uuid
 }
+
+
+/** A basic cache for the https://api.openstreetmap.org/api/0.6/node/... endpoint */
+export type OSMNodePositionCache = Record<number, OSMNodePosition>;
+
+/** Info returned from the OSM API */
+interface OSMNodePosition {
+  lat: number,
+  lon: number
+  /** OSM tags for the given node */
+  tags: Record<string, string>;
+}
