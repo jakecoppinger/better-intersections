@@ -93,7 +93,7 @@ export interface IntersectionFilterState {
 export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
 export type UnprotectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
-export type IsTwoStageCrossing = "yes" | "no";
+export type IsTwoStageCrossing = "yes" | "no" | "unknown";
 export type HasCountdownTimer = "yes" | "no" | "unknown";
 export interface IntersectionForm {
   // /** UUID references auth.users on delete cascade. */

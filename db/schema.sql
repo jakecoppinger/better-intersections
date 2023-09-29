@@ -31,15 +31,14 @@ create table measurements (
 
   has_countdown_timer text, -- "yes" | "no" | "unknown"
 
+  is_two_stage_crossing text, -- "yes" | "no" | "unknown"
+
   notes text
 );
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
 alter table measurements
   enable row level security;
-
-alter table measurements
-ADD is_two_stage_crossing text;
 
 create policy "Public measurements are viewable by everyone." on measurements
   for select using (true);
