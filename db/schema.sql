@@ -38,6 +38,9 @@ create table measurements (
 alter table measurements
   enable row level security;
 
+alter table measurements
+ADD is_two_stage_crossing text;
+
 create policy "Public measurements are viewable by everyone." on measurements
   for select using (true);
 
