@@ -18,6 +18,7 @@ import {
   IntersectionForm,
   IsScrambleCrossing,
   SQLIntersection,
+  IsTwoStageCrossing,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
@@ -373,6 +374,33 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
             setFormState((prev) => ({
               ...prev,
               is_scramble_crossing,
+            }));
+          }}
+        />
+
+        <RadioButtonComponent<IsTwoStageCrossing>
+          title="Is it a two stage crossing?"
+          description="A two stage crossing is when a pedestrian has to cross a dual carriage way road with
+                      only one pedestrian light at the end of the crossing and the pedestrian is unable to cross in 
+                      one iteration of the light and hence has to wait in the middle "
+          id="is_two_stage_crossing"
+          selectedButton={formState.is_two_stage_crossing || undefined}
+          options={
+            [
+              {
+                value: "yes",
+                label: "Yes",
+              },
+              {
+                value: "no",
+                label: "No",
+              }
+            ] as { value: IsTwoStageCrossing; label: string }[]
+          }
+          callback={(is_two_stage_crossing: IsTwoStageCrossing) => {
+            setFormState((prev) => ({
+              ...prev,
+              is_two_stage_crossing,
             }));
           }}
         />
