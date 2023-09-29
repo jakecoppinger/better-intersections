@@ -98,6 +98,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         message: "Is scramble crossing is required",
       };
     }
+    if (raw.is_two_stage_crossing === undefined) {
+      return {
+        error: true,
+        message: "Missing form field - please add if it's a two-stage crossing"
+      };
+    }
 
     return { data: raw as IntersectionForm, error: false };
   }
