@@ -3,7 +3,9 @@ import { parseStringPromise } from 'xml2js';
 import { Way } from '../types';
 import { tagListToRecord } from '../utils/utils';
 
-export async function getOsmNodePosition(osmNode: string | number): Promise<{ lat: number, lon: number, tags: Record<string, string> }> {
+
+export async function getOsmNodePosition(osmNode: number): Promise<{ lat: number, lon: number, osmNodeID: number, tags: Record<string, string> }> {
+  try {
   const response: string = await (await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)).text();
   const osmApiResult = await parseStringPromise(response);
 
@@ -21,7 +23,12 @@ export async function getOsmNodePosition(osmNode: string | number): Promise<{ la
     tags[tag.$.k] = tag.$.v;
   });
 
-  return { lat, lon, tags };
+  return { lat, lon, tags, osmNodeID: osmNode };
+}catch(e) {
+  console.log(`Error fetching OSM node ${osmNode}: ${e}`);
+  throw e;
+
+}
 }
 
 export async function fetchOsmWaysForNode(nodeId: string | number): Promise<Way[]> {
