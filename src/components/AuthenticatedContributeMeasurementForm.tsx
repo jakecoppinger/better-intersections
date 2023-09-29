@@ -41,12 +41,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
   function validateFormState(): FormValidatorOutput {
     const raw = formState;
+    const missingTimeMeasurementMessage = 'Missing time measurement. Please use the "time intersection" function above.'
     if (raw.green_light_duration === undefined) {
       debugger;
       return {
         error: true,
         message:
-          "Please input a valid green light duration in seconds (without letters)",
+          missingTimeMeasurementMessage,
       };
     }
     if (
@@ -56,10 +57,9 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       return {
         error: true,
         message:
-          "Please input a valid flashing red light duration in seconds (without letters)",
+          missingTimeMeasurementMessage,
       };
     }
-    console.log({ solid_red_light_duration: raw.solid_red_light_duration });
     if (
       raw.solid_red_light_duration === undefined ||
       isNaN(raw.solid_red_light_duration)
@@ -67,7 +67,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       return {
         error: true,
         message:
-          "Please input a valid red light duration in seconds (without letters)",
+          missingTimeMeasurementMessage,
       };
     }
     if (
@@ -76,25 +76,25 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     ) {
       return {
         error: true,
-        message: "Location description is required",
+        message: "Missing field - please add a detailed description of the crossing location",
       };
     }
     if (raw.crossing_lantern_type === undefined) {
       return {
         error: true,
-        message: "Crossing lantern type is required",
+        message: "Missing field - please add the crossing lantern type (unknown is an option)",
       };
     }
     if (raw.unprotected_crossing === undefined) {
       return {
         error: true,
-        message: "Missing info if it's a protected crossing",
+        message: "Missing field - Please add if the crossing is unprotected",
       };
     }
     if (raw.is_scramble_crossing === undefined) {
       return {
         error: true,
-        message: "Is scramble crossing is required",
+        message: "Missing field - please add if the crossing is a scrable crossing.",
       };
     }
 
