@@ -31,6 +31,8 @@ create table measurements (
 
   has_countdown_timer text, -- "yes" | "no" | "unknown"
 
+  is_two_stage_crossing text, -- "yes" | "no" | "unknown"
+
   notes text
 );
 -- Set up Row Level Security (RLS)

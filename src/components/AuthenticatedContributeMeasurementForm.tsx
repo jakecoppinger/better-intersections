@@ -18,6 +18,7 @@ import {
   IntersectionForm,
   IsScrambleCrossing,
   SQLIntersection,
+  IsTwoStageCrossing,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
@@ -97,6 +98,12 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         message: "Missing field - please add if the crossing is a scrable crossing.",
       };
     }
+    if (raw.is_two_stage_crossing === undefined) {
+      return {
+        error: true,
+        message: "Missing form field - please add if it's a two-stage crossing",
+      };
+    }
 
     return { data: raw as IntersectionForm, error: false };
   }
@@ -125,8 +132,9 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       alert(error.message);
     } else {
       alert("Measurement submitted, thanks! 🙏");
+      // TODO: Reset timing part of form (and possibly other uncontrolled fields)
+      setFormState({});
     }
-    setFormState({});
     setIsSubmitting(false);
   };
 
@@ -224,8 +232,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           geolocationStatus !== "Recorded intersection ID." && (
             <>
               <h2>Select intersection</h2>
-              <p>Select an intersection to take a measurement. If there is no pin at your desired location you
-                 you don't need to select a pin - but make sure to describe the location well in the textbox below.
+              <p>
+                Select an intersection to take a measurement. If there is no pin
+                at your desired location you you don't need to select a pin -
+                but make sure to describe the location well in the textbox
+                below.
               </p>
               <ReactMapGL
                 initialViewState={{
@@ -377,12 +388,42 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
+        <RadioButtonComponent<IsTwoStageCrossing>
+          title="Is it a two-stage crossing?"
+          description="A two-stage crossing is when pedestrian is unable to legally cross a 
+          dual-carriageway road in one cycle of the light - they have the wait at an island in 
+          the middle of the road."
+          id="is_two_stage_crossing"
+          selectedButton={formState.is_two_stage_crossing || undefined}
+          options={
+            [
+              {
+                value: "yes",
+                label: "Yes",
+              },
+              {
+                value: "no",
+                label: "No",
+              },
+              {
+                value: "unknown",
+                label: "Unknown",
+              },
+            ] as { value: IsTwoStageCrossing; label: string }[]
+          }
+          callback={(is_two_stage_crossing: IsTwoStageCrossing) => {
+            setFormState((prev) => ({
+              ...prev,
+              is_two_stage_crossing,
+            }));
+          }}
+        />
+
         <FormTextInput
           title="OpenStreetMap node ID"
           description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
           value={formState.osm_node_id?.toString() || ""}
           placeholder="Optional. Eg: 11221625370"
-          
           setValue={(newVal: string) => {
             try {
               if (newVal === "") {
