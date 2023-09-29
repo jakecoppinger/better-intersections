@@ -380,9 +380,9 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
         <RadioButtonComponent<IsTwoStageCrossing>
           title="Is it a two stage crossing?"
-          description="A two stage crossing is when a pedestrian has to cross a dual carriage way road with
-                      only one pedestrian light at the end of the crossing and the pedestrian is unable to cross in 
-                      one iteration of the light and hence has to wait in the middle "
+          description="A two stage crossing is a crossing which requires a pedestrian to cross a dual carriage way road with
+                      only one pedestrian light at the end of the crossing, but the pedestrian is unable to legally cross in 
+                      one iteration of the light hence they have to wait in the middle of the crossing for the second iteration"
           id="is_two_stage_crossing"
           selectedButton={formState.is_two_stage_crossing || undefined}
           options={
