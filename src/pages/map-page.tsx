@@ -21,7 +21,6 @@ import {
   getMaxCycleTime,
   getNextLargestMultipleOf5,
 } from "../utils/utils";
-import { LoadingTag } from "../styles/map-page.style";
 import IntersectionFilter from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 

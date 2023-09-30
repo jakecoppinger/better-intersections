@@ -1,7 +1,5 @@
 import React from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
-// @ts-ignore
-import { HashLink } from "react-router-hash-link";
 import { Link } from "react-router-dom";
 
 const About: React.FC = () => {
