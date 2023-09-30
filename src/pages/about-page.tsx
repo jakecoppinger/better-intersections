@@ -3,6 +3,7 @@ import HeaderAndFooter from "../components/HeaderAndFooter";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
 import { Link } from "react-router-dom";
+import { CsvExport } from "../components/CsvExport";
 
 const About: React.FC = () => {
   return (
@@ -67,16 +68,8 @@ const About: React.FC = () => {
           >
             Google Sheets
           </a>
-          . CSV download coming soon (see{" "}
-          <Link
-            target="_blank"
-            to={
-              "https://github.com/jakecoppinger/better-intersections/issues/18"
-            }
-          >
-            Github issue
-          </Link>
-          .
+          . CSV download -
+          <CsvExport />.
         </p>
 
         <h1>Why does the timing of pedestrian signals matter?</h1>
