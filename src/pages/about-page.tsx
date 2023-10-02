@@ -17,8 +17,8 @@ const About: React.FC = () => {
           <Link to={"/contribute-measurement"}>
             contribute timing measurements
           </Link>{" "}
-          yourself. It's focused on Sydney, Australia, but is adaptable for
-          anywhere in the world.
+          yourself. It's focused on Sydney, Australia, but you're welcome to
+          take measurements for any intersection around Australia or the world.
         </p>
 
         <p>
@@ -30,9 +30,24 @@ const About: React.FC = () => {
           >
             Github
           </a>{" "}
-          (contributions welcome!), and the data is under an open license (
-          <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>{" "}
-          license).
+          (AGPL-3.0 license, contributions welcome!), and you can download the
+          data under an open license ({" "}
+          <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>) under
+          the heading below.
+        </p>
+
+        <p>
+          Read more about about Sydney's traffic signals on Jake Coppinger's
+          blog post,{" "}
+          <Link
+            target="_blank"
+            to={
+              "https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+            }
+          >
+            Shining a Light on the Traffic Signals of Sydney
+          </Link>{" "}
+          (July 2023).
         </p>
         <p>
           If you have ideas for improvements, please create a{" "}
@@ -49,13 +64,12 @@ const About: React.FC = () => {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://aus.social/@jakecoppinger"
+            href="https://mastodon.jakecoppinger.com/@jake"
           >
-            Mastodon (@jakecoppinger@aus.social)
-          </a>
-          .
+            Mastodon
+          </a>{" "}
+          (@jake@mastodon.jakecoppinger.com).
         </p>
-
         <h2>Why does the timing of pedestrian signals matter?</h2>
         <p>
           <a
@@ -158,19 +172,6 @@ const About: React.FC = () => {
           </a>
           )
         </p>
-        <h2>Further reading</h2>
-        <p>
-          Read more on Jake Coppinger's blog post,{" "}
-          <Link
-            target="_blank"
-            to={
-              "https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
-            }
-          >
-            Shining a Light on the Traffic Signals of Sydney
-          </Link>
-          .
-        </p>
         <h2>
           <a id="contributing">How to contribute measurements</a>
         </h2>
@@ -193,7 +194,7 @@ const About: React.FC = () => {
           >
             Google Sheets
           </a>{" "}
-          (the aboe CSV export includes all data).
+          (the above CSV export includes all data).
         </p>
         <h2>Further reading</h2>
         <ul>
