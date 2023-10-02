@@ -4,12 +4,13 @@ import HeaderAndFooter from "../components/HeaderAndFooter";
 import { HashLink } from "react-router-hash-link";
 import { Link } from "react-router-dom";
 import { CsvExport } from "../components/CsvExport";
+import { JsonExport } from "../components/JsonExport";
 
 const About: React.FC = () => {
   return (
     <HeaderAndFooter>
       <div>
-        <h1>About</h1>
+        <h2>About</h2>
         <p>
           Better Intersections is a tool to record and visualise how long people
           walking and on bikes have to wait at traffic lights. You can{" "}
@@ -54,23 +55,8 @@ const About: React.FC = () => {
           </a>
           .
         </p>
-        <h3>Downloading data</h3>
-        <p>You can download a CSV file of all measurements below.</p>
-        <CsvExport></CsvExport>
-        <p>
-          The data was previously hosted on a Google Form / Google Sheets
-          backend. View data up to the transition on{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit?usp=sharing"
-          >
-            Google Sheets
-          </a>{" "}
-          (the aboe CSV export includes all data).
-        </p>
 
-        <h1>Why does the timing of pedestrian signals matter?</h1>
+        <h2>Why does the timing of pedestrian signals matter?</h2>
         <p>
           <a
             target="_blank"
@@ -172,7 +158,7 @@ const About: React.FC = () => {
           </a>
           )
         </p>
-        <h1>Further reading</h1>
+        <h2>Further reading</h2>
         <p>
           Read more on Jake Coppinger's blog post,{" "}
           <Link
@@ -185,57 +171,31 @@ const About: React.FC = () => {
           </Link>
           .
         </p>
-        <h1>
-          <a id="contributing">How to contribute measurements</a>
-        </h1>
         <h2>
+          <a id="contributing">How to contribute measurements</a>
+        </h2>
+        <p>
           <a href="/contribute-measurement">Open the form</a> and follow the
           steps!
-        </h2>
+        </p>
+        <h2>How to download the data</h2>
 
-        <ul>
-          <li>
-            Submit the location of the intersection and exactly which crossing
-            if there are multiple nearby
-            <ul>
-              <li>eg. George st and Cleveland st, east side</li>
-            </ul>
-          </li>
-          <li>
-            Start the stopwatch on your watch (or phone) when the
-            pedestrian/bicycle lantern turns green
-          </li>
-          <li>
-            Press lap when the light starts flashing red, or:
-            <ul>
-              <li>if it has a number counting down, when that starts</li>
-              <li>if it's a bicycle lantern, when it turns orange</li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns solid red</li>
-          <li>
-            Press the crossing button to request the lights to change
-            <ul>
-              <li>
-                if you're inside the{" "}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
-                >
-                  Sydney CBD automated signal area
-                </a>
-                , you won't need to do this
-              </li>
-            </ul>
-          </li>
-          <li>Press lap when the light turns green again</li>
-          <li>
-            Submit the <a href="/contribute-measurement">form</a> with your
-            measurement!
-          </li>
-        </ul>
-        <h1>Further reading</h1>
+        <p>You can download a CSV or JSON file of all measurements below.</p>
+        <CsvExport></CsvExport>
+        <JsonExport></JsonExport>
+        <p>
+          The data was previously hosted on a Google Form / Google Sheets
+          backend. View data up to the transition on{" "}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit?usp=sharing"
+          >
+            Google Sheets
+          </a>{" "}
+          (the aboe CSV export includes all data).
+        </p>
+        <h2>Further reading</h2>
         <ul>
           <li>
             <a

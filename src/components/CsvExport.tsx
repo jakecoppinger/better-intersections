@@ -51,10 +51,16 @@ export const CsvExport: FunctionComponent = () => {
     }
   };
   return (
-    <>
-      <button onClick={downloadCsv} disabled={downloadStarted}>
-        {downloadStarted ? "Download complete" : "Download measurements CSV"}
-      </button>
-    </>
+    <button
+      style={{
+        display: "block",
+        marginTop: "10px",
+        marginBottom: "10px",
+      }}
+      onClick={downloadCsv}
+      disabled={downloadStarted}
+    >
+      {downloadStarted ? "CSV download complete" : "Download measurements CSV"}
+    </button>
   );
 };
