@@ -55,21 +55,19 @@ const About: React.FC = () => {
           .
         </p>
         <h3>Downloading data</h3>
+        <p>You can download a CSV file of all measurements below.</p>
+        <CsvExport></CsvExport>
         <p>
-          Better Intersections has recently moved from a Google Form / Google
-          Sheets architecture to a dedicated (Postgres) database.
-        </p>
-        <p>
-          View all data up to the transition on{" "}
+          The data was previously hosted on a Google Form / Google Sheets
+          backend. View data up to the transition on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
             href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit?usp=sharing"
           >
             Google Sheets
-          </a>
-          . CSV download -
-          <CsvExport />.
+          </a>{" "}
+          (the aboe CSV export includes all data).
         </p>
 
         <h1>Why does the timing of pedestrian signals matter?</h1>
@@ -188,7 +186,7 @@ const About: React.FC = () => {
           .
         </p>
         <h1>
-          <a  id="contributing">How to contribute measurements</a>
+          <a id="contributing">How to contribute measurements</a>
         </h1>
         <h2>
           <a href="/contribute-measurement">Open the form</a> and follow the
