@@ -17,7 +17,7 @@ import {
   CrossingLanternType,
   IntersectionForm,
   IsScrambleCrossing,
-  SQLIntersection,
+  IntersectionInsertionFields,
   IsTwoStageCrossing,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
@@ -120,7 +120,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setIsSubmitting(false);
       return;
     }
-    const update: SQLIntersection = {
+    const update: IntersectionInsertionFields = {
       user_id: user.id,
       updated_at: new Date(),
       ...data,

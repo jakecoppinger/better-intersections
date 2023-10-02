@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
