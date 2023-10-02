@@ -95,6 +95,7 @@ export type UnprotectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
 export type IsTwoStageCrossing = "yes" | "no" | "unknown";
 export type HasCountdownTimer = "yes" | "no" | "unknown";
+
 export interface IntersectionForm {
   // /** UUID references auth.users on delete cascade. */
   // id: string;
@@ -149,13 +150,18 @@ export interface IntersectionForm {
   notes: string | null;
 }
 
-export interface SQLIntersection extends IntersectionForm {
+/** The fields needed to create a new intersection measurement */
+export interface IntersectionInsertionFields extends IntersectionForm {
   /** Which user submitted this measurement. Using string for uuid */
   user_id: string;
-  updated_at: Date; // timestamp with time zone is mapped to JavaScript's Date
+  /** timestamp with time zone is mapped to JavaScript's Date */
+  updated_at: Date;
 }
 
-export interface SQLIntersectionWithId extends SQLIntersection {
+/** The fields returned from the database */
+export interface IntersectionMeasurementResult extends IntersectionForm {
   /** Unique serial id of intersection measurement */
-  id: string; // Using string for uuid
+  id: string;
+  /** timestamp with time zone is mapped to JavaScript's Date */
+  updated_at: Date; 
 }

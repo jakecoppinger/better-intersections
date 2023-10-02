@@ -1,6 +1,6 @@
 import { getIntersectionMeasurements } from "../api/db";
 import { getOsmNodePosition } from "../api/osm";
-import { IntersectionStats, OsmWayKeys, RawTag, SQLIntersectionWithId, TrafficLightReport, Way } from "../types";
+import { IntersectionStats, OsmWayKeys, RawTag, IntersectionMeasurementResult, TrafficLightReport, Way } from "../types";
 
 
 function isStringInteger(str: string): boolean {
@@ -9,12 +9,12 @@ function isStringInteger(str: string): boolean {
 }
 
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
-export function isValidTrafficLightReport(formResponse: SQLIntersectionWithId): boolean {
+export function isValidTrafficLightReport(formResponse: IntersectionMeasurementResult): boolean {
   const rawOsmId = formResponse.osm_node_id;
   return rawOsmId !== null;
 }
 
-export async function convertToTrafficLightReport(formResponse: SQLIntersectionWithId): Promise<TrafficLightReport | null> {
+export async function convertToTrafficLightReport(formResponse: IntersectionMeasurementResult): Promise<TrafficLightReport | null> {
   const { osm_node_id, custom_updated_at, unprotected_crossing,
     green_light_duration,
     flashing_red_light_duration,
@@ -175,7 +175,7 @@ export function getNextLargestMultipleOf5(val: number) {
 }
 
 export async function getIntersections(): Promise<IntersectionStats[]> {
-  let data: SQLIntersectionWithId[] = []
+  let data: IntersectionMeasurementResult[] = []
   try {
     data = await getIntersectionMeasurements();
   } catch (e) {
