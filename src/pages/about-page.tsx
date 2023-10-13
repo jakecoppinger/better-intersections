@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import HeaderAndFooter from "../components/HeaderAndFooter";
-// @ts-ignore
-import { HashLink } from "react-router-hash-link";
 import { Link } from "react-router-dom";
 import { CsvExport } from "../components/CsvExport";
 import { JsonExport } from "../components/JsonExport";

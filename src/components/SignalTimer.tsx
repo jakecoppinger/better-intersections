@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
-import { css, keyframes } from "@emotion/react";
 
 export interface SignalTimerCallback {
   green: number;

@@ -1,4 +1,3 @@
-import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
 import { IntersectionStats, Way } from "../types";

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ReactMapGL, {
-  MapboxMap,
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
   Marker,
-  Popup,
-  ViewStateChangeEvent,
 } from "react-map-gl";
 import { Session } from "@supabase/supabase-js";
 

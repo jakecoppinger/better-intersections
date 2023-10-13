@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
-// @ts-ignore
-import { HashLink } from "react-router-hash-link";
+
 
 const TitleBox = styled.div`
   display: flex;
