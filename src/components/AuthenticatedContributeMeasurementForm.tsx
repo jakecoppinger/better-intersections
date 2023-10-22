@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import ReactMapGL, {
+import { useEffect, useState, FC } from "react";
+import { 
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
   Marker,
-} from "react-map-gl";
-import { Session } from "@supabase/supabase-js";
-
+  Map as ReactMapGL
+} from "react-map-gl/dist/esm/exports-mapbox"
+import { Session } from "@supabase/gotrue-js/src/lib/types";
 import { supabase } from "../utils/supabase-client";
 
 import {
@@ -27,7 +27,7 @@ export interface AuthenticatedFormProps {
   session: Session;
 }
 
-export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
+export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
   const { session } = props;
 
   const [isSubmitting, setIsSubmitting] = useState(false);

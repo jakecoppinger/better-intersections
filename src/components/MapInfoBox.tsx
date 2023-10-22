@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import React, { FunctionComponent } from "react";
-import { Link } from "react-router-dom";
+import { FunctionComponent, useState } from "react";
+import { Link } from "react-router-dom/dist/index";
 
 
 const TitleBox = styled.div`
@@ -42,7 +42,7 @@ const DescriptionBox = styled.div`
 `;
 
 export const MapInfoBox: FunctionComponent = () => {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   return (
     <Wrapper>
       <TitleBox

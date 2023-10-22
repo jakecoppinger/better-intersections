@@ -1,4 +1,4 @@
-import React from "react";
+import { ChangeEvent } from "react";
 import styled from "@emotion/styled";
 
 const PaddedLabel = styled.label`
@@ -91,7 +91,7 @@ export function RadioButtonComponent<T extends string>({
   title,
   description,
 }: RadioButtonComponentProps<T>) {
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newVal: T = event.target.value as T;
     callback(newVal);
   };
