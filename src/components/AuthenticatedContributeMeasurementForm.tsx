@@ -146,6 +146,25 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const [osmIntersections, setOSMIntersections] = useState<any[] | undefined>(
     undefined
   );
+  const [nearbyOSMIntersections, setNearbyOSMIntersections] = useState<any[] | undefined>(
+    undefined
+  );
+  
+  // finds nearby osm nodes for two stage crossing
+  async function findNearbyNodes () {
+    if (location !== null) {
+      const osmIntersections = await getOSMCrossings(
+        { lat: location.latitude, lon: location.longitude },
+        200
+      );
+      const filteredIntersections = osmIntersections.filter((intersection) => intersection.id !== formState.osm_node_id);
+      setNearbyOSMIntersections(filteredIntersections);
+
+    } else{
+      return;
+    }
+
+  }
 
   useEffect(() => {
     const asyncFunc = async () => {
@@ -413,8 +432,45 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               ...prev,
               is_two_stage_crossing,
             }));
+            if (is_two_stage_crossing === "yes") {
+              findNearbyNodes();
+            }
           }}
         />
+
+        {formState.is_two_stage_crossing === "yes" && location === null &&
+        <p>Unable to access location.</p>
+        }
+
+        {formState.is_two_stage_crossing === "yes" && location !== null &&
+          <ReactMapGL
+          initialViewState={{
+            longitude: location.longitude,
+            latitude: location.latitude,
+            zoom: 18,
+          }}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          id={"react-map"}
+          style={{ width: "90vw", height: "50vh" }}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+          attributionControl={false}
+        >
+          {nearbyOSMIntersections !== undefined
+            ? nearbyOSMIntersections.map((intersection: RawOSMCrossing) => (
+                <Marker
+                  key={intersection.id}
+                  latitude={intersection.lat}
+                  longitude={intersection.lon}
+                  color={"red"}
+                />
+              ))
+            : null}
+
+          <AttributionControl compact={false} />
+          <FullscreenControl position="bottom-right" />
+          <GeolocateControl position="bottom-right" />
+        </ReactMapGL>
+        }
 
         <FormTextInput
           title="OpenStreetMap node ID"
