@@ -4,10 +4,18 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export const ContributeMeasurementPage: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
+  let suppliedNodeId :string = ""
+  const isNodeId = useParams();
+
+  if (isNodeId.nodeId !== undefined) {
+    suppliedNodeId = isNodeId.nodeId;
+  }
+
+
 
   useEffect(() => {
     async function getDBSession() {
@@ -69,7 +77,7 @@ export const ContributeMeasurementPage: React.FC = () => {
         </p>
 
         {session && (
-          <AuthenticatedForm key={session.user.id} session={session} />
+          <AuthenticatedForm key={session.user.id} session={session} nodeId={suppliedNodeId}/>
         )}
         <br></br>
 
