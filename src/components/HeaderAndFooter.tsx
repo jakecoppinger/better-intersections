@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import React from "react";
+import { Link } from "react-router-dom/dist/index";
+import { FC, PropsWithChildren } from "react";
 import styled from "@emotion/styled";
 
 export const Wrapper = styled.div`
@@ -12,7 +12,7 @@ export const Wrapper = styled.div`
   }
 `;
 
-const HeaderAndFooter: React.FC<React.PropsWithChildren> = ({children}) => {
+export const HeaderAndFooter: FC<PropsWithChildren> = ({children}) => {
   return (
     <Wrapper>
       <h1><Link to={`/`}>Better Intersections</Link></h1>
@@ -21,4 +21,4 @@ const HeaderAndFooter: React.FC<React.PropsWithChildren> = ({children}) => {
   );
 };
 
-export default HeaderAndFooter;
+
