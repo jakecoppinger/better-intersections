@@ -1,4 +1,4 @@
-import React from "react";
+import { FC } from "react";
 import styled from "@emotion/styled";
 
 const LoadingWrapper = styled.div`
@@ -13,7 +13,7 @@ const LoadingWrapper = styled.div`
   padding: 5px 10px;
 `;
 
-export const LoadingIndicator: React.FC = () => (
+export const LoadingIndicator: FC = () => (
   <LoadingWrapper>
     <em>Loading data...</em>
   </LoadingWrapper>

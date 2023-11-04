@@ -1,4 +1,3 @@
-import React from "react";
 import { RangeSlider } from "rsuite";
 import {
   FilterContainer,
@@ -13,7 +12,7 @@ import { IntersectionFilterState } from "../types";
  *
  * Can use in future to filter points by other attributes.
  */
-export default function IntersectionFilter(props: {
+export function IntersectionFilter(props: {
   /**
    * Should specify the minimum and maximum cycle times of the slider.
    * Min and max values should end in 5 (offset). Cycle time averages tend to be centred around

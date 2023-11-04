@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent, useState,  } from "react";
 import { getIntersectionMeasurements } from "../api/db";
 
 /**
@@ -13,7 +13,7 @@ export function normaliseField(field: string): string {
 }
 
 export const CsvExport: FunctionComponent = () => {
-  const [downloadStarted, setDownloadStarted] = React.useState(false);
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const downloadCsv = async () => {
     try {
       const data = await getIntersectionMeasurements();

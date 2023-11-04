@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import HeaderAndFooter from "../components/HeaderAndFooter";
-import { Session } from "@supabase/supabase-js";
+import { useState, useEffect, FC } from "react";
+import { HeaderAndFooter } from "../components/HeaderAndFooter";
+import { Session } from "@supabase/gotrue-js/src/lib/types";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom/dist/index";
 
-export const ContributeMeasurementPage: React.FC = () => {
+export const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
   let suppliedNodeId :string = ""
   const isNodeId = useParams();

@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import HeaderAndFooter from "../components/HeaderAndFooter";
-import { Link } from "react-router-dom";
+import { FC } from "react";
+import { HeaderAndFooter } from "../components/HeaderAndFooter";
+import { Link } from "react-router-dom/dist/index";
 import { CsvExport } from "../components/CsvExport";
 import { JsonExport } from "../components/JsonExport";
 
-const About: React.FC = () => {
+const About: FC = () => {
   return (
     <HeaderAndFooter>
       <div>

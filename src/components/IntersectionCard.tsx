@@ -1,7 +1,6 @@
-import React from "react";
 import { IntersectionStats } from "../types";
 
-export default function IntersectionCard(props: {
+export function IntersectionCard(props: {
   intersection: IntersectionStats;
 }) {
   const { intersection } = props;

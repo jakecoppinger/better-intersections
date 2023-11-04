@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, FC } from "react";
 import { supabase } from "../utils/supabase-client";
 import { Session } from "@supabase/supabase-js";
 
@@ -13,7 +13,7 @@ export interface PasswordlessLoginProps {
   /** Session is null when not logged in */
   session: Session | null;
 }
-export const PasswordlessLogin: React.FC<PasswordlessLoginProps> = (
+export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
   props: PasswordlessLoginProps
 ) => {
   const { session } = props;

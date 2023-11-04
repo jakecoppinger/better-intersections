@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, MouseEventHandler, FC } from "react";
 import styled from "@emotion/styled";
 
 export interface SignalTimerCallback {
@@ -20,10 +20,10 @@ type SignalStateOptions =
 
 interface TrafficSignalProps {
   signalState: SignalStateOptions;
-  onclick: React.MouseEventHandler<any>;
+  onclick: MouseEventHandler<any>;
 }
 
-export const TrafficSignal: React.FC<TrafficSignalProps> = ({
+export const TrafficSignal: FC<TrafficSignalProps> = ({
   signalState,
   onclick,
 }: TrafficSignalProps) => {
@@ -103,7 +103,7 @@ interface TimeDisplayProps {
   solidRedStartTime: number | null;
   nextCycleStartTime: number | null;
 }
-export const TimeDisplay: React.FC<TimeDisplayProps> = ({
+export const TimeDisplay: FC<TimeDisplayProps> = ({
   greenStartTime,
   flashingRedStartTime,
   solidRedStartTime,
@@ -161,7 +161,7 @@ const generateCurrentSignalState = (
   return stateLookup[newPressCount] || "next-cycle";
 };
 
-export const SignalTimer: React.FC<SignalTimerProps> = ({
+export const SignalTimer: FC<SignalTimerProps> = ({
   callback,
 }: SignalTimerProps) => {
   /** The number of times the button has been pressed. If 0 times, light is grey. If 1, green.
@@ -232,7 +232,7 @@ export const SignalTimer: React.FC<SignalTimerProps> = ({
     return textIndex[pressCount];
   }
 
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e): void => {
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (e): void => {
     e.preventDefault();
     if (pressCount < 4) {
       setPressCount(pressCount + 1);
