@@ -8,7 +8,7 @@ export default function IntersectionCard(props: {
   const numMeasurements = intersection.reports.length;
 
   return (
-    <div>
+    <div style={{overflowX: "auto"}}>
       <div
         style={{
           display: "flex",
