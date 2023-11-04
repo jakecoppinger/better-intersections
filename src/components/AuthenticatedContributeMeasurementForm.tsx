@@ -31,7 +31,7 @@ export interface AuthenticatedFormProps {
 
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session, nodeId } = props;
-  const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean>();
+  const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean|undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
 
@@ -149,32 +149,30 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     undefined
   );
 
-  const checkIfNodeValid = async () => {
-    const isValid = await isNodeValid(nodeId);
-    setIsSuppliedNodeValid(isValid);
-  };
-
-  const funk = async() => {
+  const checkIfNodeValid = async() => {
     if (nodeId !== "") {
-      checkIfNodeValid().then((res) => {
+      const isValid = await isNodeValid(nodeId);
+      setIsSuppliedNodeValid(isValid);
 
-        console.log(isSuppliedNodeValid);
-        if (isSuppliedNodeValid) {
-          setFormState((prev) => ({
-            ...prev,
-            osm_node_id: Number(nodeId),
-          }));
-        } else {
-          alert("Supplied Node ID is invalid.")
-        }
-
-      })
     } else {
-      setIsSuppliedNodeValid(false);
+      setIsSuppliedNodeValid(undefined);
     }
   }
 
   useEffect(() => {
+
+    if (isSuppliedNodeValid === true) {
+      setFormState((prev) => ({
+        ...prev,
+        osm_node_id: Number(nodeId),
+      }));
+    } else if (isSuppliedNodeValid === false) {
+      alert("Supplied Node ID is invalid.")
+    }
+     else {
+      checkIfNodeValid();
+    }
+
     const asyncFunc = async () => {
       if (geolocationAllowed && location?.latitude && location?.longitude) {
         setGeolocationStatus("Finding nearby intersections...");
@@ -189,19 +187,19 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       }
     };
 
-    funk();
+    
     asyncFunc();
-  }, [geolocationAllowed, location, nodeId]);
+  }, [geolocationAllowed, location, isSuppliedNodeValid]);
 
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
         <br></br>
 
-        {isSuppliedNodeValid &&
+        {isSuppliedNodeValid == true &&
           <strong><h3>Step 1: The node ID has been recorded. 🎉</h3></strong>
         }
-        { !isSuppliedNodeValid &&
+        { isSuppliedNodeValid !== true &&
         <button
           onClick={async (e) => {
             e.preventDefault();
