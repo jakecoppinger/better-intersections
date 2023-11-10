@@ -184,20 +184,6 @@ export const SignalTimer: FC<SignalTimerProps> = ({
   nextCycleStartTime,
   setNextCycleStartTime,
 }: SignalTimerProps) => {
-  /** The number of times the button has been pressed. If 0 times, light is grey. If 1, green.
-   * If 2, flashing red. If 3, solid red. If 4, grey. */
-  // const [pressCount, setPressCount] = useState<number>(0);
-
-  // const [greenStartTime, setGreenStartTime] = useState<number | null>(null);
-  // const [flashingRedStartTime, setFlashingRedStartTime] = useState<
-  //   number | null
-  // >(null);
-  // const [solidRedStartTime, setSolidRedStartTime] = useState<number | null>(
-  //   null
-  // );
-  // const [nextCycleStartTime, setNextCycleStartTime] = useState<number | null>(
-  //   null
-  // );
 
   useEffect(() => {
     if (pressCount === 1) {
