@@ -39,9 +39,20 @@ export async function fetchOsmWaysForNode(nodeId: string | number): Promise<Way[
   return ways;
 }
 
-export async function isNodeValid(osmNode: string | number) {
+export async function isNodeValid(osmNode: string) {
+
+  const nodeRegex = /^[0-9]{1,10}$/;
+
+  if (!nodeRegex.test(osmNode)) {
+    return false;
+  }
+
+  let osmNodeNumber = parseInt(osmNode);
+  if (osmNodeNumber < 0 || osmNodeNumber >= 9500000000) {
+    return false;
+  }  
+
   const response: Response = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`);
-  
   if (response.status === 200) {
     return true;
   } else {

@@ -8,14 +8,7 @@ import { Link, useParams } from "react-router-dom/dist/index";
 
 export const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
-  let suppliedNodeId :string = ""
   const isNodeId = useParams();
-
-  if (isNodeId.nodeId !== undefined) {
-    suppliedNodeId = isNodeId.nodeId;
-  }
-
-
 
   useEffect(() => {
     async function getDBSession() {
@@ -77,7 +70,7 @@ export const ContributeMeasurementPage: FC = () => {
         </p>
 
         {session && (
-          <AuthenticatedForm key={session.user.id} session={session} nodeId={suppliedNodeId}/>
+          <AuthenticatedForm key={session.user.id} session={session} nodeId={isNodeId.nodeId}/>
         )}
         <br></br>
 

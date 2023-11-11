@@ -26,7 +26,7 @@ const MAPBOX_TOKEN =
 
 export interface AuthenticatedFormProps {
   session: Session;
-  nodeId: string
+  nodeId: undefined | string
 }
 
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
@@ -149,17 +149,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     undefined
   );
 
-  const checkIfNodeValid = async() => {
-    if (nodeId !== "") {
-      const isValid = await isNodeValid(nodeId);
-      setIsSuppliedNodeValid(isValid);
-
-    } else {
-      setIsSuppliedNodeValid(undefined);
-    }
-  }
-
   useEffect(() => {
+
+    const checkIfNodeValid = async() => {
+      if (nodeId !== "" && nodeId !== undefined) {
+        const isValid = await isNodeValid(nodeId);
+        setIsSuppliedNodeValid(isValid);
+      }
+    }
 
     if (isSuppliedNodeValid === true) {
       setFormState((prev) => ({
@@ -168,8 +165,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       }));
     } else if (isSuppliedNodeValid === false) {
       alert("Supplied Node ID is invalid.")
-    }
-     else {
+    } else {
       checkIfNodeValid();
     }
 
@@ -189,14 +185,14 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
     
     asyncFunc();
-  }, [geolocationAllowed, location, isSuppliedNodeValid]);
+  }, [geolocationAllowed, location, nodeId, isSuppliedNodeValid]);
 
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
         <br></br>
 
-        {isSuppliedNodeValid == true &&
+        {isSuppliedNodeValid === true &&
           <strong><h3>Step 1: The node ID has been recorded. 🎉</h3></strong>
         }
         { isSuppliedNodeValid !== true &&
