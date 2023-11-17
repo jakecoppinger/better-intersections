@@ -20,19 +20,21 @@ import {
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
 import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
+import { isNodeValid } from "../api/osm"
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
 export interface AuthenticatedFormProps {
   session: Session;
+  nodeId: undefined | string
 }
 
-export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
-  const { session } = props;
-
+export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
+  const { session, nodeId } = props;
+  const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean|undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
+
   type FormValidatorOutput =
     | { data: IntersectionForm; error: false; message?: undefined }
     | { data?: undefined; error: true; message: string };
@@ -148,6 +150,25 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
   );
 
   useEffect(() => {
+
+    const checkIfNodeValid = async() => {
+      if (nodeId !== "" && nodeId !== undefined) {
+        const isValid = await isNodeValid(nodeId);
+        setIsSuppliedNodeValid(isValid);
+      }
+    }
+
+    if (isSuppliedNodeValid === true) {
+      setFormState((prev) => ({
+        ...prev,
+        osm_node_id: Number(nodeId),
+      }));
+    } else if (isSuppliedNodeValid === false) {
+      alert("Supplied Node ID is invalid.")
+    } else {
+      checkIfNodeValid();
+    }
+
     const asyncFunc = async () => {
       if (geolocationAllowed && location?.latitude && location?.longitude) {
         setGeolocationStatus("Finding nearby intersections...");
@@ -162,13 +183,19 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
       }
     };
 
+    
     asyncFunc();
-  }, [geolocationAllowed, location]);
+  }, [geolocationAllowed, location, nodeId, isSuppliedNodeValid]);
 
   return (
     <>
       <form onSubmit={submitMeasurement} className="form-widget">
         <br></br>
+
+        {isSuppliedNodeValid === true &&
+          <strong><h3>Step 1: The node ID has been recorded. 🎉</h3></strong>
+        }
+        { isSuppliedNodeValid !== true &&
         <button
           onClick={async (e) => {
             e.preventDefault();
@@ -219,6 +246,7 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
         >
           Step 1: Find intersections near me
         </button>
+        }
         <p>
           {geolocationStatus}{" "}
           {geolocationStatus === "Recorded intersection ID." ? "🎉" : null}
@@ -271,6 +299,7 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
               </ReactMapGL>
             </>
           )}
+          
 
         <SignalTimer
           callback={(times) => {
@@ -416,7 +445,9 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
-        <FormTextInput
+        {!isSuppliedNodeValid &&
+
+          <FormTextInput
           title="OpenStreetMap node ID"
           description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
           value={formState.osm_node_id?.toString() || ""}
@@ -439,7 +470,9 @@ export const AuthenticatedForm: FC<AuthenticatedFormProps> = (props) => {
             } catch (e) {}
           }}
           required={false}
-        />
+          />
+        }
+
 
         <FormTextInput
           title="Notes"
