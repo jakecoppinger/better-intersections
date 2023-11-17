@@ -1,19 +1,19 @@
-import React from "react";
-import ReactMapGL, {
-  MapboxMap,
+import { useState, useEffect } from "react";
+import { Map as MapboxMap } from "react-map-gl/node_modules/@types/mapbox-gl/index";
+import { 
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
   Marker,
   Popup,
   ViewStateChangeEvent,
-} from "react-map-gl";
+  Map
+} from "react-map-gl/dist/esm/exports-mapbox"
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
 import { IntersectionFilterState, IntersectionStats } from "../types";
-
 import "mapbox-gl/dist/mapbox-gl.css";
-import IntersectionCard from "../components/IntersectionCard";
+import { IntersectionCard } from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
   getIntersections,
@@ -21,7 +21,7 @@ import {
   getMaxCycleTime,
   getNextLargestMultipleOf5,
 } from "../utils/utils";
-import IntersectionFilter from "../components/IntersectionFilter";
+import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 
 const MAPBOX_TOKEN =
@@ -62,14 +62,14 @@ type Viewport = {
 };
 
 export function MapComponent() {
-  const [state, setState] = React.useState<State>(initialState);
-  const [popupIntersection, setPopupIntersection] = React.useState<
+  const [state, setState] = useState<State>(initialState);
+  const [popupIntersection, setPopupIntersection] = useState<
     IntersectionStats | undefined
   >(undefined);
 
-  const [showPopup, setShowPopup] = React.useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
-  const [viewport, setViewport] = React.useState<Viewport>({
+  const [viewport, setViewport] = useState<Viewport>({
     longitude,
     latitude, // starting position
     zoom,
@@ -77,9 +77,9 @@ export function MapComponent() {
   const defaultMinMax = { min: 15, max: 185 };
 
   const [{ min, max }, setCycleTimeFilter] =
-    React.useState<IntersectionFilterState>(defaultMinMax);
+    useState<IntersectionFilterState>(defaultMinMax);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
       setState((s) => ({
@@ -133,7 +133,7 @@ export function MapComponent() {
       />
       <div id="map">
         {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
-        <ReactMapGL
+        <Map
           initialViewState={viewport}
           mapboxAccessToken={MAPBOX_TOKEN}
           id={"react-map"}
@@ -189,7 +189,7 @@ export function MapComponent() {
             </Popup>
           ) : null}
           {/* Todo add search  */}
-        </ReactMapGL>
+        </Map>
       </div>
     </div>
   );

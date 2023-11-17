@@ -1,14 +1,13 @@
-import React from "react";
 import { IntersectionStats } from "../types";
 
-export default function IntersectionCard(props: {
+export function IntersectionCard(props: {
   intersection: IntersectionStats;
 }) {
   const { intersection } = props;
   const numMeasurements = intersection.reports.length;
 
   return (
-    <div>
+    <div style={{overflowX: "auto"}}>
       <div
         style={{
           display: "flex",

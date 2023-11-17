@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { getIntersectionMeasurements } from "../api/db";
 
 export const JsonExport: FunctionComponent = () => {
-  const [downloadStarted, setDownloadStarted] = React.useState(false);
+  const [downloadStarted, setDownloadStarted] = useState(false);
   const downloadCsv = async () => {
     try {
       const data = await getIntersectionMeasurements();

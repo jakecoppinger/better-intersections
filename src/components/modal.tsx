@@ -1,5 +1,5 @@
-import React, { FunctionComponent} from 'react';
-import ReactDOM from 'react-dom';
+import { FunctionComponent, Fragment} from 'react';
+import ReactDOM from 'react-dom/index';
 import {
   Wrapper,
   Header,
@@ -22,7 +22,7 @@ export const Modal: FunctionComponent<ModalProps> = ({
   headerText,
 }) => {
   const modal = (
-    <React.Fragment>
+    <Fragment>
       <Backdrop />
       <Wrapper>
         <StyledModal>
@@ -33,7 +33,7 @@ export const Modal: FunctionComponent<ModalProps> = ({
           <Content>{modalContent}</Content>
         </StyledModal>
       </Wrapper>
-    </React.Fragment>
+    </Fragment>
   );
   return isShown ? ReactDOM.createPortal(modal, document.body) : null;
 };

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
 import { IntersectionStats, Way } from "../types";
-import HeaderAndFooter from "../components/HeaderAndFooter";
+import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import {
   averageIntersectionTotalRedDuration,
   filterOutNonRoadWays,
