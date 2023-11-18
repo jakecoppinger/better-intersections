@@ -1,4 +1,4 @@
-import { useEffect, useState, FC } from "react";
+import { useEffect, useState } from "react";
 import { 
   AttributionControl,
   FullscreenControl,
@@ -8,6 +8,8 @@ import {
 } from "react-map-gl/dist/esm/exports-mapbox"
 import { Session } from "@supabase/gotrue-js/src/lib/types";
 import { supabase } from "../utils/supabase-client";
+import { Modal } from "./modal";
+import { useModal } from "../hooks/useModal";
 
 import {
   UnprotectedCrossing,
@@ -34,6 +36,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean|undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
+  const [twoStageCrossingNodeId, setTwoStageCrossingNodeId] = useState<number|undefined>(undefined);
+  const {isShown, toggle} = useModal();
 
   type FormValidatorOutput =
     | { data: IntersectionForm; error: false; message?: undefined }
@@ -133,6 +137,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       alert("Measurement submitted, thanks! 🙏");
       // TODO: Reset timing part of form (and possibly other uncontrolled fields)
       setFormState({});
+      if (twoStageCrossingNodeId !== undefined) {
+        toggle();
+      }
+      
     }
     setIsSubmitting(false);
   };
@@ -162,10 +170,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       const filteredIntersections = osmIntersections.filter((intersection) => intersection.id !== formState.osm_node_id);
       setNearbyOSMIntersections(filteredIntersections);
 
-    } else{
-      return;
-    }
-
+    } 
+    return;
   }
 
   useEffect(() => {
@@ -467,12 +473,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           }}
         />
 
-<<<<<<< HEAD
+
         {formState.is_two_stage_crossing === "yes" && location === null &&
         <p>Unable to access location.</p>
         }
 
         {formState.is_two_stage_crossing === "yes" && location !== null &&
+          twoStageCrossingNodeId === undefined &&
           <ReactMapGL
           initialViewState={{
             longitude: location.longitude,
@@ -484,7 +491,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           style={{ width: "90vw", height: "50vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v9"
           attributionControl={false}
-        >
+          >
           {nearbyOSMIntersections !== undefined
             ? nearbyOSMIntersections.map((intersection: RawOSMCrossing) => (
                 <Marker
@@ -492,6 +499,10 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
                   latitude={intersection.lat}
                   longitude={intersection.lon}
                   color={"red"}
+                  onClick={() => {
+                    setTwoStageCrossingNodeId(intersection.id);
+                    
+                  }}
                 />
               ))
             : null}
@@ -499,15 +510,17 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           <AttributionControl compact={false} />
           <FullscreenControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
-        </ReactMapGL>
+          </ReactMapGL>
         }
 
-        <FormTextInput
-=======
+        {formState.is_two_stage_crossing === "yes" && location !== null &&
+          twoStageCrossingNodeId !== undefined &&
+          <p>Second Node ID successfully recorded 🎉. After submitting this form, you will be prompted to contribute a measurement for this node.</p>
+        }
+
         {!isSuppliedNodeValid &&
 
           <FormTextInput
->>>>>>> main
           title="OpenStreetMap node ID"
           description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
           value={formState.osm_node_id?.toString() || ""}
@@ -558,6 +571,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           {isSubmitting ? "Loading ..." : "Submit"}
         </button>
       </form>
+      <Modal 
+      isShown={isShown} 
+      hide={toggle} 
+      modalContent={<div>Contribute <a href={`https://betterintersections.jakecoppinger.com/contribute-measurement/${twoStageCrossingNodeId}`} target="_blank" rel="noreferrer"> here</a></div>} 
+      headerText="Would you like to contribute a measurement for the second stage of the crossing ?"/>
     </>
   );
 };
