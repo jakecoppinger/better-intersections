@@ -207,9 +207,10 @@ export const SignalTimer: FC<SignalTimerProps> = ({
         solidRedStartTime === null ||
         nextCycleStartTime === null
       ) {
-        throw new Error("Start times not set");
+        // We could throw an error here, but if the props are set back to null in the incorrect order
+        // this could occur - in this case, we just want to return
+        return;
       }
-      console.log("calling callback");
       memoisedCallback({
         green: (flashingRedStartTime - greenStartTime) / 1000,
         flashing: (solidRedStartTime - flashingRedStartTime) / 1000,
