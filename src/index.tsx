@@ -34,6 +34,10 @@ const router = createBrowserRouter([
     path: "/longest-and-shortest-waits",
     element: <LongestAndShortestWaits />,
   },
+  {
+    path: "/contribute-measurement/:nodeId",
+    element: <ContributeMeasurementPage />,
+  },
 ]);
 
 render(

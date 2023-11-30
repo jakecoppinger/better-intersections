@@ -4,10 +4,11 @@ import { Session } from "@supabase/gotrue-js/src/lib/types";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
-import { Link } from "react-router-dom/dist/index";
+import { Link, useParams } from "react-router-dom/dist/index";
 
 export const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
+  const isNodeId = useParams();
 
   useEffect(() => {
     async function getDBSession() {
@@ -69,7 +70,7 @@ export const ContributeMeasurementPage: FC = () => {
         </p>
 
         {session && (
-          <AuthenticatedForm key={session.user.id} session={session} />
+          <AuthenticatedForm key={session.user.id} session={session} nodeId={isNodeId.nodeId}/>
         )}
         <br></br>
 
