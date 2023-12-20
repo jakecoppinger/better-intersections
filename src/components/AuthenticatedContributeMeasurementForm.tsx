@@ -35,6 +35,20 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session, nodeId } = props;
   const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean|undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [pressCount, setPressCount] = useState<number>(0);
+
+  const [greenStartTime, setGreenStartTime] = useState<number | null>(null);
+  const [flashingRedStartTime, setFlashingRedStartTime] = useState<
+    number | null
+  >(null);
+  const [solidRedStartTime, setSolidRedStartTime] = useState<number | null>(
+    null
+  );
+  const [nextCycleStartTime, setNextCycleStartTime] = useState<number | null>(
+    null
+  );
+
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
   const [twoStageCrossingNodeId, setTwoStageCrossingNodeId] = useState<number|undefined>(undefined);
   const {isShown, toggle} = useModal();
@@ -135,12 +149,21 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       alert(error.message);
     } else {
       alert("Measurement submitted, thanks! 🙏");
-      // TODO: Reset timing part of form (and possibly other uncontrolled fields)
       setFormState({});
+
       if (twoStageCrossingNodeId !== undefined) {
         toggle();
       }
-      
+
+      setPressCount(0);
+      setGreenStartTime(null);
+      setFlashingRedStartTime(null);
+      setSolidRedStartTime(null);
+      setNextCycleStartTime(null);
+      setGeolocationStatus(null);
+      setGeolocationAllowed(null);
+      setOSMIntersections(undefined);
+
     }
     setIsSubmitting(false);
   };
@@ -335,6 +358,16 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               solid_red_light_duration: times.red,
             }));
           }}
+          pressCount={pressCount}
+          setPressCount={setPressCount}
+          greenStartTime={greenStartTime}
+          setGreenStartTime={setGreenStartTime}
+          flashingRedStartTime={flashingRedStartTime}
+          setFlashingRedStartTime={setFlashingRedStartTime}
+          solidRedStartTime={solidRedStartTime}
+          setSolidRedStartTime={setSolidRedStartTime}
+          nextCycleStartTime={nextCycleStartTime}
+          setNextCycleStartTime={setNextCycleStartTime}
         />
 
         <FormTextInput
@@ -346,7 +379,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           setValue={(location_description) =>
             setFormState((prev) => ({
               ...prev,
-              location_description,
+              location_description: location_description,
             }))
           }
           required={true}
@@ -405,7 +438,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           callback={(unprotected_crossing: UnprotectedCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              unprotected_crossing,
+              unprotected_crossing: unprotected_crossing,
             }));
           }}
         />
@@ -434,7 +467,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           callback={(is_scramble_crossing: IsScrambleCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              is_scramble_crossing,
+              is_scramble_crossing: is_scramble_crossing,
             }));
           }}
         />
@@ -465,7 +498,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           callback={(is_two_stage_crossing: IsTwoStageCrossing) => {
             setFormState((prev) => ({
               ...prev,
-              is_two_stage_crossing,
+              is_two_stage_crossing: is_two_stage_crossing,
             }));
             if (is_two_stage_crossing === "yes") {
               findNearbyNodes();
@@ -537,7 +570,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               if (!isNaN(osm_node_id)) {
                 return setFormState((prev) => ({
                   ...prev,
-                  osm_node_id,
+                  osm_node_id: osm_node_id,
                 }));
               }
             } catch (e) {}
@@ -550,6 +583,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         <FormTextInput
           title="Notes"
           description="Any other notes or observations? (possible improvements)"
+          value={typeof formState.notes == "string" ? formState.notes : ''}
           setValue={(val) =>
             setFormState((prev) => ({
               ...prev,

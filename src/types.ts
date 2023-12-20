@@ -165,3 +165,9 @@ export interface IntersectionMeasurementResult extends IntersectionForm {
   /** timestamp with time zone is mapped to JavaScript's Date */
   updated_at: Date; 
 }
+
+export interface OSMNode {
+  lat: number
+  lon: number
+  tags: Record<string, string>
+}

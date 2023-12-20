@@ -9,6 +9,16 @@ export interface SignalTimerCallback {
 
 export interface SignalTimerProps {
   callback: (vals: SignalTimerCallback) => void;
+  pressCount: number;
+  setPressCount: (vals: number) => void;
+  greenStartTime: number | null;
+  setGreenStartTime: (vals: number) => void;
+  flashingRedStartTime: number | null;
+  setFlashingRedStartTime: (vals: number) => void;
+  solidRedStartTime: number | null;
+  setSolidRedStartTime: (vals: number) => void;
+  nextCycleStartTime: number | null;
+  setNextCycleStartTime: (vals: number) => void;
 }
 
 type SignalStateOptions =
@@ -163,21 +173,17 @@ const generateCurrentSignalState = (
 
 export const SignalTimer: FC<SignalTimerProps> = ({
   callback,
+  pressCount,
+  setPressCount,
+  greenStartTime,
+  setGreenStartTime,
+  flashingRedStartTime,
+  setFlashingRedStartTime,
+  solidRedStartTime,
+  setSolidRedStartTime,
+  nextCycleStartTime,
+  setNextCycleStartTime,
 }: SignalTimerProps) => {
-  /** The number of times the button has been pressed. If 0 times, light is grey. If 1, green.
-   * If 2, flashing red. If 3, solid red. If 4, grey. */
-  const [pressCount, setPressCount] = useState<number>(0);
-
-  const [greenStartTime, setGreenStartTime] = useState<number | null>(null);
-  const [flashingRedStartTime, setFlashingRedStartTime] = useState<
-    number | null
-  >(null);
-  const [solidRedStartTime, setSolidRedStartTime] = useState<number | null>(
-    null
-  );
-  const [nextCycleStartTime, setNextCycleStartTime] = useState<number | null>(
-    null
-  );
 
   useEffect(() => {
     if (pressCount === 1) {
@@ -201,9 +207,10 @@ export const SignalTimer: FC<SignalTimerProps> = ({
         solidRedStartTime === null ||
         nextCycleStartTime === null
       ) {
-        throw new Error("Start times not set");
+        // We could throw an error here, but if the props are set back to null in the incorrect order
+        // this could occur - in this case, we just want to return
+        return;
       }
-      console.log("calling callback");
       memoisedCallback({
         green: (flashingRedStartTime - greenStartTime) / 1000,
         flashing: (solidRedStartTime - flashingRedStartTime) / 1000,
