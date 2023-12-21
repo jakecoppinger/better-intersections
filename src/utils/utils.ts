@@ -237,3 +237,14 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
     return [];
   }
 }
+
+export function convertUTCtoLocal(UTCtime: string): string {
+  const dateObject = new Date(UTCtime);
+  const localTime = dateObject.toString();
+  
+  if (localTime === "Invalid Date") {
+    return `${UTCtime} (local Sydney time)`;
+  } else{
+    return localTime;
+  }
+}

@@ -8,6 +8,7 @@ import {
   googleStreetViewUrl,
 } from "../utils/url-formatting";
 import {
+  convertUTCtoLocal,
   filterOutNonRoadWays,
   getIntersections,
   getMainWayForIntersection,
@@ -123,7 +124,7 @@ export default function IntersectionNodePage() {
             ) : (
               intersection.reports.map((r) => (
                 <tr key={r.osmId}>
-                  <td>{r.timestamp.toString()}</td>
+                  <td>{convertUTCtoLocal(r.timestamp.toString())}</td>
                   <td>
                     <span className="green">{r.greenDuration} sec.</span>
                   </td>

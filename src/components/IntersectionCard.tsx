@@ -1,4 +1,5 @@
 import { IntersectionStats } from "../types";
+import { convertUTCtoLocal } from "../utils/utils";
 
 export function IntersectionCard(props: {
   intersection: IntersectionStats;
@@ -29,7 +30,7 @@ export function IntersectionCard(props: {
           <tr>
             <th>Time</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}>{r.timestamp.toString()}</td>
+              <td key={r.timestamp.toString()}>{convertUTCtoLocal(r.timestamp.toString())}</td>
             ))}
           </tr>
           <tr>
