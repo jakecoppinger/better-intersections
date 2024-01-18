@@ -237,3 +237,18 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
     return [];
   }
 }
+
+/** 
+ * Formats UTC time (or any ISO8601 date string) into the browsers local timezone.
+ * If date is invalid, returns the original string.
+ */
+export function convertUTCtoLocal(UTCtime: string): string {
+  const dateObject = new Date(UTCtime);
+  const localTime = dateObject.toString();
+  
+  if (localTime === "Invalid Date") {
+    return UTCtime;
+  } else{
+    return localTime;
+  }
+}
