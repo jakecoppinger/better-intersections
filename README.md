@@ -51,6 +51,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
+## Tests
+
+See Jest docs for args for watching files etc.
+
+`yarn test`
+
 ## Production build
 
 `yarn build`
@@ -60,18 +66,20 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 
-## Tests
+## Deploying to Cloudflare Pages using Wrangler
 
-`yarn test`
+Note: You'll need to set up your own Cloudflare pages site if you'd like to do this.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Docs: https://developers.cloudflare.com/pages/get-started/direct-upload/
+
+- First login to wrangler: `npx wrangler login`
+- Choose project and deploy (running tests and build beforehand): `npm run deploy`
 
 # Authors
 
 Started by Jake Coppinger. Hosting (Cloudflare Pages, Supabase) and domain under his name.
 
-See contributions on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
+See contributors on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
 
 # License
 

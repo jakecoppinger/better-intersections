@@ -20,21 +20,18 @@ export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
 }
 
 export default function IntersectionNodePage() {
-  const [adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(
-    undefined
-  );
+  const [ adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(undefined);
   const [nodeId, setNodeId] = useState<string | undefined>(undefined);
   const [intersection, setIntersection] = useState<
     IntersectionStats | undefined
   >(undefined);
 
-  // Similar to componentDidMount and componentDidUpdate:  useEffect(() => {    // Update the document title using the browser API    document.title = `You clicked ${count} times`;  });
   useEffect(() => {
     async function getAdjacentWays() {
       if (nodeId === undefined) {
         return;
       }
-      const ways = filterOutNonRoadWays(await fetchOsmWaysForNode(nodeId));
+      const ways = await fetchOsmWaysForNode(nodeId);
 
       setAdjacentWays(ways);
     }
@@ -69,7 +66,7 @@ export default function IntersectionNodePage() {
     );
   }
 
-  const mainWay: Way | undefined =
+  const mainWay: Way | undefined | null =
     adjacentWays !== undefined
       ? getMainWayForIntersection(adjacentWays)
       : undefined;
@@ -79,9 +76,14 @@ export default function IntersectionNodePage() {
       <div>
         <h1>
           <span>
-            {adjacentWays === undefined
+            {mainWay === undefined
               ? "Loading street "
-              : adjacentWays[0].tags.name + " "}
+              : (
+                mainWay !== null
+                  ? mainWay.tags.name + " "
+                  : "Unknown street "
+              )
+            }
             {intersection ? (
               <span>
                 (

@@ -136,16 +136,41 @@ export function getMarkerColour(avgCycleLegth: number): string {
   return colour;
 }
 
-export function getMainWayForIntersection(ways: Way[]): Way {
-  // Usually 2 ways left after filtering out footpaths
-  const adjacentRoad = ways[0];
-  return adjacentRoad;
+/**
+ * Takes in unfiltered list of ways and returns the most relevent named main road for the intersection
+ * If there is a non-footway, non-cycleway road with a name, it is returned.
+ * Otherwise, if there is an adjacent cycleway with a name it is returned
+ * Otherwise, if there is an adjacent footway with a name it is returned
+ * Otherwise returns null.
+ */
+export function getMainWayForIntersection(ways: Way[]): Way | null {
+  const waysWithNames = filterOutWaysWithoutName(ways);
+  const cycleways = filterOnlyCycleways(waysWithNames);
+  const nonRoadWays = filterOutNonRoadWays(waysWithNames);
+
+  if(nonRoadWays.length > 0) {
+    return nonRoadWays[0];
+  }
+
+  if(cycleways.length > 0) {
+    return cycleways[0];
+  }
+  if(waysWithNames.length > 0) {
+    return waysWithNames[0];
+  }
+  return null;
 }
 
 export function filterOutNonRoadWays(ways: Way[]): Way[] {
   return ways.filter(
     (way) => way.tags.highway !== "footway" && way.tags.highway !== "cycleway"
   );
+}
+export function filterOutWaysWithoutName(ways: Way[]): Way[] {
+  return ways.filter((way) => way.tags.name);
+}
+export function filterOnlyCycleways(ways: Way[]): Way[] {
+  return ways.filter((way) => way.tags.highway === "cycleway");
 }
 
 /** Calculate average of an array */

@@ -32,7 +32,8 @@ const IntersectionTableRow = ({
     getAdjacentWays();
   }, [intersection.osmId]);
 
-  const mainWay: Way | undefined =
+  /** mainWay is undefined when loading, null when no adjacent road exists */
+  const mainWay: Way | undefined | null=
     adjacentWays !== undefined
       ? getMainWayForIntersection(adjacentWays)
       : undefined;

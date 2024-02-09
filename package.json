@@ -37,8 +37,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --watchAll=false",
+    "deploy": "npm run test && npm run build && npx wrangler pages deploy ./build/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -61,6 +61,7 @@
   },
   "homepage": "",
   "devDependencies": {
-    "@types/xml2js": "^0.4.12"
+    "@types/xml2js": "^0.4.12",
+    "wrangler": "^3.28.0"
   }
 }
