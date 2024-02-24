@@ -54,7 +54,7 @@ export function IntersectionCard(props: {
           <tr>
             <th>Cycle length</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}>{r.cycleLength} sec.</td>
+              <td key={r.timestamp.toString()}>{Math.round(r.cycleLength*100)/100} sec.</td>
             ))}
           </tr>
           <tr>
