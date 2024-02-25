@@ -80,6 +80,13 @@ export function averageIntersectionTotalRedDuration(intersection: IntersectionSt
   return totalCycleTime / intersection.reports.length;
 }
 
+export function averageIntersectionMaxWait(intersection: IntersectionStats): number {
+  return intersection
+    .reports
+    .reduce((acc, report) => acc + report.redDuration + report.flashingDuration, 0)
+    / intersection.reports.length;
+}
+
 interface MoveEndCallbackProps {
   centre: mapboxgl.LngLat;
   zoom: number;
@@ -111,12 +118,21 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
+export function getMaxWaitMarkerColour(maxWait: number): string {
+  if (maxWait > 45) {
+    return 'red';
+  }
+  if (maxWait <= 30) {
+    return 'green';
+  }
+  return 'orange';
+}
 /*
 Returns colour for markers based on average cycle time
 if time > 150, returns black 
 else returns a gradient between green and red
 */
-export function getMarkerColour(avgCycleLegth: number): string {
+export function getCycleTimeMarkerColour(avgCycleLegth: number): string {
 
   if (avgCycleLegth >= 150) {
     return 'hsl(0deg 0% 0%)';
@@ -148,14 +164,14 @@ export function getMainWayForIntersection(ways: Way[]): Way | null {
   const cycleways = filterOnlyCycleways(waysWithNames);
   const nonRoadWays = filterOutNonRoadWays(waysWithNames);
 
-  if(nonRoadWays.length > 0) {
+  if (nonRoadWays.length > 0) {
     return nonRoadWays[0];
   }
 
-  if(cycleways.length > 0) {
+  if (cycleways.length > 0) {
     return cycleways[0];
   }
-  if(waysWithNames.length > 0) {
+  if (waysWithNames.length > 0) {
     return waysWithNames[0];
   }
   return null;
@@ -270,10 +286,10 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
 export function convertUTCtoLocal(UTCtime: string): string {
   const dateObject = new Date(UTCtime);
   const localTime = dateObject.toString();
-  
+
   if (localTime === "Invalid Date") {
     return UTCtime;
-  } else{
+  } else {
     return localTime;
   }
 }

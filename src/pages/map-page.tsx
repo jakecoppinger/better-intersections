@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Map as MapboxMap } from "react-map-gl/node_modules/@types/mapbox-gl/index";
-import { 
+import {
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
@@ -17,9 +17,11 @@ import { IntersectionCard } from "../components/IntersectionCard";
 import {
   averageIntersectionTotalRedDuration,
   getIntersections,
-  getMarkerColour,
+  getCycleTimeMarkerColour,
   getMaxCycleTime,
   getNextLargestMultipleOf5,
+  getMaxWaitMarkerColour,
+  averageIntersectionMaxWait,
 } from "../utils/utils";
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
@@ -79,7 +81,7 @@ export function MapComponent() {
   const [{ min, max }, setCycleTimeFilter] =
     useState<IntersectionFilterState>(defaultMinMax);
 
-  const [displayMode, setDisplayMode] = useState<DisplayMode>("max_ped_wait_time");
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("avg_cycle_time");
   useEffect(() => {
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
@@ -122,7 +124,7 @@ export function MapComponent() {
         : defaultMinMax.max
     ),
   };
-
+  console.log("rendering with displayMode:", displayMode);
   return (
     <div id="container">
       <MapInfoBox />
@@ -131,7 +133,8 @@ export function MapComponent() {
         min={min}
         max={max}
         updateFilter={setCycleTimeFilter}
-        updateDisplaymode={(newDisplayMode: DisplayMode) => {setDisplayMode(newDisplayMode)}}
+        displayMode={displayMode}
+        updateDisplaymode={(newDisplayMode: DisplayMode) => { setDisplayMode(newDisplayMode) }}
       />
       <div id="map">
         {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
@@ -153,28 +156,31 @@ export function MapComponent() {
           {/* <NavigationControl position="bottom-right" /> */}
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
-                const totalRedDuration =
-                  averageIntersectionTotalRedDuration(intersection);
+              const totalRedDuration =
+                averageIntersectionTotalRedDuration(intersection);
 
-                /* Check that the current intersection is within the cycle time filter range */
-                if (totalRedDuration >= min && totalRedDuration <= max) {
-                  return (
-                    <Marker
-                      key={intersection.osmId}
-                      latitude={intersection.lat}
-                      longitude={intersection.lon}
-                      onClick={() => {
-                        setPopupIntersection(intersection);
-                        if (!showPopup) {
-                          setShowPopup(true);
-                        }
-                      }}
-                      color={getMarkerColour(totalRedDuration)}
-                    />
-                  );
-                }
-                return null;
-              })
+              /* Check that the current intersection is within the cycle time filter range */
+              if (totalRedDuration >= min && totalRedDuration <= max) {
+                const markerColor = displayMode === 'max_ped_wait_time'
+                  ? getMaxWaitMarkerColour(averageIntersectionMaxWait(intersection))
+                  : getCycleTimeMarkerColour(totalRedDuration)
+                return (
+                  <Marker
+                    key={`${intersection.osmId}-${markerColor}`}
+                    latitude={intersection.lat}
+                    longitude={intersection.lon}
+                    onClick={() => {
+                      setPopupIntersection(intersection);
+                      if (!showPopup) {
+                        setShowPopup(true);
+                      }
+                    }}
+                    color={markerColor}
+                  />
+                );
+              }
+              return null;
+            })
             : null}
 
           {showPopup && popupIntersection ? (
