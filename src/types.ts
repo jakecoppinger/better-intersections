@@ -90,6 +90,17 @@ export interface IntersectionFilterState {
   max: number;
 }
 
+export type DisplayMode = "avg_cycle_time" | "max_ped_wait_time";
+export interface DisplayModeState {
+  /**
+   * When avg_cycle_time, the map will display colours based on the average cycle time of
+   * the intersection.
+   * When max_ped_wait_time, the map will display colours based on the maximum pedestrian
+   * wait time (red + flashing red).
+   */
+  displayMode: DisplayMode;
+}
+
 export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
 export type UnprotectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";

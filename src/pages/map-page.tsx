@@ -11,7 +11,7 @@ import {
 } from "react-map-gl/dist/esm/exports-mapbox"
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
-import { IntersectionFilterState, IntersectionStats } from "../types";
+import { DisplayMode, IntersectionFilterState, IntersectionStats } from "../types";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { IntersectionCard } from "../components/IntersectionCard";
 import {
@@ -79,6 +79,7 @@ export function MapComponent() {
   const [{ min, max }, setCycleTimeFilter] =
     useState<IntersectionFilterState>(defaultMinMax);
 
+  const [displayMode, setDisplayMode] = useState<DisplayMode>("max_ped_wait_time");
   useEffect(() => {
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
@@ -130,6 +131,7 @@ export function MapComponent() {
         min={min}
         max={max}
         updateFilter={setCycleTimeFilter}
+        updateDisplaymode={(newDisplayMode: DisplayMode) => {setDisplayMode(newDisplayMode)}}
       />
       <div id="map">
         {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
