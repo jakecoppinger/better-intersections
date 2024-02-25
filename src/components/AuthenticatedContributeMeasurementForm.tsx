@@ -1,4 +1,4 @@
-import { useEffect, useState, FC } from "react";
+import { useEffect, useState } from "react";
 import { 
   AttributionControl,
   FullscreenControl,
@@ -8,6 +8,8 @@ import {
 } from "react-map-gl/dist/esm/exports-mapbox"
 import { Session } from "@supabase/gotrue-js/src/lib/types";
 import { supabase } from "../utils/supabase-client";
+import { Modal } from "./modal";
+import { useModal } from "../hooks/useModal";
 
 import {
   UnprotectedCrossing,
@@ -48,6 +50,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   );
 
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
+  const [twoStageCrossingNodeId, setTwoStageCrossingNodeId] = useState<number|undefined>(undefined);
+  const {isShown, toggle} = useModal();
 
   type FormValidatorOutput =
     | { data: IntersectionForm; error: false; message?: undefined }
@@ -146,6 +150,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     } else {
       alert("Measurement submitted, thanks! 🙏");
       setFormState({});
+
+      if (twoStageCrossingNodeId !== undefined) {
+        toggle();
+      }
+
       setPressCount(0);
       setGreenStartTime(null);
       setFlashingRedStartTime(null);
@@ -154,7 +163,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setGeolocationStatus(null);
       setGeolocationAllowed(null);
       setOSMIntersections(undefined);
-  
+
     }
     setIsSubmitting(false);
   };
@@ -170,6 +179,23 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const [osmIntersections, setOSMIntersections] = useState<any[] | undefined>(
     undefined
   );
+  const [nearbyOSMIntersections, setNearbyOSMIntersections] = useState<any[] | undefined>(
+    undefined
+  );
+  
+  // finds nearby osm nodes for two stage crossing
+  async function findNearbyNodes () {
+    if (location !== null) {
+      const osmIntersections = await getOSMCrossings(
+        { lat: location.latitude, lon: location.longitude },
+        200
+      );
+      const filteredIntersections = osmIntersections.filter((intersection) => intersection.id !== formState.osm_node_id);
+      setNearbyOSMIntersections(filteredIntersections);
+
+    } 
+    return;
+  }
 
   useEffect(() => {
 
@@ -474,8 +500,56 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               ...prev,
               is_two_stage_crossing: is_two_stage_crossing,
             }));
+            if (is_two_stage_crossing === "yes") {
+              findNearbyNodes();
+            }
           }}
         />
+
+
+        {formState.is_two_stage_crossing === "yes" && location === null &&
+        <p>Unable to access location.</p>
+        }
+
+        {formState.is_two_stage_crossing === "yes" && location !== null &&
+          twoStageCrossingNodeId === undefined &&
+          <ReactMapGL
+          initialViewState={{
+            longitude: location.longitude,
+            latitude: location.latitude,
+            zoom: 18,
+          }}
+          mapboxAccessToken={MAPBOX_TOKEN}
+          id={"react-map"}
+          style={{ width: "90vw", height: "50vh" }}
+          mapStyle="mapbox://styles/mapbox/streets-v9"
+          attributionControl={false}
+          >
+          {nearbyOSMIntersections !== undefined
+            ? nearbyOSMIntersections.map((intersection: RawOSMCrossing) => (
+                <Marker
+                  key={intersection.id}
+                  latitude={intersection.lat}
+                  longitude={intersection.lon}
+                  color={"red"}
+                  onClick={() => {
+                    setTwoStageCrossingNodeId(intersection.id);
+                    
+                  }}
+                />
+              ))
+            : null}
+
+          <AttributionControl compact={false} />
+          <FullscreenControl position="bottom-right" />
+          <GeolocateControl position="bottom-right" />
+          </ReactMapGL>
+        }
+
+        {formState.is_two_stage_crossing === "yes" && location !== null &&
+          twoStageCrossingNodeId !== undefined &&
+          <p>Second Node ID successfully recorded 🎉. After submitting this form, you will be prompted to contribute a measurement for this node.</p>
+        }
 
         {!isSuppliedNodeValid &&
 
@@ -531,6 +605,11 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
           {isSubmitting ? "Loading ..." : "Submit"}
         </button>
       </form>
+      <Modal 
+      isShown={isShown} 
+      hide={toggle} 
+      modalContent={<div>Contribute <a href={`https://betterintersections.jakecoppinger.com/contribute-measurement/${twoStageCrossingNodeId}`} target="_blank" rel="noreferrer"> here</a></div>} 
+      headerText="Would you like to contribute a measurement for the second stage of the crossing ?"/>
     </>
   );
 };
