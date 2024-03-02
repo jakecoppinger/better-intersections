@@ -157,12 +157,13 @@ tr {
 td:first-child,
 th:first-child {
   border-left: none;
+  width: 110px;
 }
 tr:last-child {
   border-bottom: none;
 }
 table {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 button {

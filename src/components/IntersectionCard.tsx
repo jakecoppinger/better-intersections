@@ -6,6 +6,11 @@ const IntersectionCardText = styled.p`
   margin-top: 10px;
   margin-bottom:0px;
 `;
+
+const NoMarginP = styled.p`
+  margin-top: 0px;
+  margin-bottom: 0px;
+`;
 export function IntersectionCard(props: {
   intersection: IntersectionStats;
 }) {
@@ -26,8 +31,6 @@ export function IntersectionCard(props: {
         intersection. Are you standing here? <a href={`/contribute-measurement/${intersection.osmId}`}>
           Record and submit a measurement!</a>
       </IntersectionCardText>
-      <p>
-      </p>
       <table>
         <tbody>
           <tr>
@@ -61,7 +64,7 @@ export function IntersectionCard(props: {
             ))}
           </tr>
           <tr>
-            <th>Unprotected when flashing red?</th>
+            <th>Unprotected when flashing red</th>
             {intersection.reports.map((r) => (
               <td key={r.timestamp.toString()}>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
             ))}
@@ -75,12 +78,12 @@ export function IntersectionCard(props: {
         </tbody>
       </table>
 
-      <IntersectionCardText>
+      <NoMarginP>
         {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
         <a href={`/intersection/node/${intersection.osmId}`}>
           View more detailed stats (including imagery, # of lanes & road type)
         </a>.
-      </IntersectionCardText>
+      </NoMarginP>
     </div>
   );
 }
