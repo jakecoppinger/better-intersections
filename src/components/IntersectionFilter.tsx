@@ -2,6 +2,17 @@ import { RangeSlider } from "rsuite";
 import "rsuite/dist/rsuite-no-reset.min.css";
 import { DisplayMode, IntersectionFilterState } from "../types";
 import styled from "@emotion/styled";
+import { Link } from "react-router-dom";
+
+const GreenText = styled.span`
+    color: green;
+  `;
+const RedText = styled.span`
+    color: red;
+  `;
+const OrangeText = styled.span`
+    color: orange;
+  `;
 
 export const FilterContainer = styled.div`
   position: absolute;
@@ -73,15 +84,6 @@ export function IntersectionFilter({ filterRange, min,
       <ViewModeTitle>Colour pins by:</ViewModeTitle>
       <input
         type="radio"
-        id="max_ped_wait_time"
-        name="display-mode"
-        value="Max wait time"
-        checked={displayMode === "max_ped_wait_time"}
-        onChange={handleDisplayModeChange}
-      />
-      <ViewModeLabel htmlFor="max_ped_wait_time">Max wait time</ViewModeLabel>
-      <input
-        type="radio"
         id="avg_cycle_time"
         name="display-mode"
         value="Avg cycle time"
@@ -89,6 +91,22 @@ export function IntersectionFilter({ filterRange, min,
         onChange={handleDisplayModeChange}
       />
       <ViewModeLabel htmlFor="avg_cycle_time">Avg. cycle time</ViewModeLabel>
+      <input
+        type="radio"
+        id="max_ped_wait_time"
+        name="display-mode"
+        value="Max wait time"
+        checked={displayMode === "max_ped_wait_time"}
+        onChange={handleDisplayModeChange}
+      />
+      <ViewModeLabel htmlFor="max_ped_wait_time">Max wait time (avg. of measurements)</ViewModeLabel>
+
+      {displayMode === "max_ped_wait_time" ? <p><GreenText>Green represents 40s or less (<Link
+        target="_blank"
+        rel="noopener noreferrer"
+        to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
+        CoS target is ≤ 35</Link>)</GreenText>, <OrangeText>orange 50 or less (recomendation is ≤ 45)</OrangeText> and{" "}
+        <RedText>red above 50 seconds</RedText></p> : null}
 
       <FilterText>Filter by average cycle time:</FilterText>
       <RangeSlider

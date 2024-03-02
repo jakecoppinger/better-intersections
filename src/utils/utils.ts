@@ -122,7 +122,7 @@ export function getMaxWaitMarkerColour(maxWait: number): string {
   if (maxWait > 45) {
     return 'red';
   }
-  if (maxWait <= 30) {
+  if (maxWait < 35) {
     return 'green';
   }
   return 'orange';

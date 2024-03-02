@@ -62,12 +62,6 @@ export const MapInfoBox: FunctionComponent = () => {
           <li>
             <Link to={`/contribute-measurement`}>Contribute a measurement!</Link>
           </li>
-          <li>Further reading on{" "}
-            <Link 
-            target="_blank"
-            rel="noopener noreferrer"
-            to={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>the design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
-          </li>
           <li>
             <Link to={`/about`}>About</Link> this project
           </li>
@@ -77,7 +71,23 @@ export const MapInfoBox: FunctionComponent = () => {
               longest and shortest waits measured
             </Link>
           </li>
+          <li>Further reading on{" "}
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>the design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
+          </li>
         </ul>
+        <p>The{" "}
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
+            City of Sydney draft Walking Strategy and Action Plan</Link> is advocating <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time
+          at intersections of <b>45 seconds</b> for people walking with a <b>target of 30 seconds</b>.</p>
         <p>
           Built by{" "}
           <a
