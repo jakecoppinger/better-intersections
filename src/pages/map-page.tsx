@@ -142,7 +142,7 @@ export function MapComponent() {
           mapboxAccessToken={MAPBOX_TOKEN}
           id={"react-map"}
           style={{ width: "100vw", height: "100vh" }}
-          mapStyle="mapbox://styles/mapbox/streets-v9"
+          mapStyle="mapbox://styles/mapbox/streets-v12"
           ref={(ref) =>
             ref && !state.map && setState({ ...state, map: ref.getMap() })
           }
@@ -152,7 +152,6 @@ export function MapComponent() {
           <AttributionControl compact={false} />
           <FullscreenControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
-          {/* <NavigationControl position="bottom-right" /> */}
           {state.points
             ? state.points.map((intersection: IntersectionStats) => {
               const totalRedDuration =
