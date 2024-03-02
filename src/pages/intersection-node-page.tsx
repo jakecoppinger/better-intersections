@@ -159,7 +159,7 @@ export default function IntersectionNodePage() {
                   { lat: intersection.lat, lon: intersection.lon }
                 )}`}
               >
-                GeoHack
+                GeoHack (links to multiple maps at this location)
               </a>
             )}
           </li>

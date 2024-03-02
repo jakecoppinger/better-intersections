@@ -121,7 +121,7 @@ export default function LongestAndShortestWaits() {
 
   return (
     <HeaderAndFooter>
-      <h1>Longest pedestrian intersection wait times in Sydney</h1>
+      <h1>Longest pedestrian intersection wait times measured</h1>
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <IntersectionTable intersections={shortestIntersectionsFirst} />
       <p>

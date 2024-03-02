@@ -26,6 +26,14 @@ export const FilterContainer = styled.div`
   }
 `;
 
+const ViewModeTitle = styled.p`
+    margin-top: 0px;
+    margin-bottom: 3px;
+    `;
+const ViewModeLabel = styled.label`
+    margin-left: 2px;
+    margin-right: 10px;
+  `;
 
 export const FilterText = styled.p`
   margin-top: 5px;
@@ -62,7 +70,7 @@ export function IntersectionFilter({ filterRange, min,
 
   return (
     <FilterContainer>
-      <p>Colour pins by:</p>
+      <ViewModeTitle>Colour pins by:</ViewModeTitle>
       <input
         type="radio"
         id="max_ped_wait_time"
@@ -71,7 +79,7 @@ export function IntersectionFilter({ filterRange, min,
         checked={displayMode === "max_ped_wait_time"}
         onChange={handleDisplayModeChange}
       />
-      <label htmlFor="max_ped_wait_time">Max wait time</label>
+      <ViewModeLabel htmlFor="max_ped_wait_time">Max wait time</ViewModeLabel>
       <input
         type="radio"
         id="avg_cycle_time"
@@ -80,9 +88,9 @@ export function IntersectionFilter({ filterRange, min,
         checked={displayMode === "avg_cycle_time"}
         onChange={handleDisplayModeChange}
       />
-      <label htmlFor="avg_cycle_time">Avg cycle time</label>
+      <ViewModeLabel htmlFor="avg_cycle_time">Avg. cycle time</ViewModeLabel>
 
-      <FilterText>Filter by cycle time (avg, seconds):</FilterText>
+      <FilterText>Filter by average cycle time:</FilterText>
       <RangeSlider
         value={[min, max]}
         max={filterRange.max}
@@ -90,7 +98,7 @@ export function IntersectionFilter({ filterRange, min,
         onChange={([min, max]) => {
           updateFilter({ min, max });
         }}
-        renderTooltip={(v) => `${v}s`}
+        renderTooltip={(v) => `${v} seconds`}
         /** Unfortunately we can't add labels without having steps */
         step={10}
         graduated
@@ -98,7 +106,10 @@ export function IntersectionFilter({ filterRange, min,
          * Render a label for every 20 seconds, offset by 5 (see above docstring)
          */
         renderMark={(mark) => {
-          if ([15, 35, 55, 75, 95, 115, 135, 155, 185].includes(mark)) {
+          if ([15, 185].includes(mark)) {
+            return <span>{mark}s</span>;
+          }
+          if ([15, 35, 55, 75, 95, 115, 135, 185].includes(mark)) {
             return <span>{mark}</span>;
           }
           return null;

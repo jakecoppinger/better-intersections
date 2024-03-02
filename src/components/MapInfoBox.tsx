@@ -60,13 +60,16 @@ export const MapInfoBox: FunctionComponent = () => {
         <h3>A crowdsourced pedestrian traffic light timing map</h3>
         <ul>
           <li>
-            <Link to={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>The design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
+            <Link to={`/contribute-measurement`}>Contribute a measurement!</Link>
+          </li>
+          <li>Further reading on{" "}
+            <Link 
+            target="_blank"
+            rel="noopener noreferrer"
+            to={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>the design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
           </li>
           <li>
             <Link to={`/about`}>About</Link> this project
-          </li>
-          <li>
-            <Link to={`/contribute-measurement`}>Contribute a measurement</Link>
           </li>
           <li>
             See the{" "}
