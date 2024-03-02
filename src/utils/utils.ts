@@ -299,5 +299,7 @@ export function convertUTCtoLocal(UTCtime: string): string {
  * popup.
  */
 export function removeVerboseTimezoneDescriptor(input: string): string {
-  return input.replace(" (Australian Eastern Standard Time)", "");
+  return input
+    .replace(" (Australian Eastern Standard Time)", "")
+    .replace(" (Australian Eastern Daylight Time)", "");
 }

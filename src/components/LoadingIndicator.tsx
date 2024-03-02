@@ -6,7 +6,7 @@ const LoadingWrapper = styled.div`
   background-color: white;
 
   position: absolute;
-  bottom: 150px;
+  bottom: 190px;
   left: 10px;
 
   border-radius: 10px;

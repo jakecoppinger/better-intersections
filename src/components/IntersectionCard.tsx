@@ -1,6 +1,11 @@
+import styled from "@emotion/styled";
 import { IntersectionStats } from "../types";
 import { convertUTCtoLocal } from "../utils/utils";
 
+const IntersectionCardText = styled.p`
+  margin-top: 10px;
+  margin-bottom:0px;
+`;
 export function IntersectionCard(props: {
   intersection: IntersectionStats;
 }) {
@@ -8,23 +13,21 @@ export function IntersectionCard(props: {
   const numMeasurements = intersection.reports.length;
 
   return (
-    <div style={{overflowX: "auto"}}>
+    <div style={{ overflowX: "auto" }}>
       <div
         style={{
           display: "flex",
           margin: "0 0",
         }}
       ></div>
-      <p>
+      <IntersectionCardText>
         {numMeasurements}{" "}
         {numMeasurements === 1 ? "measurement" : "measurements"} at this
-        intersection.
-
+        intersection. Are you standing here? <a href={`/contribute-measurement/${intersection.osmId}`}>
+          Record and submit a measurement!</a>
+      </IntersectionCardText>
+      <p>
       </p>
-      {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
-      <a href={`/intersection/node/${intersection.osmId}`}>
-        View more stats about this intersection
-      </a>
       <table>
         <tbody>
           <tr>
@@ -54,7 +57,7 @@ export function IntersectionCard(props: {
           <tr>
             <th>Cycle length</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}>{Math.round(r.cycleLength*100)/100} sec.</td>
+              <td key={r.timestamp.toString()}>{Math.round(r.cycleLength * 100) / 100} sec.</td>
             ))}
           </tr>
           <tr>
@@ -71,6 +74,13 @@ export function IntersectionCard(props: {
           </tr>
         </tbody>
       </table>
+
+      <IntersectionCardText>
+        {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
+        <a href={`/intersection/node/${intersection.osmId}`}>
+          View more detailed stats about this intersection
+        </a>.
+      </IntersectionCardText>
     </div>
   );
 }

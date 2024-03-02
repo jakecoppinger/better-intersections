@@ -14,6 +14,13 @@ const OrangeText = styled.span`
     color: orange;
   `;
 
+/**
+ * Stops the text below average cycle time filter slider escaping the white container
+ */
+const RangeSliderContainer = styled.div`
+  margin-left: 5px;
+  margin-right: 10px;
+  `;
 export const FilterContainer = styled.div`
   position: absolute;
   right: 10px;
@@ -39,7 +46,7 @@ export const FilterContainer = styled.div`
 
 const ViewModeTitle = styled.p`
     margin-top: 0px;
-    margin-bottom: 3px;
+    margin-bottom: 1px;
     `;
 const ViewModeLabel = styled.label`
     margin-left: 2px;
@@ -47,8 +54,8 @@ const ViewModeLabel = styled.label`
   `;
 
 export const FilterText = styled.p`
-  margin-top: 5px;
-  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 0px;
 `;
 /**
  * React component for a cycle time filter.
@@ -99,40 +106,46 @@ export function IntersectionFilter({ filterRange, min,
         checked={displayMode === "max_ped_wait_time"}
         onChange={handleDisplayModeChange}
       />
-      <ViewModeLabel htmlFor="max_ped_wait_time">Max wait time (avg. of measurements)</ViewModeLabel>
+      <ViewModeLabel htmlFor="max_ped_wait_time">Max pedestrian wait</ViewModeLabel>
 
-      {displayMode === "max_ped_wait_time" ? <p><GreenText>Green represents 40s or less (<Link
-        target="_blank"
-        rel="noopener noreferrer"
-        to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
-        CoS target is ≤ 35</Link>)</GreenText>, <OrangeText>orange 50 or less (recomendation is ≤ 45)</OrangeText> and{" "}
-        <RedText>red above 50 seconds</RedText></p> : null}
+      {displayMode === "max_ped_wait_time" ? <p><GreenText>Green represents average of measurements
+        of 40s or less (<Link
+          target="_blank"
+          rel="noopener noreferrer"
+          to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
+          CoS target is ≤ 35</Link>)</GreenText>, <OrangeText>orange 50 or less (recommended max is ≤ 45)</OrangeText> and{" "}
+        <RedText>red above 50 seconds</RedText>.</p> : null}
 
       <FilterText>Filter by average cycle time:</FilterText>
-      <RangeSlider
-        value={[min, max]}
-        max={filterRange.max}
-        min={filterRange.min}
-        onChange={([min, max]) => {
-          updateFilter({ min, max });
-        }}
-        renderTooltip={(v) => `${v} seconds`}
-        /** Unfortunately we can't add labels without having steps */
-        step={10}
-        graduated
-        /**
-         * Render a label for every 20 seconds, offset by 5 (see above docstring)
-         */
-        renderMark={(mark) => {
-          if ([15, 185].includes(mark)) {
-            return <span>{mark}s</span>;
-          }
-          if ([15, 35, 55, 75, 95, 115, 135, 185].includes(mark)) {
-            return <span>{mark}</span>;
-          }
-          return null;
-        }}
-      />
+      <RangeSliderContainer>
+        <RangeSlider
+          value={[min, max]}
+          max={filterRange.max}
+          min={filterRange.min}
+          onChange={([min, max]) => {
+            updateFilter({ min, max });
+          }}
+          renderTooltip={(v) => `${v} seconds`}
+          /** Unfortunately we can't add labels without having steps */
+          step={10}
+          graduated
+          /**
+           * Render a label for every 20 seconds, offset by 5 (see above docstring)
+           */
+          renderMark={(mark) => {
+            if ([15, 185].includes(mark)) {
+              return <NonSelectable>{mark}s</NonSelectable>;
+            }
+            if ([15, 35, 55, 75, 95, 115, 135, 185].includes(mark)) {
+              return <NonSelectable>{mark}</NonSelectable>;
+            }
+            return null;
+          }}
+        />
+      </RangeSliderContainer >
     </FilterContainer>
   );
 }
+const NonSelectable = styled.span`
+  user-select: none;
+  `;

@@ -1,5 +1,5 @@
 import { useEffect, useState, FC } from "react";
-import { 
+import {
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
@@ -31,7 +31,7 @@ export interface AuthenticatedFormProps {
 
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session, nodeId } = props;
-  const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean|undefined>(undefined);
+  const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [pressCount, setPressCount] = useState<number>(0);
@@ -154,7 +154,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setGeolocationStatus(null);
       setGeolocationAllowed(null);
       setOSMIntersections(undefined);
-  
+
     }
     setIsSubmitting(false);
   };
@@ -173,7 +173,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
   useEffect(() => {
 
-    const checkIfNodeValid = async() => {
+    const checkIfNodeValid = async () => {
       if (nodeId !== "" && nodeId !== undefined) {
         const isValid = await isNodeValid(nodeId);
         setIsSuppliedNodeValid(isValid);
@@ -186,7 +186,8 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         osm_node_id: Number(nodeId),
       }));
     } else if (isSuppliedNodeValid === false) {
-      alert("Supplied Node ID is invalid.")
+      alert(`Error: The OSM node ID (${nodeId}) for this intersection couldn't be found.
+You'll need to manually find the intersection.`)
     } else {
       checkIfNodeValid();
     }
@@ -205,7 +206,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       }
     };
 
-    
+
     asyncFunc();
   }, [geolocationAllowed, location, nodeId, isSuppliedNodeValid]);
 
@@ -217,57 +218,57 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         {isSuppliedNodeValid === true &&
           <strong><h3>Step 1: The node ID has been recorded. 🎉</h3></strong>
         }
-        { isSuppliedNodeValid !== true &&
-        <button
-          onClick={async (e) => {
-            e.preventDefault();
-            setGeolocationStatus("Attempting to find location...");
+        {isSuppliedNodeValid !== true &&
+          <button
+            onClick={async (e) => {
+              e.preventDefault();
+              setGeolocationStatus("Attempting to find location...");
 
-            if ("permissions" in navigator) {
-              try {
-                const permissionStatus = await navigator.permissions.query({
-                  name: "geolocation",
-                });
+              if ("permissions" in navigator) {
+                try {
+                  const permissionStatus = await navigator.permissions.query({
+                    name: "geolocation",
+                  });
 
-                if (permissionStatus.state === "denied") {
-                  setGeolocationStatus("Geolocation permission denied.");
-                  setGeolocationAllowed(false);
-                  return;
+                  if (permissionStatus.state === "denied") {
+                    setGeolocationStatus("Geolocation permission denied.");
+                    setGeolocationAllowed(false);
+                    return;
+                  }
+                } catch (err) {
+                  alert((err as any).toString());
+                  console.error("Error checking permissions:", err);
                 }
-              } catch (err) {
-                alert((err as any).toString());
-                console.error("Error checking permissions:", err);
               }
-            }
 
-            if (!navigator.geolocation) {
-              setGeolocationAllowed(false);
-              setGeolocationStatus("Geolocation not possible.");
-              return;
-            }
-
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                const { latitude, longitude } = position.coords;
-                setLocation({ latitude, longitude });
-                setGeolocationAllowed(true);
-                setGeolocationStatus("Found location.");
-              },
-              (err) => {
-                setGeolocationStatus("Geolocation not possible.");
+              if (!navigator.geolocation) {
                 setGeolocationAllowed(false);
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0,
+                setGeolocationStatus("Geolocation not possible.");
+                return;
               }
-            );
-          }}
-          autoFocus={true}
-        >
-          Step 1: Find intersections near me
-        </button>
+
+              navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  const { latitude, longitude } = position.coords;
+                  setLocation({ latitude, longitude });
+                  setGeolocationAllowed(true);
+                  setGeolocationStatus("Found location.");
+                },
+                (err) => {
+                  setGeolocationStatus("Geolocation not possible.");
+                  setGeolocationAllowed(false);
+                },
+                {
+                  enableHighAccuracy: true,
+                  timeout: 5000,
+                  maximumAge: 0,
+                }
+              );
+            }}
+            autoFocus={true}
+          >
+            Step 1: Find intersections near me
+          </button>
         }
         <p>
           {geolocationStatus}{" "}
@@ -299,20 +300,20 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               >
                 {osmIntersections !== undefined
                   ? osmIntersections.map((intersection: RawOSMCrossing) => (
-                      <Marker
-                        key={intersection.id}
-                        latitude={intersection.lat}
-                        longitude={intersection.lon}
-                        onClick={() => {
-                          setFormState((prev) => ({
-                            ...prev,
-                            osm_node_id: intersection.id,
-                          }));
-                          setGeolocationStatus("Recorded intersection ID.");
-                        }}
-                        color={"red"}
-                      />
-                    ))
+                    <Marker
+                      key={intersection.id}
+                      latitude={intersection.lat}
+                      longitude={intersection.lon}
+                      onClick={() => {
+                        setFormState((prev) => ({
+                          ...prev,
+                          osm_node_id: intersection.id,
+                        }));
+                        setGeolocationStatus("Recorded intersection ID.");
+                      }}
+                      color={"red"}
+                    />
+                  ))
                   : null}
 
                 <AttributionControl compact={false} />
@@ -321,7 +322,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
               </ReactMapGL>
             </>
           )}
-          
+
 
         <SignalTimer
           callback={(times) => {
@@ -480,28 +481,28 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
         {!isSuppliedNodeValid &&
 
           <FormTextInput
-          title="OpenStreetMap node ID"
-          description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
-          value={formState.osm_node_id?.toString() || ""}
-          placeholder="Optional. Eg: 11221625370"
-          setValue={(newVal: string) => {
-            try {
-              if (newVal === "") {
-                return setFormState((prev) => ({
-                  ...prev,
-                  osm_node_id: undefined,
-                }));
-              }
-              const osm_node_id = parseInt(newVal);
-              if (!isNaN(osm_node_id)) {
-                return setFormState((prev) => ({
-                  ...prev,
-                  osm_node_id: osm_node_id,
-                }));
-              }
-            } catch (e) {}
-          }}
-          required={false}
+            title="OpenStreetMap node ID"
+            description="What is the OpenStreetMap node ID of the crossing? This will be pre-filled if you clicked on a pin on the map above, please leave it!"
+            value={formState.osm_node_id?.toString() || ""}
+            placeholder="Optional. Eg: 11221625370"
+            setValue={(newVal: string) => {
+              try {
+                if (newVal === "") {
+                  return setFormState((prev) => ({
+                    ...prev,
+                    osm_node_id: undefined,
+                  }));
+                }
+                const osm_node_id = parseInt(newVal);
+                if (!isNaN(osm_node_id)) {
+                  return setFormState((prev) => ({
+                    ...prev,
+                    osm_node_id: osm_node_id,
+                  }));
+                }
+              } catch (e) { }
+            }}
+            required={false}
           />
         }
 
