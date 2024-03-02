@@ -62,11 +62,10 @@ const About: FC = () => {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href="https://mastodon.jakecoppinger.com/@jake"
+            href="https://mastodon.social/@jakecoppinger"
           >
             Mastodon
-          </a>{" "}
-          (@jake@mastodon.jakecoppinger.com).
+          </a>.
         </p>
         <h2>Why does the timing of pedestrian signals matter?</h2>
         <p>
