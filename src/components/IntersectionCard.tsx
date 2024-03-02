@@ -78,7 +78,7 @@ export function IntersectionCard(props: {
       <IntersectionCardText>
         {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
         <a href={`/intersection/node/${intersection.osmId}`}>
-          View more detailed stats about this intersection
+          View more detailed stats (including imagery, # of lanes & road type)
         </a>.
       </IntersectionCardText>
     </div>
