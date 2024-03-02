@@ -12,6 +12,7 @@ import {
   filterOutNonRoadWays,
   getIntersections,
   getMainWayForIntersection,
+  removeVerboseTimezoneDescriptor,
 } from "../utils/utils";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
@@ -20,7 +21,7 @@ export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
 }
 
 export default function IntersectionNodePage() {
-  const [ adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(undefined);
+  const [adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(undefined);
   const [nodeId, setNodeId] = useState<string | undefined>(undefined);
   const [intersection, setIntersection] = useState<
     IntersectionStats | undefined

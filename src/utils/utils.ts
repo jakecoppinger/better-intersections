@@ -290,6 +290,14 @@ export function convertUTCtoLocal(UTCtime: string): string {
   if (localTime === "Invalid Date") {
     return UTCtime;
   } else {
-    return localTime;
+    return removeVerboseTimezoneDescriptor(localTime);
   }
+}
+
+/**
+ * Removes `(Australian Eastern Standard Time)` from a timezone string to save space in the table
+ * popup.
+ */
+export function removeVerboseTimezoneDescriptor(input: string): string {
+  return input.replace(" (Australian Eastern Standard Time)", "");
 }

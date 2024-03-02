@@ -124,7 +124,6 @@ export function MapComponent() {
         : defaultMinMax.max
     ),
   };
-  console.log("rendering with displayMode:", displayMode);
   return (
     <div id="container">
       <MapInfoBox />
