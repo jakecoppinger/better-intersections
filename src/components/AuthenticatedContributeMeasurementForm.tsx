@@ -308,6 +308,8 @@ You'll need to manually find the intersection.`)
                         setFormState((prev) => ({
                           ...prev,
                           osm_node_id: intersection.id,
+                          latitude: intersection.lat,
+                          longitude: intersection.lon
                         }));
                         setGeolocationStatus("Recorded intersection ID.");
                       }}
