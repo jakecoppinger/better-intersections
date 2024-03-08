@@ -160,7 +160,7 @@ export interface IntersectionForm {
   /** Additional notes. */
   notes: string | null;
 
-  /** TEST long & LAT */
+  /** latitude and longitude of the node*/
   latitude: number|null;
   longitude: number|null;
 }
