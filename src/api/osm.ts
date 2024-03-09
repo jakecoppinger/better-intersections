@@ -43,26 +43,50 @@ export async function getOsmNodePosition(osmNode: number,
 
 
 /**
- * Attempt to fetch the position of an OSM node from the OSM API.
- * Throws an error if the node does not exist or for any other HTTP error.
- * @param osmNode String or number of the OSM Node.
- * @returns Object containing the latitude, longitude and tags of the node.
+ * Makes a request to the OSM API to fetch the raw node data.
+ * If the node has been deleted, it will fetch the last version of the node from the history API.
+ * @param osmNode OSM Node ID
+ * @returns Raw JSON for the node from the OSM API
  */
-export async function requestOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
+async function requestRawOsmNode(osmNode: number): Promise<any> {
   const response = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)
   if (response.status !== 200) {
     if (response.status === 410) {
-      // TODO: https://api.openstreetmap.org/api/0.6/node/2268947005/historym
-      throw new Error(`HTTP 410: OSM node ${osmNode} has been deleted`);
+      console.log(`Warning: OSM node ${osmNode} has been deleted. Fetching via history instead.`);
+      const historyResponse = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}/history`)
+      if (historyResponse.status !== 200) {
+        throw new Error(`HTTP ${historyResponse.status}: History for OSM node ${osmNode} could not be fetched`);
+      }
+      const historyResponseString: string = await historyResponse.text();
+      const parsedResult = await parseStringPromise(historyResponseString);
+      if (!parsedResult.osm.node || parsedResult.osm.node.length === 0) {
+        throw new Error(`No node array found in history API response for OSM node ${osmNode}`);
+      }
+      return parsedResult.osm.node[parsedResult.osm.node.length - 1];
     }
     throw new Error(`HTTP ${response.status}: OSM node ${osmNode} could not be fetched`);
   }
 
   const responseString: string = await response.text();
   const osmApiResult = await parseStringPromise(responseString);
+  if (!osmApiResult.osm.node || osmApiResult.osm.node.length === 0) {
+    throw new Error(`No node array found in API response for OSM node ${osmNode}`);
+  }
+  return osmApiResult.osm.node[0];
+}
 
-  const lat = parseFloat(osmApiResult.osm.node[0].$.lat);
-  const lon = parseFloat(osmApiResult.osm.node[0].$.lon);
+
+/**
+ * Attempt to fetch the position of an OSM node from the OSM API.
+ * Throws an error if the node does not exist or for any other HTTP error.
+ * @param osmNode String or number of the OSM Node.
+ * @returns Object containing the latitude, longitude and tags of the node.
+ */
+export async function requestOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
+  const rawNode = await requestRawOsmNode(parseInt(osmNode.toString()));
+
+  const lat = parseFloat(rawNode.$.lat);
+  const lon = parseFloat(rawNode.$.lon);
 
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);
@@ -70,7 +94,7 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
 
   // Extract tags
   const tags: Record<string, string> = {};
-  const tagArray = osmApiResult.osm.node[0].tag || [];
+  const tagArray = rawNode.tag || [];
   tagArray.forEach((tag: any) => {
     tags[tag.$.k] = tag.$.v;
   });
