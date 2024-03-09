@@ -33,7 +33,10 @@ create table measurements (
 
   is_two_stage_crossing text, -- "yes" | "no" | "unknown"
 
-  notes text
+  notes text,
+  -- latitude & longitude of the node
+  latitude float,
+  longitude float
 );
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.

@@ -159,6 +159,10 @@ export interface IntersectionForm {
 
   /** Additional notes. */
   notes: string | null;
+
+  /** latitude and longitude of the node*/
+  latitude: number|null;
+  longitude: number|null;
 }
 
 /** The fields needed to create a new intersection measurement */
