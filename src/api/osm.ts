@@ -4,30 +4,41 @@ import { OSMNode, Way } from '../types';
 import { tagListToRecord } from '../utils/utils';
 import osmCache from './osm-cache.json'
 
-let cacheHits = 0;
-let cacheMisses = 0;
+let totalLookups = 0;
+let jsonCacheHits = 0;
+let dbCacheHits = 0;
+
+let jsonCacheMisses = 0;
+let dbCacheMisses = 0;
 
 /**
  * Log debug output of the OSM cache hit rate. Run this after fetching all nodes.
  */
 export function logOSMCacheStats() {
-  const totalHits = cacheHits + cacheMisses;
-  console.log(`OSM API cache stats: Loaded ${totalHits} nodes. ${cacheMisses} misses. ${cacheHits / (cacheHits + cacheMisses) * 100}% hit rate.`);
+  console.log(`OSM API cache stats: Loaded ${totalLookups} nodes. ${dbCacheMisses} DB cache misses, ${jsonCacheMisses} json cache misses. ${dbCacheHits / (dbCacheHits + dbCacheMisses) * 100}% DB cache hit rate, ${jsonCacheHits / (jsonCacheHits + jsonCacheMisses) * 100}% JSON cache hit rate.`);
 }
 /*
-Function that checks if the node is in the cache, if not, it fetches it
-from the OSM API (using getOsmNodePosition)
+Function that checks if the node is in the JSON cache or already stored in our DB, if not, it
+fetches it from the OSM API (using getOsmNodePosition).
 */
-export async function getOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
-  const possibleCacheHit = (osmCache as Record<string, OSMNode | undefined>)[osmNode.toString()];
-
-  if (possibleCacheHit) {
-    cacheHits += 1;
-    return possibleCacheHit;
-  } else {
-    cacheMisses += 1;
-    return await requestOsmNodePosition(osmNode);
+export async function getOsmNodePosition(osmNode: number,
+  nodeIdLocationLookup: Record<number, { lat: number, lon: number }>): Promise<{ lat: number, lon: number }> {
+  totalLookups += 1;
+  const possibleJsonCacheHit = (osmCache as Record<string, OSMNode | undefined>)[osmNode];
+  const possibleDBCacheHit = nodeIdLocationLookup[osmNode];
+  if (possibleDBCacheHit) {
+    dbCacheHits += 1;
+    return possibleDBCacheHit;
   }
+  dbCacheMisses += 1;
+
+  if (possibleJsonCacheHit) {
+    jsonCacheHits += 1;
+    return possibleJsonCacheHit;
+  }
+  jsonCacheMisses += 1;
+
+  return await requestOsmNodePosition(osmNode);
 }
 
 
@@ -41,6 +52,7 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
   const response = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)
   if (response.status !== 200) {
     if (response.status === 410) {
+      // TODO: https://api.openstreetmap.org/api/0.6/node/2268947005/historym
       throw new Error(`HTTP 410: OSM node ${osmNode} has been deleted`);
     }
     throw new Error(`HTTP ${response.status}: OSM node ${osmNode} could not be fetched`);

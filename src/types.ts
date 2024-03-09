@@ -32,7 +32,7 @@ export interface TrafficLightReport {
   /** Derived field. Length of full cycle */
   cycleLength: number,
   /** OSM tags on the intersection node */
-  tags: Record<string, string>
+  // tags: Record<string, string>
   /** Is the crossing unprotected when flashing red? Boolean or null when unknown */
   unprotectedOnFlashingRed: boolean | null
 }
@@ -45,7 +45,7 @@ export interface IntersectionStats {
   lon: number,
   reports: TrafficLightReport[];
   /** OSM tags for the intersection */
-  tags: Record<string, string>;
+  // tags: Record<string, string>;
 }
 
 export interface Way {
@@ -161,8 +161,8 @@ export interface IntersectionForm {
   notes: string | null;
 
   /** latitude and longitude of the node*/
-  latitude: number|null;
-  longitude: number|null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 /** The fields needed to create a new intersection measurement */
