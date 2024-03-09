@@ -2,19 +2,15 @@ import { getIntersectionMeasurements } from "../api/db";
 import { getOsmNodePosition, logOSMCacheStats, requestOsmNodePosition } from "../api/osm";
 import { IntersectionStats, OsmWayKeys, RawTag, IntersectionMeasurementResult, TrafficLightReport, Way, OSMNode } from "../types";
 
-
-function isStringInteger(str: string): boolean {
-  const num = Number(str);
-  return !isNaN(num) && parseInt(str, 10) === num;
-}
-
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
 export function isValidTrafficLightReport(formResponse: IntersectionMeasurementResult): boolean {
   const rawOsmId = formResponse.osm_node_id;
   return rawOsmId !== null;
 }
 
-export async function convertToTrafficLightReport(formResponse: IntersectionMeasurementResult): Promise<TrafficLightReport | null> {
+export async function convertToTrafficLightReport(formResponse: IntersectionMeasurementResult, 
+  nodeIdLocationLookup: Record<number, { lat: number, lon: number}>): Promise<TrafficLightReport | null> {
+
   const { osm_node_id, custom_updated_at, unprotected_crossing,
     green_light_duration,
     flashing_red_light_duration,
@@ -31,7 +27,7 @@ export async function convertToTrafficLightReport(formResponse: IntersectionMeas
     throw new Error(`No osm id in field: ${osm_node_id}`);
   }
   try {
-    const { lat, lon, tags } = await getOsmNodePosition(osm_node_id)
+    const { lat, lon } = await getOsmNodePosition(osm_node_id, nodeIdLocationLookup)
 
     const val = {
       osmId: osm_node_id,
@@ -42,7 +38,6 @@ export async function convertToTrafficLightReport(formResponse: IntersectionMeas
       redDuration: solid_red_light_duration,
       notes: notes || undefined,
       timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : updated_at,
-      tags: tags,
       unprotectedOnFlashingRed,
     }
     const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
@@ -54,8 +49,6 @@ export async function convertToTrafficLightReport(formResponse: IntersectionMeas
   }
 }
 
-
-
 export function summariseReportsByIntersection(reports: TrafficLightReport[]): IntersectionStats[] {
   const stats: Record<string, IntersectionStats> = {};
   reports.forEach(report => {
@@ -66,7 +59,6 @@ export function summariseReportsByIntersection(reports: TrafficLightReport[]): I
       stats[report.osmId] = {
         osmId: report.osmId,
         reports: [report],
-        tags: report.tags,
         lat: report.lat,
         lon: report.lon,
       }
@@ -215,6 +207,26 @@ export function getNextLargestMultipleOf5(val: number) {
   return Math.ceil(val / 5) * 5;
 }
 
+/**
+ * Generates a record mapping node IDs to an object containing their latitude and longitude
+ */
+export function buildNodeIdLocationLookup(measurements: IntersectionMeasurementResult[]): Record<number, { lat: number, lon: number}> {
+  const lookup: Record<string, { lat: number, lon: number }> = {};
+  /** measurements sorted by time, so that we preserve the most recent coordinate of an OSM node */
+  const sortedMeasurements = measurements.sort((a, b) => {
+    const aTime = new Date(a.updated_at).getTime();
+    const bTime = new Date(b.updated_at).getTime();
+    return bTime - aTime;
+  });
+  sortedMeasurements.forEach((measurement) => {
+    const {osm_node_id, latitude, longitude} = measurement;
+    if (osm_node_id && latitude && longitude) {
+      lookup[osm_node_id] = { lat: latitude, lon: longitude};
+    }
+  });
+  return lookup;
+}
+
 export async function getIntersections(): Promise<IntersectionStats[]> {
   let data: IntersectionMeasurementResult[] = []
   try {
@@ -225,6 +237,7 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
     console.log(e);
     return [];
   }
+  const nodeIdLocationLookup = buildNodeIdLocationLookup(data);
   const safeData = data.filter(measurement => measurement.osm_node_id);
 
   // Turn this on if you want to generate a new cache!
@@ -261,7 +274,7 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
     const reportsOrNull: (TrafficLightReport | null)[] = await Promise.all(
       safeData
         .filter(isValidTrafficLightReport)
-        .map(convertToTrafficLightReport)
+        .map(measurement => convertToTrafficLightReport(measurement, nodeIdLocationLookup))
     );
     logOSMCacheStats();
 

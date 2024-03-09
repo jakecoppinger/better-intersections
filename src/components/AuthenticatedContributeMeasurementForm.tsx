@@ -1,4 +1,4 @@
-import { useEffect, useState, FC } from "react";
+import { useEffect, useState } from "react";
 import {
   AttributionControl,
   FullscreenControl,
@@ -20,7 +20,8 @@ import {
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
 import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
-import { isNodeValid } from "../api/osm"
+import { attemptFindNodeLocation, isNodeValid } from "../api/osm"
+
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
@@ -57,7 +58,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     const raw = formState;
     const missingTimeMeasurementMessage = 'Missing time measurement. Please use the "time intersection" function above.'
     if (raw.green_light_duration === undefined) {
-      debugger;
       return {
         error: true,
         message:
@@ -123,7 +123,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
 
   const submitMeasurement: any = async (event: any, avatarUrl: any) => {
     event.preventDefault();
-
     setIsSubmitting(true);
     const { user } = session;
 
@@ -133,10 +132,15 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setIsSubmitting(false);
       return;
     }
+
+    const {lat,lon} = await attemptFindNodeLocation(data.osm_node_id);
+
     const update: IntersectionInsertionFields = {
       user_id: user.id,
       updated_at: new Date(),
       ...data,
+      latitude: lat,
+      longitude: lon
     };
 
     let { error } = await supabase.from("measurements").insert(update);
@@ -154,7 +158,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setGeolocationStatus(null);
       setGeolocationAllowed(null);
       setOSMIntersections(undefined);
-
     }
     setIsSubmitting(false);
   };
@@ -172,22 +175,22 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   );
 
   useEffect(() => {
-
+    // Check if the node in the URL is valid.
     const checkIfNodeValid = async () => {
       if (nodeId !== "" && nodeId !== undefined) {
         const isValid = await isNodeValid(nodeId);
         setIsSuppliedNodeValid(isValid);
       }
     }
-
     if (isSuppliedNodeValid === true) {
       setFormState((prev) => ({
         ...prev,
         osm_node_id: Number(nodeId),
       }));
     } else if (isSuppliedNodeValid === false) {
+      // This error isn't likely to occur
       alert(`Error: The OSM node ID (${nodeId}) for this intersection couldn't be found.
-You'll need to manually find the intersection.`)
+You'll need to manually find the intersection or provide a location description.`)
     } else {
       checkIfNodeValid();
     }
@@ -243,7 +246,8 @@ You'll need to manually find the intersection.`)
 
               if (!navigator.geolocation) {
                 setGeolocationAllowed(false);
-                setGeolocationStatus("Geolocation not possible.");
+                setGeolocationStatus(
+                  "Geolocation not possible - you may need to enable it in your browser settings. Make sure to describe the location well in the textbox below!");
                 return;
               }
 
@@ -255,7 +259,7 @@ You'll need to manually find the intersection.`)
                   setGeolocationStatus("Found location.");
                 },
                 (err) => {
-                  setGeolocationStatus("Geolocation not possible.");
+                  setGeolocationStatus("Geolocation not possible - please .");
                   setGeolocationAllowed(false);
                 },
                 {
