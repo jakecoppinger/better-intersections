@@ -59,10 +59,15 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
       }
       const historyResponseString: string = await historyResponse.text();
       const parsedResult = await parseStringPromise(historyResponseString);
-      if (!parsedResult.osm.node || parsedResult.osm.node.length === 0) {
+      const numVersions = parsedResult.osm.node.length;
+      if (numVersions === 0) {
         throw new Error(`No node array found in history API response for OSM node ${osmNode}`);
       }
-      return parsedResult.osm.node[parsedResult.osm.node.length - 1];
+      if(numVersions === 1) {
+        throw new Error(`Node ${osmNode} has only one version, but it is deleted, which should be impossible.`);
+      }
+      // We want the second-to-last version, which is the last undeleted version.
+      return parsedResult.osm.node[numVersions - 2];
     }
     throw new Error(`HTTP ${response.status}: OSM node ${osmNode} could not be fetched`);
   }
@@ -84,9 +89,15 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
  */
 export async function requestOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
   const rawNode = await requestRawOsmNode(parseInt(osmNode.toString()));
+  const latString: string | undefined = rawNode.$.lat;
+  const lonString: string | undefined = rawNode.$.lon;
 
-  const lat = parseFloat(rawNode.$.lat);
-  const lon = parseFloat(rawNode.$.lon);
+  if( latString === undefined || lonString === undefined) {
+    throw new Error(`Undefined latitude or longitude for OSM node ${osmNode}`);
+  }
+  const lat = parseFloat(latString);
+  const lon = parseFloat(lonString);
+
 
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);

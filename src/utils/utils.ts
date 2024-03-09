@@ -28,7 +28,6 @@ export async function convertToTrafficLightReport(formResponse: IntersectionMeas
   }
   try {
     const { lat, lon } = await getOsmNodePosition(osm_node_id, nodeIdLocationLookup)
-    // const { lat, lon, tags } = await getOsmNodePosition(osm_node_id)
 
     const val = {
       osmId: osm_node_id,
@@ -39,7 +38,6 @@ export async function convertToTrafficLightReport(formResponse: IntersectionMeas
       redDuration: solid_red_light_duration,
       notes: notes || undefined,
       timestamp: timestampOverride && timestampOverride.length > 0 ? timestampOverride : updated_at,
-      // tags: tags,
       unprotectedOnFlashingRed,
     }
     const cycleLength = val.greenDuration + val.flashingDuration + val.redDuration;
