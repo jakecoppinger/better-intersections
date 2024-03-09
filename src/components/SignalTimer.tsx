@@ -2,8 +2,11 @@ import { useState, useEffect, useMemo, MouseEventHandler, FC } from "react";
 import styled from "@emotion/styled";
 
 export interface SignalTimerCallback {
+  /** Number of seconds pedestrian traffic light is green for */
   green: number;
+  /** Number of seconds pedestrian traffic light is flashing red (or orange countdown) for */
   flashing: number;
+  /** Number of seconds pedestrian traffic light is sold red for */
   red: number;
 }
 
@@ -113,6 +116,12 @@ interface TimeDisplayProps {
   solidRedStartTime: number | null;
   nextCycleStartTime: number | null;
 }
+
+function formatMillis(millis: number): string {
+  const seconds = millis / 1000;
+  // Only show 1 decimal place
+  return Math.round(seconds * 10) / 10 + "s";
+}
 export const TimeDisplay: FC<TimeDisplayProps> = ({
   greenStartTime,
   flashingRedStartTime,
@@ -133,27 +142,26 @@ export const TimeDisplay: FC<TimeDisplayProps> = ({
 
   return (
     <p>
-      {/* {greenStartTime === null && <span>Ready</span>} */}
       {greenStartTime !== null && (
         <span>
-          Green for {((flashingRedStartTime || now) - greenStartTime) / 1000}s
+          Green for {formatMillis((flashingRedStartTime || now) - greenStartTime)}
         </span>
       )}
       {flashingRedStartTime !== null && (
         <span>
           , flashing red for{" "}
-          {((solidRedStartTime || now) - flashingRedStartTime) / 1000}s
+          {formatMillis((solidRedStartTime || now) - flashingRedStartTime)}
         </span>
       )}
       {solidRedStartTime !== null && (
         <span>
           , solid red for{" "}
-          {((nextCycleStartTime || now) - solidRedStartTime) / 1000}s
+          {formatMillis((nextCycleStartTime || now) - solidRedStartTime)}
         </span>
       )}
       {nextCycleStartTime !== null && greenStartTime && (
         <span>
-          . Total cycle time {(nextCycleStartTime - greenStartTime) / 1000}s.
+          . Total cycle time {formatMillis(nextCycleStartTime - greenStartTime)}.
         </span>
       )}
     </p>
@@ -195,7 +203,11 @@ export const SignalTimer: FC<SignalTimerProps> = ({
     } else if (pressCount === 4) {
       setNextCycleStartTime(Date.now());
     }
-  }, [pressCount]);
+  }, [pressCount,
+    setGreenStartTime,
+    setFlashingRedStartTime,
+    setSolidRedStartTime,
+    setNextCycleStartTime]);
 
   const memoisedCallback = useMemo(() => callback, []);
   useEffect(() => {
@@ -227,10 +239,10 @@ export const SignalTimer: FC<SignalTimerProps> = ({
 
   function generateButtonText() {
     const textIndex = [
-      "Press button when green light starts",
-      "Press when light flashes red or counts in orange",
-      "Press when light becomes solid red",
-      "Press when light becomes green (again)",
+      "Tap here when green walk light starts",
+      "Tap when light flashes red (or counts in orange)",
+      "Tap when light becomes solid red",
+      "Tap when light becomes green (again)",
       "Done timing.",
     ];
     if (pressCount >= textIndex.length) {
@@ -249,7 +261,14 @@ export const SignalTimer: FC<SignalTimerProps> = ({
 
   return (
     <>
-    <h3>Step 2: Time intersection</h3>
+      <h3>Step 2: Time intersection</h3>
+      <p>
+        Depending on your location and time of day, you may never get a green light unless you
+        press the metal button to request to cross the road.
+        <br></br>
+        <b>Press the metal button after the pedestrian walk light changes to solid red</b> so that you measure the
+        minimum possible pedestrian wait duration.
+      </p>
       <TrafficSignal onclick={handleClick} signalState={signalState} />
       <button
         autoFocus={true}

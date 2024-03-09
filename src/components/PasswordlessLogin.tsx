@@ -1,6 +1,11 @@
 import { useState, FC } from "react";
+import styled from "@emotion/styled";
 import { supabase } from "../utils/supabase-client";
 import { Session } from "@supabase/supabase-js";
+
+const FormWithPadding = styled.form`
+margin-bottom: 50px;
+`;
 
 type AuthState =
   | "no-login-email-sent"
@@ -40,7 +45,7 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
     return (
       <>
         <h1>Verify your email to submit a measurement</h1>
-        <form
+        <FormWithPadding
           className="form-widget"
           onSubmit={async (event: any) => {
             event.preventDefault();
@@ -75,7 +80,7 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
               )}
             </button>
           </div>
-        </form>
+        </FormWithPadding>
       </>
     );
   }
