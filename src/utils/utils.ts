@@ -59,7 +59,6 @@ export function summariseReportsByIntersection(reports: TrafficLightReport[]): I
       stats[report.osmId] = {
         osmId: report.osmId,
         reports: [report],
-        // tags: report.tags,
         lat: report.lat,
         lon: report.lon,
       }
