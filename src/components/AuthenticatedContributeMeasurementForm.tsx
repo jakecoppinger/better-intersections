@@ -20,7 +20,7 @@ import {
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
 import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
-import { attemptFindNodeLocation, isNodeValid } from "../api/osm"
+import { isNodeValid, requestOsmNodePosition } from "../api/osm"
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -54,7 +54,7 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     | { data: IntersectionForm; error: false; message?: undefined }
     | { data?: undefined; error: true; message: string };
 
-  function validateFormState(): FormValidatorOutput {
+  async function validateFormState(): Promise<FormValidatorOutput> {
     const raw = formState;
     const missingTimeMeasurementMessage = 'Missing time measurement. Please use the "time intersection" function above.'
     if (raw.green_light_duration === undefined) {
@@ -118,32 +118,47 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       };
     }
 
+    // We're happy for the user to submit the form without an OSM node ID as the node might not yet
+    // exist in OSM (or have incorrect tags), but if they do, we validate it and prevent submission
+    // of an invalid OSM node ID.
+    if (raw.osm_node_id !== undefined && raw.osm_node_id !== null) {
+      try {
+        const node = await requestOsmNodePosition(raw.osm_node_id);
+        raw.latitude = node.lat;
+        raw.longitude = node.lon;
+      } catch (e) {
+        return {
+          error: true,
+          // TODO: Add error logging to the backend
+          message: `The OSM node ID (${raw.osm_node_id}) appears to be invalid - please update it leave the field empty.`
+        }
+      }
+    }
+
+
     return { data: raw as IntersectionForm, error: false };
   }
 
-  const submitMeasurement: any = async (event: any, avatarUrl: any) => {
+  const submitMeasurement: any = async (event: any) => {
     event.preventDefault();
     setIsSubmitting(true);
     const { user } = session;
 
-    const { data, error: validateError, message } = validateFormState();
+    const { data, error: validateError, message } = await validateFormState();
+
     if (validateError || data === undefined) {
       alert(message);
       setIsSubmitting(false);
       return;
     }
 
-    const {lat,lon} = await attemptFindNodeLocation(data.osm_node_id);
-
     const update: IntersectionInsertionFields = {
       user_id: user.id,
       updated_at: new Date(),
-      ...data,
-      latitude: lat,
-      longitude: lon
+      ...data
     };
 
-    let { error } = await supabase.from("measurements").insert(update);
+    const { error } = await supabase.from("measurements").insert(update);
 
     if (error) {
       alert(error.message);

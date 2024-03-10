@@ -54,7 +54,7 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
       if (numVersions === 0) {
         throw new Error(`No node array found in history API response for OSM node ${osmNode}`);
       }
-      if(numVersions === 1) {
+      if (numVersions === 1) {
         throw new Error(`Node ${osmNode} has only one version, but it is deleted, which should be impossible.`);
       }
       // We want the second-to-last version, which is the last undeleted version.
@@ -72,23 +72,6 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
 }
 
 /**
- * Fetch the position of an OSM node from the OSM API.
- * If the node does not exist or any error occurs, returns {lat: null, lon: null}.
- */
-export async function attemptFindNodeLocation(osmNode: number | undefined | null): Promise<{lat: number | null, lon: number | null}> {
-  if(osmNode === undefined || osmNode === null) {
-    return {lat: null, lon: null};
-  }
-  try {
-  const node = await requestOsmNodePosition(osmNode);
-  return {lat: node.lat, lon: node.lon};
-  } catch (e) {
-    console.warn(`Failed to fetch lat/lon for OSM node ${osmNode} during submission, leaving it out. Error: ${e}`);
-    return {lat: null, lon: null};
-  }
-}
-
-/**
  * Attempt to fetch the position of an OSM node from the OSM API.
  * Throws an error if the node does not exist or for any other HTTP error.
  * @param osmNode String or number of the OSM Node.
@@ -99,7 +82,7 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
   const latString: string | undefined = rawNode.$.lat;
   const lonString: string | undefined = rawNode.$.lon;
 
-  if( latString === undefined || lonString === undefined) {
+  if (latString === undefined || lonString === undefined) {
     throw new Error(`Undefined latitude or longitude for OSM node ${osmNode}`);
   }
   const lat = parseFloat(latString);
