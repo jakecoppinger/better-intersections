@@ -2,41 +2,32 @@
 import { parseStringPromise } from 'xml2js';
 import { OSMNode, Way } from '../types';
 import { tagListToRecord } from '../utils/utils';
-import osmCache from './osm-cache.json'
+import { updateNodeLatLong } from './db';
 
 let totalLookups = 0;
-let jsonCacheHits = 0;
 let dbCacheHits = 0;
-
-let jsonCacheMisses = 0;
 let dbCacheMisses = 0;
 
 /**
  * Log debug output of the OSM cache hit rate. Run this after fetching all nodes.
  */
 export function logOSMCacheStats() {
-  console.log(`OSM API cache stats: Loaded ${totalLookups} nodes. ${dbCacheMisses} DB cache misses, ${jsonCacheMisses} json cache misses. ${dbCacheHits / (dbCacheHits + dbCacheMisses) * 100}% DB cache hit rate, ${jsonCacheHits / (jsonCacheHits + jsonCacheMisses) * 100}% JSON cache hit rate.`);
+  console.log(`OSM API cache stats: Loaded ${totalLookups} nodes. ${dbCacheMisses} DB cache misses. ${dbCacheHits / (dbCacheHits + dbCacheMisses) * 100}% DB cache hit rate,`);
 }
 /*
 Function that checks if the node is in the JSON cache or already stored in our DB, if not, it
-fetches it from the OSM API (using getOsmNodePosition).
+fetches it from the OSM API (using requestOsmNodePosition).
 */
 export async function getOsmNodePosition(osmNode: number,
   nodeIdLocationLookup: Record<number, { lat: number, lon: number }>): Promise<{ lat: number, lon: number }> {
   totalLookups += 1;
-  const possibleJsonCacheHit = (osmCache as Record<string, OSMNode | undefined>)[osmNode];
+
   const possibleDBCacheHit = nodeIdLocationLookup[osmNode];
   if (possibleDBCacheHit) {
     dbCacheHits += 1;
     return possibleDBCacheHit;
   }
   dbCacheMisses += 1;
-
-  if (possibleJsonCacheHit) {
-    jsonCacheHits += 1;
-    return possibleJsonCacheHit;
-  }
-  jsonCacheMisses += 1;
 
   return await requestOsmNodePosition(osmNode);
 }
@@ -117,6 +108,15 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
 
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);
+  }
+
+  try {
+    // Update DB with lat/lon so we don't have to fetch it again
+    await updateNodeLatLong(parseFloat(osmNode as string), lat, lon);
+  } catch (e) {
+    // TODO: Add error logging to DB
+    console.error(`Unable to update lat/lon in db for node ${osmNode}. This is a non-fatal error but unexpected.`);
+    console.log(e);
   }
 
   // Extract tags

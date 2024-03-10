@@ -1,6 +1,6 @@
 
 import { supabase } from "../utils/supabase-client";
-import { IntersectionMeasurementResult } from "../types";
+import { IntersectionMeasurementResult, OSMNode } from "../types";
 
 export async function getIntersectionMeasurements(): Promise<IntersectionMeasurementResult[]> {
   const { data, error } = await supabase
@@ -17,3 +17,16 @@ export async function getIntersectionMeasurements(): Promise<IntersectionMeasure
   return data;
 }
 
+/**
+ * Set the latitude and longitude of a node in the database.
+ */
+export async function updateNodeLatLong(nodeId: number, lat: number, lon: number) {
+  const { error } = await supabase
+    .from('measurements')
+    .update({ latitude: lat, longitude: lon})
+    .eq('osm_node_id', nodeId)
+  
+  if (error) {
+    throw new Error(`Error updating db for node ${nodeId}: ${error}`);
+  }
+}

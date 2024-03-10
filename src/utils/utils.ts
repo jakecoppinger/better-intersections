@@ -1,6 +1,7 @@
 import { getIntersectionMeasurements } from "../api/db";
-import { getOsmNodePosition, logOSMCacheStats, requestOsmNodePosition } from "../api/osm";
-import { IntersectionStats, OsmWayKeys, RawTag, IntersectionMeasurementResult, TrafficLightReport, Way, OSMNode } from "../types";
+import { getOsmNodePosition, logOSMCacheStats } from "../api/osm";
+import { IntersectionStats, OsmWayKeys, RawTag, IntersectionMeasurementResult, TrafficLightReport, Way } from "../types";
+
 
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
 export function isValidTrafficLightReport(formResponse: IntersectionMeasurementResult): boolean {
@@ -239,36 +240,6 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
   }
   const nodeIdLocationLookup = buildNodeIdLocationLookup(data);
   const safeData = data.filter(measurement => measurement.osm_node_id);
-
-  // Turn this on if you want to generate a new cache!
-  const generateOsmCache = false;
-  if (generateOsmCache) {
-    const cache: Record<string, OSMNode> = {};
-    const disappearedOSMNodes: number[] = [];
-    const osmNodes: number[] = safeData
-      .filter(measurement => measurement.osm_node_id)
-      .map(measurement => measurement.osm_node_id as number);
-
-    await Promise.all(osmNodes.map(async (osmNode) => {
-      try {
-        // requestOsmNodePosition doesn't hit the cache - we want fresh data
-        const node = await requestOsmNodePosition(osmNode);
-        cache[osmNode.toString()] = node;
-      } catch (e) {
-        // @ts-ignore
-        if (e.toString().includes('410')) {
-          disappearedOSMNodes.push(osmNode);
-        } else {
-          throw new Error(`Couldn't fetch node ${osmNode}: ${e}`);
-        }
-      }
-    }));
-
-    console.log(JSON.stringify(cache));
-    console.log('put above JSON into osm-cache.json :)');
-    console.log(`${osmNodes.length} nodes input, ${Object.keys(cache).length} nodes output. ${disappearedOSMNodes.length} nodes disappeared.`);
-    console.log(`Disappeared nodes: ${disappearedOSMNodes.join(', ')}`);
-  }
 
   try {
     const reportsOrNull: (TrafficLightReport | null)[] = await Promise.all(
