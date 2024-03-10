@@ -21,7 +21,7 @@ import {
   getMaxCycleTime,
   getNextLargestMultipleOf5,
   getMaxWaitMarkerColour,
-  averageIntersectionMaxWait,
+  averageIntersectionMaxWait
 } from "../utils/utils";
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
@@ -83,6 +83,7 @@ export function MapComponent() {
 
   const [displayMode, setDisplayMode] = useState<DisplayMode>("avg_cycle_time");
   useEffect(() => {
+
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
       setState((s) => ({
