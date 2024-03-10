@@ -20,7 +20,7 @@ import {
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
 import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
-import { attemptFindNodeLocation, isNodeValid } from "../api/osm"
+import { isNodeValid, requestOsmNodePosition } from "../api/osm"
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -122,17 +122,19 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     // exist in OSM (or have incorrect tags), but if they do, we validate it and prevent submission
     // of an invalid OSM node ID.
     if (raw.osm_node_id !== undefined && raw.osm_node_id !== null) {
-      const result = await attemptFindNodeLocation(raw.osm_node_id);
-      if (result === null) {
+      try {
+        const node = await requestOsmNodePosition(raw.osm_node_id);
+        raw.latitude = node.lat;
+        raw.longitude = node.lon;
+      } catch (e) {
         return {
           error: true,
           // TODO: Add error logging to the backend
-          message: `The OSM node ID (${raw.osm_node_id}) appears to be invalid - please update it or let Jake know if this is unexpected.`
+          message: `The OSM node ID (${raw.osm_node_id}) appears to be invalid - please update it leave the field empty.`
         }
       }
-      raw.latitude = result.latitude;
-      raw.longitude = result.longitude;
     }
+
 
     return { data: raw as IntersectionForm, error: false };
   }

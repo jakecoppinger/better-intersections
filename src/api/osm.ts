@@ -81,19 +81,6 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
 }
 
 /**
- * Fetch the position of an OSM node from the OSM API.
- * If the node does not exist or any error occurs, returns {lat: null, lon: null}.
- */
-export async function attemptFindNodeLocation(osmNode: number): Promise<{ latitude: number, longitude: number } | null> {
-  try {
-    const node = await requestOsmNodePosition(osmNode);
-    return { latitude: node.lat, longitude: node.lon };
-  } catch (e) {
-    return null;
-  }
-}
-
-/**
  * Attempt to fetch the position of an OSM node from the OSM API.
  * Throws an error if the node does not exist or for any other HTTP error.
  * @param osmNode String or number of the OSM Node.
