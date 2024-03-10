@@ -17,6 +17,9 @@ export async function getIntersectionMeasurements(): Promise<IntersectionMeasure
   return data;
 }
 
+/**
+ * Set the latitude and longitude of a node in the database.
+ */
 export async function updateNodeLatLong(nodeId: number, lat: number, lon: number) {
   const { error } = await supabase
     .from('measurements')

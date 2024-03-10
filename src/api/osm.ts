@@ -111,10 +111,11 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
   }
 
   try {
+    // Update DB with lat/lon so we don't have to fetch it again
     await updateNodeLatLong(parseFloat(osmNode as string), lat, lon);
   } catch (e) {
-    // TODO: Adding logging
-    console.log('Unable to update DB. Please try again later or contact Jake.');
+    // TODO: Add error logging to DB
+    console.error(`Unable to update lat/lon in db for node ${osmNode}. This is a non-fatal error but unexpected.`);
     console.log(e);
   }
 
