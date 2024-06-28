@@ -138,15 +138,7 @@ export default function LongestAndShortestWaits() {
       ) : null}
 
       <p>
-        View the data on{" "}
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://docs.google.com/spreadsheets/d/1L08GNolPYjiRwLOL2d3lAZPqwCNe5vGr6SAOtH7hnNM/edit?usp=sharing"
-        >
-          Google Sheets
-        </a>
-        .
+        See <Link to={'/about'}>about</Link> for data download.
       </p>
     </HeaderAndFooter>
   );
