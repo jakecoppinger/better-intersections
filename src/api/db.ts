@@ -27,6 +27,9 @@ export async function getIntersectionMeasurements(): Promise<
   return data.filter((formResponse) => formResponse.osm_node_id !== null);
 }
 
+const computedNodesSelectString = 
+  "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait,human_name"
+
 /**
  * Fetch row from the DB.
  * If row does not exist for the given nodeId, returns undefined.
@@ -36,9 +39,7 @@ export async function fetchComputedNodeProperties(
 ): Promise<ComputedNodeProperties | undefined> {
   const { data, error } = await webSupabase
     .from("computed_node_properties")
-    .select(
-      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait"
-    )
+    .select(computedNodesSelectString)
     .eq("osm_node_id", nodeId);
 
   if (error) {
@@ -67,6 +68,7 @@ export async function insertComputedNodeProperties(
     average_cycle_time: properties.averageCycleTime,
     average_total_red_duration: properties.averageTotalRedDuration,
     average_max_wait: properties.averageMaxWait,
+    human_name: properties.humanName
   };
   const { error } = await serviceRoleSupabase
     .from("computed_node_properties")
@@ -99,6 +101,7 @@ function mapComputedNodeRowToProperties(
     averageCycleTime: row.average_cycle_time,
     averageTotalRedDuration: row.average_total_red_duration,
     averageMaxWait: row.average_max_wait,
+    humanName: row.human_name
   };
 }
 /**
@@ -109,9 +112,7 @@ export async function fetchAllCachedNodeProperties(): Promise<
 > {
   const { data, error } = await webSupabase
     .from("computed_node_properties")
-    .select(
-      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait"
-    );
+    .select(computedNodesSelectString);
 
   if (error) {
     throw error;

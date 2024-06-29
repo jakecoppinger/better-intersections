@@ -73,7 +73,8 @@ create table computed_node_properties (
   average_cycle_time float not null,
 
   average_total_red_duration float not null,
-  average_max_wait float not null
+  average_max_wait float not null,
+  human_name text
 );
 
 alter table computed_node_properties

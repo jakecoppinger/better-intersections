@@ -9,12 +9,12 @@ import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import {
   filterOutNonRoadWays,
   getIntersections,
-  getMainWayForIntersection,
 } from "../utils/utils";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
 import { computedNodeProperties } from "../utils/computed-node-properties";
+import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
 
 const IntersectionTableRow = ({
   intersection,

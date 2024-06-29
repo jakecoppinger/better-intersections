@@ -163,30 +163,6 @@ export function getCycleTimeMarkerColour(avgCycleLegth: number): string {
   return colour;
 }
 
-/**
- * Takes in unfiltered list of ways and returns the most relevent named main road for the intersection
- * If there is a non-footway, non-cycleway road with a name, it is returned.
- * Otherwise, if there is an adjacent cycleway with a name it is returned
- * Otherwise, if there is an adjacent footway with a name it is returned
- * Otherwise returns null.
- */
-export function getMainWayForIntersection(ways: Way[]): Way | null {
-  const waysWithNames = filterOutWaysWithoutName(ways);
-  const cycleways = filterOnlyCycleways(waysWithNames);
-  const nonRoadWays = filterOutNonRoadWays(waysWithNames);
-
-  if (nonRoadWays.length > 0) {
-    return nonRoadWays[0];
-  }
-
-  if (cycleways.length > 0) {
-    return cycleways[0];
-  }
-  if (waysWithNames.length > 0) {
-    return waysWithNames[0];
-  }
-  return null;
-}
 
 export function filterOutNonRoadWays(ways: Way[]): Way[] {
   return ways.filter(

@@ -6,13 +6,14 @@ import {
   Way,
 } from "../types";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
-import { getIntersections, getMainWayForIntersection } from "../utils/utils";
+import { getIntersections} from "../utils/utils";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
 import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
 import { computedNodeProperties } from "../utils/computed-node-properties";
+import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
 
 const IntersectionTableRow = ({
   intersection,

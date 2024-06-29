@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl } from "./config";
 import { computedNodeProperties } from "./utils/computed-node-properties";
-import { getIntersections, getMainWayForIntersection } from "./utils/utils";
-import { fetchOsmWaysForNode } from "./api/osm";
+import { getIntersections} from "./utils/utils";
 
 /** This key should never be be publicly accessible. */
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;
@@ -15,6 +14,7 @@ export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey);
 async function updateComputedNodeProperties() {
   const intersections = (await getIntersections());
   // const intersections = (await getIntersections()).slice(0, 3);
+
   const logProgress = true;
   const richIntersections = await computedNodeProperties(
     intersections,

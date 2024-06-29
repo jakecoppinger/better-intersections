@@ -200,6 +200,7 @@ export interface ComputedNodeProperties {
   averageCycleTime: number;
   averageTotalRedDuration: number;
   averageMaxWait: number;
+  humanName: string | null;
 }
 export interface IntersectionStatsWithComputed extends IntersectionStats {
   latitude: number;
@@ -211,6 +212,7 @@ export interface IntersectionStatsWithComputed extends IntersectionStats {
   averageCycleTime: number;
   averageTotalRedDuration: number;
   averageMaxWait: number;
+  humanName: string | null;
 }
 
 /** The fields returned from the database */
@@ -224,4 +226,5 @@ export interface ComputedNodePropertiesRow {
   average_cycle_time: number;
   average_total_red_duration: number;
   average_max_wait: number;
+  human_name: string | null;
 }

@@ -8,11 +8,12 @@ import {
   IntersectionStats,
   IntersectionStatsWithComputed,
 } from "../types";
-import { getMainWayForIntersection } from "./utils";
 import {
   calculateAverageIntersectionMaxWait,
   calculateAverageIntersectionTotalRedDuration,
   calculateIntersectionAverageCycleTime,
+  getMainWayForIntersection,
+  humanNameForIntersection,
 } from "./intersection-computed-properties";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -77,7 +78,14 @@ export async function computedNodeProperties(
 
     // TODO: Add error handling if num lanes is not an integer
     const numRoadLanes = mainWay ? parseInt(mainWay.tags.lanes) : null;
+
     const isRoadOneway = mainWay ? mainWay.tags.oneway === "yes" : false;
+    const humanName = humanNameForIntersection({
+      intersection,
+      ways,
+      latitude,
+      longitude,
+    });
 
     const allComputedProperties: ComputedNodeProperties = {
       osmId: nodeId,
@@ -88,6 +96,7 @@ export async function computedNodeProperties(
       averageCycleTime,
       numRoadLanes,
       isRoadOneway,
+      humanName,
     };
     const intersectionStatsWithComputed: IntersectionStatsWithComputed = {
       ...intersection,

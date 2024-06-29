@@ -9,11 +9,9 @@ import {
 } from "../utils/url-formatting";
 import {
   convertUTCtoLocal,
-  filterOutNonRoadWays,
   getIntersections,
-  getMainWayForIntersection,
-  removeVerboseTimezoneDescriptor,
 } from "../utils/utils";
+import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;
