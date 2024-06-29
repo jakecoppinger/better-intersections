@@ -122,7 +122,8 @@ export default function Analysis() {
 
       {intersections !== undefined ? (
         <PlotFigure
-          options={{
+          options={
+            {
             grid: true,
             inset: 10,
             marks: [
@@ -130,9 +131,16 @@ export default function Analysis() {
               Plot.dot(intersections, {
                 x: "averageCycleTime",
                 y: "numRoadLanes",
+                tip: true,
+                channels:{
+                  "OSM Node ID": {
+                    value: d => d.osmId.toString()
+                  }
+                }
               }),
             ],
-          }}
+          }
+        }
         />
       ) : null}
 
