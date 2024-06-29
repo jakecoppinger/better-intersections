@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl } from "./config";
 import { computedNodeProperties } from "./utils/computed-node-properties";
 import { getIntersections} from "./utils/utils";
+import { decorateIntersectionsWithCouncilName } from "./utils/council-calculations";
 
 /** This key should never be be publicly accessible. */
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;
@@ -12,8 +13,8 @@ if (serviceRoleKey === undefined || serviceRoleKey === "") {
 export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey);
 
 async function updateComputedNodeProperties() {
-  const intersections = (await getIntersections());
-  // const intersections = (await getIntersections()).slice(0, 3);
+  // const intersections = (await getIntersections());
+  const intersections = (await getIntersections()).slice(0, 3);
 
   const logProgress = true;
   const richIntersections = await computedNodeProperties(
@@ -29,10 +30,10 @@ async function main() {
   console.log("Starting...");
   await updateComputedNodeProperties();
 
-  // const ways = await fetchOsmWaysForNode(9791717679);
-  // const mainWay = getMainWayForIntersection(ways);
-  // console.log({ ways, mainWay });
-
+  // DEBUG!
+  // const intersections = (await getIntersections());
+  // const output = await decorateIntersectionsWithCouncilName(intersections);
+  // console.log(output.filter((x) => x.councilName !== undefined));
 
   console.log("done!");
 }

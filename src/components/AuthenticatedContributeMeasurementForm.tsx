@@ -16,10 +16,11 @@ import {
   IsScrambleCrossing,
   IntersectionInsertionFields,
   IsTwoStageCrossing,
+  RawOSMCrossing,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
-import { RawOSMCrossing, getOSMCrossings } from "../api/overpass";
+import { getOSMCrossings } from "../api/overpass";
 import { isNodeValid, requestOsmNodePosition } from "../api/osm"
 
 const MAPBOX_TOKEN =

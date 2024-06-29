@@ -8,6 +8,7 @@ import {
   IntersectionStats,
   IntersectionStatsWithComputed,
 } from "../types";
+import { decorateIntersectionsWithCouncilName } from "./council-calculations";
 import {
   calculateAverageIntersectionMaxWait,
   calculateAverageIntersectionTotalRedDuration,
@@ -33,7 +34,10 @@ export async function computedNodeProperties(
    */
   serviceRoleSupabase?: SupabaseClient
 ): Promise<IntersectionStatsWithComputed[]> {
-  const osmNodeIds = intersections.map((intersection) => intersection.osmId);
+  const decoratedIntersections = await decorateIntersectionsWithCouncilName(intersections);
+  const osmNodeIds = decoratedIntersections
+    .map((intersection) => intersection.osmId)
+  
   const newIntersections: IntersectionStatsWithComputed[] = [];
 
   console.log(`Fetching cached node ids from DB...`);
@@ -53,14 +57,14 @@ export async function computedNodeProperties(
         nodeId
       ) as ComputedNodeProperties;
       newIntersections.push({
-        ...intersections[i],
+        ...decoratedIntersections[i],
         ...cachedProperties,
       });
       continue;
     }
     console.log(`Cache miss for node ${nodeId}. Fetching from OSM API.`);
 
-    const intersection: IntersectionStats = intersections[i];
+    const intersection: IntersectionStats = decoratedIntersections[i];
     const ways = await fetchOsmWaysForNode(nodeId);
 
     // Generate computed properties

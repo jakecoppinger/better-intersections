@@ -100,6 +100,7 @@ export async function requestOsmNodePosition(
   osmNode: number
 ): Promise<OSMNode> {
   const rawNode = await requestRawOsmNode(parseInt(osmNode.toString()));
+  const id = rawNode.$.id as number;
   const latString: string | undefined = rawNode.$.lat;
   const lonString: string | undefined = rawNode.$.lon;
 
@@ -120,7 +121,7 @@ export async function requestOsmNodePosition(
     tags[tag.$.k] = tag.$.v;
   });
 
-  return { lat, lon, tags };
+  return { type: 'node', id, lat, lon, tags };
 }
 
 export async function fetchOsmWaysForNode(nodeId: number): Promise<Way[]> {

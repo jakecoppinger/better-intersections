@@ -181,10 +181,64 @@ export interface IntersectionMeasurementResult extends IntersectionForm {
   /** timestamp with time zone is mapped to JavaScript's Date */
   updated_at: Date;
 }
+export interface RawOSMCrossing {
+  type: "node",
+  id: number,
+  lat: number,
+  lon: number,
+  // tags: {
+  // },
+}
+export interface OSMWay {
+  type: "way",
+  id: number,
+  nodes: number[],
+  geometry: { lat: number, lon: number }[],
+  tags: {
+    highway?: string,
+    maxspeed?: string,
+    lanes?: string,
+    lit?: string,
+    name?: string,
+    oneway?: string,
+    sidewalk?: string,
+    source?: string,
+    width?: string,
+    bicycle?: string,
+    surface?: string,
+    opening_date?: string,
+  },
 
+  bounds: {
+    minlat: number,
+    minlon: number,
+    maxlat: number,
+    maxlon: number,
+  }
+}
+
+export interface OSMRelation {
+  type: "relation",
+  id: number,
+  tags: {
+    name?: string,
+    ["name:en"]?: string,
+    type?: string,
+    boundary?: string,
+    admin_level?: string,
+    ref?: string,
+    place?: string,
+    source?: string,
+    wikidata?: string,
+    wikipedia?: string,
+  },
+}
 export interface OSMNode {
-  lat: number;
-  lon: number;
+  type: "node",
+  /** todo. is it string? */
+  id: number,
+  lat: number,
+  lon: number,
   tags: Record<string, string>;
 }
 
