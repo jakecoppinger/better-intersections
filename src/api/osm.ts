@@ -2,7 +2,6 @@
 import { parseStringPromise } from 'xml2js';
 import { OSMNode, Way } from '../types';
 import { tagListToRecord } from '../utils/utils';
-import { updateNodeLatLong } from './db';
 
 let totalLookups = 0;
 let dbCacheHits = 0;
@@ -91,15 +90,6 @@ export async function requestOsmNodePosition(osmNode: number): Promise<OSMNode> 
 
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);
-  }
-
-  try {
-    // Update DB with lat/lon so we don't have to fetch it again
-    await updateNodeLatLong(osmNode, lat, lon);
-  } catch (e) {
-    // TODO: Add error logging to DB
-    console.error(`Unable to update lat/lon in db for node ${osmNode}. This is a non-fatal error but unexpected.`);
-    console.log(e);
   }
 
   // Extract tags

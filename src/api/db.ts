@@ -22,23 +22,6 @@ export async function getIntersectionMeasurements(): Promise<
   return data;
 }
 
-/**
- * Set the latitude and longitude of a node in the database.
- */
-export async function updateNodeLatLong(
-  nodeId: number,
-  lat: number,
-  lon: number
-) {
-  const { error } = await webSupabase
-    .from("measurements")
-    .update({ latitude: lat, longitude: lon })
-    .eq("osm_node_id", nodeId);
-
-  if (error) {
-    throw new Error(`Error updating db for node ${nodeId}: ${error}`);
-  }
-}
 
 /**
  * Fetch row from the DB.

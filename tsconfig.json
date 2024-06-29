@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "es6",
     "lib": [
       "dom",
@@ -16,10 +17,17 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
-    "src"
+    "src/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ]
 }
