@@ -52,7 +52,6 @@ create policy "Users can insert their own measurement."
 on measurements for insert
 to authenticated
 with check ( (select auth.uid()) = user_id );
-
 -- Cache for properties of an intersection either calculated from measurements, or from other
 -- OSM data.
 -- Can be wiped at any time. Recomputed by maintenance script.
@@ -69,10 +68,10 @@ create table computed_node_properties (
 
   -- If the intersection road is oneway for cars
   -- If no OSM wayway tag is present, this property should be set to false (OSM implied default)
-  is_road_oneway boolean
+  is_road_oneway boolean,
 
   average_max_cycle_time float not null,
-  average_total_red_duration float not null
+  average_total_red_duration float not null,
   average_max_wait float not null
 );
 
