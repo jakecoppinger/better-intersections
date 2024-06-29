@@ -39,16 +39,14 @@ create table measurements (
   longitude float
 );
 
-
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
 alter table measurements
   enable row level security;
 
-create policy "Public measurements are visible to everyone."
+create policy "Public measurements are visble to everyone."
 on measurements for select
-to anon
-using ( true );
+using (true);
 
 create policy "Users can insert their own measurement."
 on measurements for insert
@@ -79,5 +77,5 @@ alter table computed_node_properties
 
 create policy "Public computed_node_properties are visible to everyone."
 on computed_node_properties for select
-to anon
 using ( true );
+
