@@ -1,7 +1,5 @@
 import {
   fetchAllCachedNodeProperties,
-  fetchComputedNodeProperties,
-  getCachedPropertyNodeList,
   insertComputedNodeProperties,
 } from "../api/db";
 import { fetchOsmWaysForNode, requestOsmNodePosition } from "../api/osm";
