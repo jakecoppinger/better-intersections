@@ -185,8 +185,10 @@ export interface OSMNode {
 /** The fields returned from the database */
 export interface ComputedNodePropertiesRow {
   osm_node_id: number;
+  latitude:number;
+  longitude:number;
   num_road_lanes: number | null;
-  // is_road_oneway: boolean | null;
+  is_road_oneway: boolean;
 }
 export interface IntersectionStatsOSMComputed {
   // isInCoS?: boolean;

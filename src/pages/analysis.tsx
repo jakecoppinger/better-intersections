@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
-import { fetchComputedNodeProperties, updateComputedNodeProperties } from "../api/db";
+import { fetchComputedNodeProperties, insertComputedNodeProperties } from "../api/db";
 
 
 
@@ -102,8 +102,11 @@ const IntersectionTable = ({
   );
 };
 
-/** Attempts to fetch cached stats for an OSM node from the DB.
- * If it doesn't exist in the DB, fetches it from OSM API and caches it before returning.
+/**
+ * Attempts to fetch cached stats for an OSM node from the DB.
+ * If it doesn't exist in the DB, fetches it from OSM API.
+ * 
+ * Does not cache the result in the DB as RLS prevents that.
  */
 async function fetchOrGenerateExtraIntersectionStats(intersection: IntersectionStats): Promise<IntersectionStatsOSMComputed & IntersectionStatsLocalComputed> {
   const localComputedStats: IntersectionStatsLocalComputed = {
@@ -122,7 +125,6 @@ async function fetchOrGenerateExtraIntersectionStats(intersection: IntersectionS
   }
 
   const osmComputedStats = await computeOSMNodeStats(intersection.osmId);
-  await updateComputedNodeProperties(intersection.osmId, osmComputedStats);
   return {
     ...osmComputedStats,
     ...localComputedStats

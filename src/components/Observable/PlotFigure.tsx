@@ -2,6 +2,10 @@
 import { useEffect, useRef } from "react";
 import * as Plot from "@observablehq/plot";
 
+/**
+ * See docs:
+ * https://observablehq.com/plot/features/plots
+ */
 export function PlotFigure({ options }: {options: Plot.PlotOptions}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
