@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl } from "./config";
 import { computedNodeProperties } from "./utils/computed-node-properties";
 import { getIntersections} from "./utils/utils";
-import { decorateIntersectionsWithCouncilName } from "./utils/council-calculations";
+import { generateSignalNodeIdToCouncilNameMap } from "./utils/council-calculations";
 
 /** This key should never be be publicly accessible. */
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;

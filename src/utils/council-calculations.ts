@@ -1,7 +1,9 @@
 import { IntersectionStats, OSMNode, OSMRelation} from "../types";
 import { overpassTurboRequest } from "../api/overpass";
 
+/** OSM relation for Sydney */
 const sydneyOsmRelation = 5750005;
+
 export const generateAllCouncilsQuery = (relationId: number) => `
 [out:json][timeout:25];
 rel(${relationId});map_to_area->.searchArea;
@@ -14,6 +16,10 @@ out tags;
 
 /**
  * A very rough algorithm for tagging each intersection with the council it's in!
+ * Only searches within Sydney councils (ie. admin level 6 relations in OSM)
+ * 
+ * Returns a map of traffic signal node IDs to the name of the council they are in
+ * (incomplete of course)
  * 
  * algo:
  * create map (ie. record, lookup table etc) for all traffic signal nodes
@@ -24,8 +30,8 @@ out tags;
  *     check if traffic light is in council signal lookup map
  *     if so, set value of og traffic signal map to council name
  */
-export async function decorateIntersectionsWithCouncilName(intersections: IntersectionStats[]): Promise<
-  (IntersectionStats & { councilName: string | undefined })[]
+export async function generateSignalNodeIdToCouncilNameMap(intersections: IntersectionStats[]): Promise<
+  Map<number,string>
 > {
   const allSydneyCouncilsQuery = generateAllCouncilsQuery(sydneyOsmRelation);
   const councilResults = (await overpassTurboRequest(
@@ -37,10 +43,11 @@ export async function decorateIntersectionsWithCouncilName(intersections: Inters
       relationId: council.id,
       councilName: council.tags.name as string,
     }))
-    .filter((council) => 
-      council.councilName === 'Council of the City of Sydney'
-      || council.councilName === 'Randwick City Council');
-  console.log(councilList);
+
+    // .filter((council) =>  // Good for debugging
+    //   council.councilName === 'Council of the City of Sydney'
+    //   || council.councilName === 'Randwick City Council');
+  // console.log(councilList);
 
   /** Map of traffic signal node IDs to names of council they are in */
   const trafficSignalToCouncilLookup = new Map<number,string>();
@@ -62,10 +69,7 @@ export async function decorateIntersectionsWithCouncilName(intersections: Inters
       }
     }
   }
-  return intersections.map((intersection) => ({
-    ...intersection,
-    councilName: trafficSignalToCouncilLookup.get(intersection.osmId),
-  }));
+  return trafficSignalToCouncilLookup;
 }
 
 

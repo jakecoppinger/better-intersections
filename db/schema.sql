@@ -36,7 +36,8 @@ create table measurements (
   notes text,
   -- latitude & longitude of the node
   latitude float,
-  longitude float
+  longitude float,
+  councilName: text,
 );
 
 -- Set up Row Level Security (RLS)

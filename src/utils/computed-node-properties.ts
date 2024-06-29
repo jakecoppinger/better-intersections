@@ -8,7 +8,7 @@ import {
   IntersectionStats,
   IntersectionStatsWithComputed,
 } from "../types";
-import { decorateIntersectionsWithCouncilName } from "./council-calculations";
+import { generateSignalNodeIdToCouncilNameMap } from "./council-calculations";
 import {
   calculateAverageIntersectionMaxWait,
   calculateAverageIntersectionTotalRedDuration,
@@ -34,8 +34,7 @@ export async function computedNodeProperties(
    */
   serviceRoleSupabase?: SupabaseClient
 ): Promise<IntersectionStatsWithComputed[]> {
-  const decoratedIntersections = await decorateIntersectionsWithCouncilName(intersections);
-  const osmNodeIds = decoratedIntersections
+  const osmNodeIds = intersections
     .map((intersection) => intersection.osmId)
   
   const newIntersections: IntersectionStatsWithComputed[] = [];
@@ -49,6 +48,8 @@ export async function computedNodeProperties(
     cachedNodeIdsMap.set(value.osmId, value);
   });
 
+  const signalNodeIdToCouncilNameMap = await generateSignalNodeIdToCouncilNameMap(intersections);
+
   // We intentionally want to do this in serial to avoid hitting OSM API all at once
   for (let i = 0; i < osmNodeIds.length; i++) {
     const nodeId = osmNodeIds[i];
@@ -57,14 +58,14 @@ export async function computedNodeProperties(
         nodeId
       ) as ComputedNodeProperties;
       newIntersections.push({
-        ...decoratedIntersections[i],
+        ...intersections[i],
         ...cachedProperties,
       });
       continue;
     }
     console.log(`Cache miss for node ${nodeId}. Fetching from OSM API.`);
 
-    const intersection: IntersectionStats = decoratedIntersections[i];
+    const intersection: IntersectionStats = intersections[i];
     const ways = await fetchOsmWaysForNode(nodeId);
 
     // Generate computed properties
@@ -91,6 +92,7 @@ export async function computedNodeProperties(
       longitude,
     });
 
+
     const allComputedProperties: ComputedNodeProperties = {
       osmId: nodeId,
       latitude,
@@ -101,6 +103,7 @@ export async function computedNodeProperties(
       numRoadLanes,
       isRoadOneway,
       humanName,
+      councilName: signalNodeIdToCouncilNameMap.get(nodeId) || null,
     };
     const intersectionStatsWithComputed: IntersectionStatsWithComputed = {
       ...intersection,
