@@ -187,20 +187,10 @@ export interface OSMNode {
   lon: number;
   tags: Record<string, string>;
 }
-// export interface IntersectionStatsOSMComputed {
-//   // isInCoS?: boolean;
-//   // isAStateRoad?: boolean;
-//   numRoadLanes: number | null;
-//   isRoadOneway?: boolean;
-// }
-
-// export interface IntersectionStatsLocalComputed {
-//   /** Average of all measurements */
-//   averageCycleTime: number;
-//   averageTotalRedDuration: number;
-// }
 
 export interface ComputedNodeProperties {
+  osmId: number;
+
   latitude: number;
   longitude: number;
 

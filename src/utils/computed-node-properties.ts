@@ -1,5 +1,7 @@
 import {
+  fetchAllCachedNodeProperties,
   fetchComputedNodeProperties,
+  getCachedPropertyNodeList,
   insertComputedNodeProperties,
 } from "../api/db";
 import { fetchOsmWaysForNode, requestOsmNodePosition } from "../api/osm";
@@ -35,24 +37,27 @@ export async function computedNodeProperties(
   const osmNodeIds = intersections.map((intersection) => intersection.osmId);
   const newIntersections: IntersectionStatsWithComputed[] = [];
 
+  console.log(`Fetching cached node ids from DB...`);
+  const cachedNodeProperties = await fetchAllCachedNodeProperties();
+  console.log(`Cache length: ${cachedNodeProperties.length} nodes.`);
+
+  const cachedNodeIdsMap = new Map<number, ComputedNodeProperties>();
+  cachedNodeProperties.forEach((value) => {
+    cachedNodeIdsMap.set(value.osmId, value);
+  });
+
+
   // We intentionally want to do this in serial to avoid hitting OSM API all at once
   for (let i = 0; i < osmNodeIds.length; i++) {
-    const nodeId: number = osmNodeIds[i];
-
-    const maybeExistingComputedProperties = await fetchComputedNodeProperties(
-      nodeId
-    );
-    // If we have the computed properties cached, use them
-    if (maybeExistingComputedProperties !== undefined) {
+    const nodeId = osmNodeIds[i];
+    if (cachedNodeIdsMap.has(nodeId)) {
+      const cachedProperties = cachedNodeIdsMap.get(
+        nodeId
+      ) as ComputedNodeProperties;
       newIntersections.push({
         ...intersections[i],
-        ...maybeExistingComputedProperties,
+        ...cachedProperties,
       });
-      if (logProgress) {
-        console.log(
-          `Found existing computed properties for node ${nodeId} in cache.`
-        );
-      }
       continue;
     }
     console.log(`Cache miss for node ${nodeId}. Fetching from OSM API.`);
@@ -78,6 +83,7 @@ export async function computedNodeProperties(
     const isRoadOneway = mainWay ? mainWay.tags.oneway === "yes" : false;
 
     const allComputedProperties: ComputedNodeProperties = {
+      osmId: nodeId,
       latitude,
       longitude,
       averageTotalRedDuration,

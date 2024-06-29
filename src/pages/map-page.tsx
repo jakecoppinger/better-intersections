@@ -86,7 +86,7 @@ export function MapComponent() {
   useEffect(() => {
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
-      const richIntersections = await computedNodeProperties(intersections);
+      const richIntersections = await computedNodeProperties(intersections, true);
       setState((s) => ({
         ...s,
         points: richIntersections,

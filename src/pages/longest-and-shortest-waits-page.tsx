@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
-import { IntersectionStats, IntersectionStatsWithComputed, Way } from "../types";
+import {
+  IntersectionStats,
+  IntersectionStatsWithComputed,
+  Way,
+} from "../types";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import {
   filterOutNonRoadWays,
@@ -33,7 +37,7 @@ const IntersectionTableRow = ({
   }, [intersection.osmId]);
 
   /** mainWay is undefined when loading, null when no adjacent road exists */
-  const mainWay: Way | undefined | null=
+  const mainWay: Way | undefined | null =
     adjacentWays !== undefined
       ? getMainWayForIntersection(adjacentWays)
       : undefined;
@@ -89,15 +93,13 @@ const IntersectionTable = ({
 
 export default function LongestAndShortestWaits() {
   const [intersections, setIntersections] = useState<
-  IntersectionStatsWithComputed[] | undefined
+    IntersectionStatsWithComputed[] | undefined
   >(undefined);
 
   useEffect(() => {
     async function getIntersectionData() {
       const intersections = await getIntersections();
-      const richIntersections = await computedNodeProperties(
-        intersections,
-      );
+      const richIntersections = await computedNodeProperties(intersections);
       setIntersections(richIntersections);
     }
     getIntersectionData();
@@ -125,7 +127,7 @@ export default function LongestAndShortestWaits() {
           instructions for contributing!
         </HashLink>
       </p>
-      
+
       {intersections ? (
         <p>
           These examples pulled from {intersections.length} intersections which
@@ -134,7 +136,7 @@ export default function LongestAndShortestWaits() {
       ) : null}
 
       <p>
-        See <Link to={'/about'}>about</Link> for data download.
+        See <Link to={"/about"}>about</Link> for data download.
       </p>
     </HeaderAndFooter>
   );
