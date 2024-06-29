@@ -140,17 +140,36 @@ export default function Analysis() {
   return (
     <HeaderAndFooter>
       <h1>Analysis</h1>
+      <h2>Histogram of all measurements by cycle time</h2>
+      <p>Cycle time of a crossing is average of all measurements at that crossing</p>
       {intersectionsByAverageCycleTime !== undefined ?
-      <PlotFigure
-        options={{
-          y: { grid: true },
-          marks: [
-            Plot.rectY(intersectionsByAverageCycleTime, Plot.binX({ y: "count" }, { x: "averageCycleTime" })),
-            Plot.ruleY([0])
-          ]
-        }}
-      />
-      : null}
+        <PlotFigure
+          options={{
+            y: { grid: true },
+            marks: [
+              Plot.rectY(intersectionsByAverageCycleTime, Plot.binX({ y: "count" }, {
+                interval: 5,
+                x: "averageCycleTime"
+              })),
+              Plot.ruleY([0])
+            ]
+          }}
+        />
+        : null}
+
+
+      <h3>as above, cumulative distribution</h3>
+      {intersectionsByAverageCycleTime !== undefined ?
+        <PlotFigure
+          options={{
+            y: { grid: true },
+            marks: [
+              Plot.rectY(intersectionsByAverageCycleTime, Plot.binX({ y: "count" }, { x: "averageCycleTime", cumulative: true, interval: 5 })),
+              Plot.ruleY([0])
+            ]
+          }}
+        />
+        : null}
 
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <IntersectionTable intersections={shortestIntersectionsFirst} />
