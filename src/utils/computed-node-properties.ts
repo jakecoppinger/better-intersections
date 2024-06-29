@@ -44,7 +44,6 @@ export async function computedNodeProperties(
     cachedNodeIdsMap.set(value.osmId, value);
   });
 
-
   // We intentionally want to do this in serial to avoid hitting OSM API all at once
   for (let i = 0; i < osmNodeIds.length; i++) {
     const nodeId = osmNodeIds[i];
@@ -71,7 +70,7 @@ export async function computedNodeProperties(
       calculateAverageIntersectionTotalRedDuration(intersection);
 
     const averageMaxWait = calculateAverageIntersectionMaxWait(intersection);
-    const averageMaxCycleTime =
+    const averageCycleTime =
       calculateIntersectionAverageCycleTime(intersection);
 
     const mainWay = getMainWayForIntersection(ways);
@@ -86,7 +85,7 @@ export async function computedNodeProperties(
       longitude,
       averageTotalRedDuration,
       averageMaxWait,
-      averageMaxCycleTime,
+      averageCycleTime,
       numRoadLanes,
       isRoadOneway,
     };

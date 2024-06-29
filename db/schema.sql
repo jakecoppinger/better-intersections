@@ -70,7 +70,8 @@ create table computed_node_properties (
   -- If no OSM wayway tag is present, this property should be set to false (OSM implied default)
   is_road_oneway boolean,
 
-  average_max_cycle_time float not null,
+  average_cycle_time float not null,
+
   average_total_red_duration float not null,
   average_max_wait float not null
 );

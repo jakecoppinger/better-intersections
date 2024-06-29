@@ -197,7 +197,7 @@ export interface ComputedNodeProperties {
   numRoadLanes: number | null;
   isRoadOneway: boolean;
 
-  averageMaxCycleTime: number;
+  averageCycleTime: number;
   averageTotalRedDuration: number;
   averageMaxWait: number;
 }
@@ -208,7 +208,7 @@ export interface IntersectionStatsWithComputed extends IntersectionStats {
   numRoadLanes: number | null;
   isRoadOneway: boolean;
 
-  averageMaxCycleTime: number;
+  averageCycleTime: number;
   averageTotalRedDuration: number;
   averageMaxWait: number;
 }
@@ -221,7 +221,7 @@ export interface ComputedNodePropertiesRow {
   num_road_lanes: number | null;
   is_road_oneway: boolean;
 
-  average_max_cycle_time: number;
+  average_cycle_time: number;
   average_total_red_duration: number;
   average_max_wait: number;
 }

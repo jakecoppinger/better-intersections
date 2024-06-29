@@ -86,53 +86,6 @@ const IntersectionTable = ({
   );
 };
 
-/**
- * Attempts to fetch cached stats for an OSM node from the DB.
- * If it doesn't exist in the DB, fetches it from OSM API.
- *
- * Does not cache the result in the DB as RLS prevents that.
- */
-// async function fetchOrGenerateExtraIntersectionStats(intersection: IntersectionStats): Promise<IntersectionStatsOSMComputed & IntersectionStatsLocalComputed> {
-//   const localComputedStats: IntersectionStatsLocalComputed = {
-//       // Local computed properties
-//       averageCycleTime: intersectionAverageCycleTime(intersection),
-//       averageTotalRedDuration: averageIntersectionTotalRedDuration(intersection)
-//   }
-
-//   const computedProperties = await fetchComputedNodeProperties(intersection.osmId);
-//   if(computedProperties !== undefined) {
-//     return {
-//       // OSM data computed properties
-//       numRoadLanes: computedProperties.num_road_lanes,
-//       ...localComputedStats
-//     };
-//   }
-
-//   const osmComputedStats = await computeOSMNodeStats(intersection.osmId, adjacentWays);
-//   return {
-//     ...osmComputedStats,
-//     ...localComputedStats
-//   }
-// }
-
-// async function decorateIntersectionsWithExtraStats(intersections: IntersectionStats[]):
-//   Promise<(IntersectionStats
-//     & IntersectionStatsOSMComputed
-//     & IntersectionStatsLocalComputed
-//   )[]> {
-//   let extraStats: (IntersectionStatsOSMComputed & IntersectionStatsLocalComputed)[] = [];
-//   for (let i = 0; i < intersections.length; i++) {
-//     const osmStats = await fetchOrGenerateExtraIntersectionStats(intersections[i]);
-//     extraStats.push(osmStats);
-//   }
-
-//   return intersections.map((intersection, index) => {
-//     return {
-//       ...intersection,
-//       ...extraStats[index],
-//     };
-//   });
-// }
 
 export default function Analysis() {
   const [intersections, setIntersections] = useState<
@@ -142,11 +95,7 @@ export default function Analysis() {
   useEffect(() => {
     async function getIntersectionData() {
       const intersections = await getIntersections();
-
-      const intersectionsWithExtraStats = await computedNodeProperties(
-        intersections.slice(0, 3)
-      );
-
+      const intersectionsWithExtraStats = await computedNodeProperties( intersections);
       setIntersections(intersectionsWithExtraStats);
     }
     getIntersectionData();

@@ -37,7 +37,7 @@ export async function fetchComputedNodeProperties(
   const { data, error } = await webSupabase
     .from("computed_node_properties")
     .select(
-      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_max_cycle_time,average_total_red_duration,average_max_wait"
+      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait"
     )
     .eq("osm_node_id", nodeId);
 
@@ -48,19 +48,7 @@ export async function fetchComputedNodeProperties(
     return undefined;
   }
   const row = data[0];
-
-  const renamedRow: ComputedNodeProperties = {
-    osmId: row.osm_node_id,
-    numRoadLanes: row.num_road_lanes,
-    latitude: row.latitude,
-    longitude: row.longitude,
-    isRoadOneway: row.is_road_oneway,
-    averageMaxCycleTime: row.average_max_cycle_time,
-    averageTotalRedDuration: row.average_total_red_duration,
-    averageMaxWait: row.average_max_wait,
-  };
-
-  return renamedRow;
+  return mapComputedNodeRowToProperties(row);
 }
 /**
  * This function can only be run by an admin user locally - it will fail on web builds due to RLS.
@@ -76,7 +64,7 @@ export async function insertComputedNodeProperties(
     latitude: properties.latitude,
     longitude: properties.longitude,
     is_road_oneway: properties.isRoadOneway,
-    average_max_cycle_time: properties.averageMaxCycleTime,
+    average_cycle_time: properties.averageCycleTime,
     average_total_red_duration: properties.averageTotalRedDuration,
     average_max_wait: properties.averageMaxWait,
   };
@@ -97,32 +85,32 @@ export async function insertComputedNodeProperties(
 }
 
 /**
+ * Map from the DB schema fields to the TypeScript interface.
+ */
+function mapComputedNodeRowToProperties(
+  row: ComputedNodePropertiesRow
+): ComputedNodeProperties {
+  return {
+    osmId: row.osm_node_id,
+    numRoadLanes: row.num_road_lanes,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    isRoadOneway: row.is_road_oneway,
+    averageCycleTime: row.average_cycle_time,
+    averageTotalRedDuration: row.average_total_red_duration,
+    averageMaxWait: row.average_max_wait,
+  };
+}
+/**
  * Fetch all the cached node properties from the DB at once.
  */
 export async function fetchAllCachedNodeProperties(): Promise<
   ComputedNodeProperties[]
 > {
-  /**
-   * Map from the DB schema fields to the TypeScript interface.
-   */
-  function mapComputedNodeRowToProperties(
-    row: ComputedNodePropertiesRow
-  ): ComputedNodeProperties {
-    return {
-      osmId: row.osm_node_id,
-      numRoadLanes: row.num_road_lanes,
-      latitude: row.latitude,
-      longitude: row.longitude,
-      isRoadOneway: row.is_road_oneway,
-      averageMaxCycleTime: row.average_max_cycle_time,
-      averageTotalRedDuration: row.average_total_red_duration,
-      averageMaxWait: row.average_max_wait,
-    };
-  }
   const { data, error } = await webSupabase
     .from("computed_node_properties")
     .select(
-      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_max_cycle_time,average_total_red_duration,average_max_wait"
+      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait"
     );
 
   if (error) {
