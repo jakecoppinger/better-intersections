@@ -38,16 +38,19 @@ create table measurements (
   latitude float,
   longitude float
 );
+
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
 alter table measurements
   enable row level security;
 
-create policy "Public measurements are viewable by everyone." on measurements
-  for select using (true);
+create policy "Public measurements are visble to everyone."
+on measurements for select
+using (true);
 
-create policy "Users can insert their own measurement." on measurements
-  for insert with check (auth.uid() = id);
+create policy "Users can insert their own measurement."
+on measurements for insert
+to authenticated
+with check ( (select auth.uid()) = user_id );
 
-create policy "Users can update own measurement." on measurements
-  for update using (auth.uid() = id);
+-- Updating own measurements not currently needed.
