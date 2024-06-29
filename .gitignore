@@ -1,7 +1,10 @@
 node_modules
 .DS_Store
+*.swp
+.env
+
+# Compiled JS for web build
 build/
 
-*.swp
-
-.env
+# Compiled JS for local maintenance script
+dist/

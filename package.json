@@ -36,9 +36,10 @@
     }
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false",
+    "start": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts start",
+    "build": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts build",
+    "test": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts test --watchAll=false",
+    "start-maintenance": "cp tsconfigs/node.tsconfig.json tsconfig.json && tsc && node --max_old_space_size=4096 --trace-warnings  ./dist/local-maintenance-entrypoint.js",
     "deploy": "npm run test && npm run build && npx wrangler pages deploy ./build/"
   },
   "eslintConfig": {
