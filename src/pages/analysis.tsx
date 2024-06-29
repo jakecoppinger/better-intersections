@@ -118,7 +118,7 @@ export default function Analysis() {
     <HeaderAndFooter>
       <h1>Analysis</h1>
 
-      <h1>Average cycle time vs num road lanes</h1>
+      <h2>Average cycle time vs num road lanes, coloured by council</h2>
       {intersections !== undefined ? (
         <PlotFigure
           options={{
@@ -140,7 +140,10 @@ export default function Analysis() {
           }}
         />
       ) : null}
-      <h1>Average cycle time vs cycle time max delta </h1>
+
+      <h1>Measurement accuracy</h1>
+      <h2>Average cycle time vs cycle time max delta </h2>
+      <h3>Only includes intersections with more than one measurement</h3>
       {intersections !== undefined ? (
         <PlotFigure
           options={{
@@ -148,9 +151,39 @@ export default function Analysis() {
             inset: 10,
             marks: [
               Plot.frame(),
-              Plot.dot(intersections, {
+              Plot.dot(intersections.filter(intersection => intersection.reports.length>1), {
                 x: "averageCycleTime",
                 y: "cycleTimeMaxDifference",
+                tip: true,
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
+        />
+      ) : null}
+
+      <h2>Cycle time max delta between measurements / average</h2>
+      <h3>Only includes intersections with more than one measurement</h3>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            y: {percent: true},
+            grid: true,
+            inset: 10,
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections
+                .filter(intersection => intersection.reports.length>1)
+                .map(i => ({
+                  ...i, 
+                  maxErrorRatio: i.cycleTimeMaxDifference / i.averageCycleTime}))
+              , {
+                x: "averageCycleTime",
+                y: "maxErrorRatio",
                 tip: true,
                 channels: {
                   "OSM Node ID": {
