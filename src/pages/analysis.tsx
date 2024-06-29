@@ -15,6 +15,28 @@ import { HashLink } from "react-router-hash-link";
 import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
 
+type IntersectionStatsOSMComputed = {
+  isInCoS?: boolean;
+  isAStateRoad?: boolean;
+  numRoadLanes?: number;
+  isOneWay?: boolean;
+}
+
+type IntersectionStatsLocalComputed = {
+  /** Average of all measurements */
+  averageCycleTime: number;
+  averageTotalRedDuration: number;
+}
+
+
+async function computeOSMNodeStats(nodeId: number): Promise<IntersectionStatsOSMComputed> {
+  const ways = await fetchOsmWaysForNode(nodeId);
+  const mainWay = getMainWayForIntersection(ways);
+  // TODO: Add error handling if num lanes is not an integer
+  const numRoadLanes = mainWay ? parseInt(mainWay.tags.lanes) : undefined;
+  return { numRoadLanes };
+}
+
 
 const IntersectionTableRow = ({
   intersection,
@@ -91,15 +113,51 @@ const IntersectionTable = ({
   );
 };
 
+async function decorateIntersectionsWithExtraStats(intersections: IntersectionStats[]):
+  Promise<(IntersectionStats
+    & IntersectionStatsOSMComputed
+    & IntersectionStatsLocalComputed
+  )[]> {
+  let extraStats: IntersectionStatsOSMComputed[] = [];
+  for (let i = 0; i < intersections.length; i++) {
+    const osmNodeId = intersections[i].osmId;
+    const osmStats = await computeOSMNodeStats(osmNodeId);
+    extraStats.push(osmStats);
+  }
+
+  return intersections.map((intersection, index) => {
+    return {
+      ...intersection,
+      ...extraStats[index],
+      ...computeLocalNodeStats(intersection)
+    };
+  });
+}
+
+function computeLocalNodeStats(intersection: IntersectionStats): IntersectionStatsLocalComputed {
+  return {
+    averageCycleTime: intersectionAverageCycleTime(intersection),
+    averageTotalRedDuration: averageIntersectionTotalRedDuration(intersection)
+  }
+}
+
 export default function Analysis() {
   const [intersections, setIntersections] = useState<
     IntersectionStats[] | undefined
+  >(undefined);
+
+  const [intersectionsWithExtraStats, setIntersectionsWithExtraStats] = useState<
+    (IntersectionStats & IntersectionStatsOSMComputed)[] | undefined
   >(undefined);
 
   useEffect(() => {
     async function getIntersectionData() {
       const intersections = await getIntersections();
       setIntersections(intersections);
+
+      const intersectionsWithExtraStats: (IntersectionStats & IntersectionStatsOSMComputed & IntersectionStatsLocalComputed)[] =
+        await decorateIntersectionsWithExtraStats(intersections.slice(0, 3));
+      setIntersectionsWithExtraStats(intersectionsWithExtraStats);
     }
     getIntersectionData();
   }, []);
@@ -140,6 +198,25 @@ export default function Analysis() {
   return (
     <HeaderAndFooter>
       <h1>Analysis</h1>
+
+      {/* <pre>
+        {JSON.stringify(intersectionsWithExtraStats, null, 2)}
+      </pre> */}
+
+      {intersectionsWithExtraStats !== undefined ?
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersectionsWithExtraStats, { x: "averageCycleTime", y: "numRoadLanes" })
+            ]
+          }}
+        />
+        : null}
+
+
       <h2>Histogram of all measurements by cycle time</h2>
       <p>Cycle time of a crossing is average of all measurements at that crossing</p>
       {intersectionsByAverageCycleTime !== undefined ?

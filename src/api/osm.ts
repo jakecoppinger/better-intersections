@@ -77,7 +77,7 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
  * @param osmNode String or number of the OSM Node.
  * @returns Object containing the latitude, longitude and tags of the node.
  */
-export async function requestOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
+export async function requestOsmNodePosition(osmNode: number): Promise<OSMNode> {
   const rawNode = await requestRawOsmNode(parseInt(osmNode.toString()));
   const latString: string | undefined = rawNode.$.lat;
   const lonString: string | undefined = rawNode.$.lon;
@@ -95,7 +95,7 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
 
   try {
     // Update DB with lat/lon so we don't have to fetch it again
-    await updateNodeLatLong(parseFloat(osmNode as string), lat, lon);
+    await updateNodeLatLong(osmNode, lat, lon);
   } catch (e) {
     // TODO: Add error logging to DB
     console.error(`Unable to update lat/lon in db for node ${osmNode}. This is a non-fatal error but unexpected.`);
@@ -112,7 +112,7 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
   return { lat, lon, tags };
 }
 
-export async function fetchOsmWaysForNode(nodeId: string | number): Promise<Way[]> {
+export async function fetchOsmWaysForNode(nodeId: number): Promise<Way[]> {
   const response: string = await (
     await fetch(`https://api.openstreetmap.org/api/0.6/node/${nodeId}/ways`)
   ).text();

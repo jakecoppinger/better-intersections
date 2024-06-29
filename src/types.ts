@@ -19,7 +19,7 @@ export interface TrafficLightReport {
   /** Timestamp of the Google Form submission, or timestamp given if provided */
   timestamp: Date | string;
   /** OpenStreetMap node ID of the intersection */
-  osmId: string | number;
+  osmId: number;
   lat: number;
   lon: number;
   /** How long is the traffic light solid green for */
@@ -38,7 +38,7 @@ export interface TrafficLightReport {
 
 export interface IntersectionStats {
   /** OpenStreetMap node ID of the intersection */
-  osmId: string | number;
+  osmId: number;
   lat: number,
   lon: number,
   reports: TrafficLightReport[];
