@@ -37,7 +37,6 @@ create table measurements (
   -- latitude & longitude of the node
   latitude float,
   longitude float,
-  councilName: text,
 );
 
 -- Set up Row Level Security (RLS)
@@ -53,6 +52,7 @@ create policy "Users can insert their own measurement."
 on measurements for insert
 to authenticated
 with check ( (select auth.uid()) = user_id );
+
 -- Cache for properties of an intersection either calculated from measurements, or from other
 -- OSM data.
 -- Can be wiped at any time. Recomputed by maintenance script.
@@ -72,10 +72,17 @@ create table computed_node_properties (
   is_road_oneway boolean,
 
   average_cycle_time float not null,
+  average_green_duration float not null,
+  average_flashing_red_duration float not null,
+  average_solid_red_duration float not null,
+  average_flashing_and_solid_red_duration float not null,
+  cycle_time_max_difference float not null,
 
-  average_total_red_duration float not null,
-  average_max_wait float not null,
-  human_name text
+  human_name text,
+  council_name text,
+  is_nsw_state_road boolean,
+  osm_highway_classification text,
+  road_max_speed int
 );
 
 alter table computed_node_properties

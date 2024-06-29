@@ -252,10 +252,17 @@ export interface ComputedNodeProperties {
   isRoadOneway: boolean;
 
   averageCycleTime: number;
-  averageTotalRedDuration: number;
-  averageMaxWait: number;
+  averageGreenDuration: number;
+  averageFlashingRedDuration: number;
+  averageFlashingAndSolidRedDuration: number;
+  averageSolidRedDuration: number;
+  cycleTimeMaxDifference: number;
+
   humanName: string | null;
   councilName: string | null;
+  isNSWStateRoad: boolean | null;
+  osmHighwayClassification: string | null;
+  roadMaxSpeed: number | null;
 }
 export interface IntersectionStatsWithComputed extends IntersectionStats {
   latitude: number;
@@ -265,10 +272,17 @@ export interface IntersectionStatsWithComputed extends IntersectionStats {
   isRoadOneway: boolean;
 
   averageCycleTime: number;
-  averageTotalRedDuration: number;
-  averageMaxWait: number;
+  averageGreenDuration: number;
+  averageFlashingRedDuration: number;
+  averageFlashingAndSolidRedDuration: number;
+  averageSolidRedDuration: number;
+  cycleTimeMaxDifference: number;
+
   humanName: string | null;
   councilName: string | null;
+  isNSWStateRoad: boolean | null;
+  osmHighwayClassification: string | null;
+  roadMaxSpeed: number | null;
 }
 
 /** The fields returned from the database */
@@ -280,8 +294,15 @@ export interface ComputedNodePropertiesRow {
   is_road_oneway: boolean;
 
   average_cycle_time: number;
-  average_total_red_duration: number;
-  average_max_wait: number;
+  average_green_duration: number,
+  average_flashing_red_duration: number;
+  average_flashing_and_solid_red_duration: number;
+  average_solid_red_duration: number;
+  cycle_time_max_difference: number;
+
   human_name: string | null;
   council_name: string | null;
+  is_nsw_state_road: boolean | null;
+  osm_highway_classification: string | null;
+  road_max_speed: number | null;
 }

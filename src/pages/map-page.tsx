@@ -154,13 +154,13 @@ export function MapComponent() {
           <GeolocateControl position="bottom-right" />
           {state.points
             ? state.points.map((intersection) => {
-                const totalRedDuration = intersection.averageTotalRedDuration;
+                const totalRedDuration = intersection.averageFlashingAndSolidRedDuration;
 
                 /* Check that the current intersection is within the cycle time filter range */
                 if (totalRedDuration >= min && totalRedDuration <= max) {
                   const markerColor =
                     displayMode === "max_ped_wait_time"
-                      ? getMaxWaitMarkerColour(intersection.averageMaxWait)
+                      ? getMaxWaitMarkerColour(intersection.averageFlashingAndSolidRedDuration)
                       : getCycleTimeMarkerColour(totalRedDuration);
                   return (
                     <Marker

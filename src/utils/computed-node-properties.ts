@@ -10,11 +10,17 @@ import {
 } from "../types";
 import { generateSignalNodeIdToCouncilNameMap } from "./council-calculations";
 import {
-  calculateAverageIntersectionMaxWait,
-  calculateAverageIntersectionTotalRedDuration,
-  calculateIntersectionAverageCycleTime,
+  calculateAverageCycleTime,
+  calculateAverageFlashingAndSolidRedDuration,
+  calculateAverageFlashingRedDuration,
+  calculateAverageGreenDuration,
+  calculateAverageSolidRedDuration,
+  calculateCycleTimeMaxDifference,
+  findRoadMaxSpeed,
   getMainWayForIntersection,
   humanNameForIntersection,
+  isIntersectionOnNSWStateRoad,
+  roadClassificationForIntersection,
 } from "./intersection-computed-properties";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -48,7 +54,12 @@ export async function computedNodeProperties(
     cachedNodeIdsMap.set(value.osmId, value);
   });
 
-  const signalNodeIdToCouncilNameMap = await generateSignalNodeIdToCouncilNameMap(intersections);
+  const signalNodeIdToCouncilNameMap = 
+    // Only generate map if on backend. If on frontend and it's cached
+    // we won't need this anyway.
+    serviceRoleSupabase ? 
+      await generateSignalNodeIdToCouncilNameMap(intersections)
+      : new Map<number, string>();
 
   // We intentionally want to do this in serial to avoid hitting OSM API all at once
   for (let i = 0; i < osmNodeIds.length; i++) {
@@ -72,12 +83,6 @@ export async function computedNodeProperties(
     const { lat: latitude, lon: longitude } = await requestOsmNodePosition(
       nodeId
     );
-    const averageTotalRedDuration =
-      calculateAverageIntersectionTotalRedDuration(intersection);
-
-    const averageMaxWait = calculateAverageIntersectionMaxWait(intersection);
-    const averageCycleTime =
-      calculateIntersectionAverageCycleTime(intersection);
 
     const mainWay = getMainWayForIntersection(ways);
 
@@ -97,13 +102,21 @@ export async function computedNodeProperties(
       osmId: nodeId,
       latitude,
       longitude,
-      averageTotalRedDuration,
-      averageMaxWait,
-      averageCycleTime,
+
+      averageCycleTime: calculateAverageCycleTime(intersection),
+      averageGreenDuration: calculateAverageGreenDuration(intersection),
+      averageFlashingRedDuration: calculateAverageFlashingRedDuration(intersection),
+      averageFlashingAndSolidRedDuration: calculateAverageFlashingAndSolidRedDuration(intersection),
+      averageSolidRedDuration: calculateAverageSolidRedDuration(intersection),
+      cycleTimeMaxDifference: calculateCycleTimeMaxDifference(intersection),
+
       numRoadLanes,
       isRoadOneway,
       humanName,
       councilName: signalNodeIdToCouncilNameMap.get(nodeId) || null,
+      isNSWStateRoad: isIntersectionOnNSWStateRoad(intersection, mainWay),
+      osmHighwayClassification: roadClassificationForIntersection(mainWay),
+      roadMaxSpeed: findRoadMaxSpeed(mainWay),
     };
     const intersectionStatsWithComputed: IntersectionStatsWithComputed = {
       ...intersection,

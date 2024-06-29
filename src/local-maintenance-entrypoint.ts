@@ -1,8 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { supabaseUrl } from "./config";
 import { computedNodeProperties } from "./utils/computed-node-properties";
-import { getIntersections} from "./utils/utils";
-import { generateSignalNodeIdToCouncilNameMap } from "./utils/council-calculations";
+import { getIntersections } from "./utils/utils";
 
 /** This key should never be be publicly accessible. */
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;
@@ -13,8 +12,8 @@ if (serviceRoleKey === undefined || serviceRoleKey === "") {
 export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey);
 
 async function updateComputedNodeProperties() {
-  // const intersections = (await getIntersections());
-  const intersections = (await getIntersections()).slice(0, 3);
+  const intersections = await getIntersections();
+  // const intersections = (await getIntersections()).slice(0, 3);
 
   const logProgress = true;
   const richIntersections = await computedNodeProperties(
@@ -40,11 +39,11 @@ async function main() {
 
 main();
 
-process.on('uncaughtException', (err) => {
+process.on("uncaughtException", (err) => {
   console.log(`Uncaught Exception: ${err}, ${JSON.stringify(err)}`);
   process.exit(1);
 });
-process.on('unhandledRejection', err => {
+process.on("unhandledRejection", (err) => {
   console.log(`Unhandled Rejection: ${err}, ${JSON.stringify(err)}`);
   throw err;
 });

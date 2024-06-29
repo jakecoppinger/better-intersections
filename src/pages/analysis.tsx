@@ -6,7 +6,7 @@ import {
   Way,
 } from "../types";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
-import { getIntersections} from "../utils/utils";
+import { getIntersections } from "../utils/utils";
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
@@ -18,7 +18,7 @@ import { getMainWayForIntersection } from "../utils/intersection-computed-proper
 const IntersectionTableRow = ({
   intersection,
 }: {
-  intersection: IntersectionStats & { averageTotalRedDuration: number };
+  intersection: IntersectionStatsWithComputed;
 }) => {
   const [adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(
     undefined
@@ -50,7 +50,7 @@ const IntersectionTableRow = ({
           {intersection.osmId}
         </Link>
       </td>
-      <td>{intersection.averageTotalRedDuration} sec.</td>
+      <td>{intersection.averageFlashingAndSolidRedDuration} sec. (max wait)</td>
       <td>{intersection.reports.length} </td>
     </tr>
   );
@@ -59,7 +59,7 @@ const IntersectionTable = ({
   intersections,
 }: {
   intersections:
-    | (IntersectionStats & { averageTotalRedDuration: number })[]
+    | IntersectionStatsWithComputed[]
     | undefined;
 }) => {
   return (
@@ -87,7 +87,6 @@ const IntersectionTable = ({
   );
 };
 
-
 export default function Analysis() {
   const [intersections, setIntersections] = useState<
     IntersectionStatsWithComputed[] | undefined
@@ -96,7 +95,9 @@ export default function Analysis() {
   useEffect(() => {
     async function getIntersectionData() {
       const intersections = await getIntersections();
-      const intersectionsWithExtraStats = await computedNodeProperties( intersections);
+      const intersectionsWithExtraStats = await computedNodeProperties(
+        intersections
+      );
       setIntersections(intersectionsWithExtraStats);
     }
     getIntersectionData();
@@ -104,12 +105,12 @@ export default function Analysis() {
 
   const longestIntersectionsFirst = intersections
     ? intersections
-        .sort((a, b) => b.averageTotalRedDuration - a.averageTotalRedDuration)
+        .sort((a, b) => b.averageFlashingAndSolidRedDuration - a.averageFlashingAndSolidRedDuration)
         .slice(0, Math.max(5))
     : undefined;
   const shortestIntersectionsFirst = intersections
     ? intersections
-        .sort((a, b) => a.averageTotalRedDuration - b.averageTotalRedDuration)
+        .sort((a, b) => a.averageFlashingAndSolidRedDuration - b.averageFlashingAndSolidRedDuration)
         .slice(0, Math.max(5))
     : undefined;
 
@@ -117,14 +118,10 @@ export default function Analysis() {
     <HeaderAndFooter>
       <h1>Analysis</h1>
 
-      {/* <pre>
-        {JSON.stringify(intersectionsWithExtraStats, null, 2)}
-      </pre> */}
-
+      <h1>Average cycle time vs num road lanes</h1>
       {intersections !== undefined ? (
         <PlotFigure
-          options={
-            {
+          options={{
             grid: true,
             inset: 10,
             marks: [
@@ -133,15 +130,133 @@ export default function Analysis() {
                 x: "averageCycleTime",
                 y: "numRoadLanes",
                 tip: true,
-                channels:{
+                channels: {
                   "OSM Node ID": {
-                    value: d => d.osmId.toString()
-                  }
-                }
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
               }),
             ],
-          }
-        }
+          }}
+        />
+      ) : null}
+      <h1>Average cycle time vs cycle time max delta </h1>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections, {
+                x: "averageCycleTime",
+                y: "cycleTimeMaxDifference",
+                tip: true,
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
+        />
+      ) : null}
+
+      <h1>Average cycle time vs road max speed</h1>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections, {
+                x: "averageCycleTime",
+                y: "roadMaxSpeed",
+                tip: true,
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
+        />
+      ) : null}
+      <h1>Average green duration vs average cycle time - coloured by state roads</h1>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            color: { legend: true },
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections, {
+                x: "averageCycleTime",
+                y: "averageGreenDuration",
+                tip: true,
+                fill: "isNSWStateRoad",
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
+        />
+      ) : null}
+      <h1>Average green duration vs average cycle time - coloured by council name</h1>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            color: { legend: true },
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections, {
+                x: "averageCycleTime",
+                y: "averageGreenDuration",
+                tip: true,
+                fill: "councilName",
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
+        />
+      ) : null}
+
+
+      <h1>Average red duration vs average cycle time - colour state roads</h1>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            color: { legend: true },
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections, {
+                x: "averageCycleTime",
+                y: "averageFlashingAndSolidRedDuration",
+                tip: true,
+                fill: "isNSWStateRoad",
+                channels: {
+                  "OSM Node ID": {
+                    value: (d) => d.osmId.toString(),
+                  },
+                },
+              }),
+            ],
+          }}
         />
       ) : null}
 

@@ -5,12 +5,31 @@ import {
   filterOutWaysWithoutName,
 } from "./utils";
 
+export { isIntersectionOnNSWStateRoad } from "./IntersectionPropertyCalculations/isNSWStateRoad";
+
+export function findRoadMaxSpeed(mainWay: Way | null): number | null {
+  if (!mainWay) {
+    return null;
+  }
+  return mainWay.tags.maxspeed ? parseInt(mainWay.tags.maxspeed) : null;
+}
+
+export function roadClassificationForIntersection(
+  mainWay: Way | null
+): string | null {
+  if (!mainWay) {
+    return null;
+  }
+
+  return mainWay.tags.highway;
+}
+
 // TODO: This can do with much improvement, not easy though
 export function humanNameForIntersection({
   intersection,
   ways,
   latitude,
-  longitude
+  longitude,
 }: {
   intersection: IntersectionStats;
   ways: Way[];
@@ -25,43 +44,45 @@ export function humanNameForIntersection({
   return mainWay ? `${mainWay.tags.name} at ${latitude},${longitude}` : null;
 }
 
-export function calculateAverageIntersectionTotalRedDuration(
+export const calculateAverageFlashingAndSolidRedDuration = (
   intersection: IntersectionStats
-): number {
-  const totalCycleTime = intersection.reports.reduce(
-    (acc, report) => acc + report.cycleLength,
+): number =>
+  intersection.reports.reduce(
+    (acc, report) => acc + report.flashingDuration + report.redDuration,
     0
-  );
-  return totalCycleTime / intersection.reports.length;
-}
+  ) / intersection.reports.length;
 
-/**
- * Calculate the average of the maximum wait time for an intersection.
- * Max wait is calculated as the sum of red and flashing red light durations.
- */
-export function calculateAverageIntersectionMaxWait(
+export const calculateAverageGreenDuration = (
   intersection: IntersectionStats
-): number {
-  return (
-    intersection.reports.reduce(
-      (acc, report) => acc + report.redDuration + report.flashingDuration,
-      0
-    ) / intersection.reports.length
-  );
-}
+): number =>
+  intersection.reports.reduce((acc, report) => acc + report.greenDuration, 0) /
+  intersection.reports.length;
 
-/**
- * Calculate the average cycle time of all reports for an intersection.
- * @param intersection
- */
-export function calculateIntersectionAverageCycleTime(
+export const calculateAverageFlashingRedDuration = (
   intersection: IntersectionStats
-): number {
-  return (
-    intersection.reports.reduce((acc, report) => acc + report.cycleLength, 0) /
-    intersection.reports.length
-  );
-}
+): number =>
+  intersection.reports.reduce(
+    (acc, report) => acc + report.flashingDuration,
+    0
+  ) / intersection.reports.length;
+
+export const calculateAverageSolidRedDuration = (
+  intersection: IntersectionStats
+): number =>
+  intersection.reports.reduce((acc, report) => acc + report.redDuration, 0) /
+  intersection.reports.length;
+
+export const calculateAverageCycleTime = (
+  intersection: IntersectionStats
+): number =>
+  intersection.reports.reduce((acc, report) => acc + report.cycleLength, 0) /
+  intersection.reports.length;
+
+export const calculateCycleTimeMaxDifference = (
+  intersection: IntersectionStats
+): number =>
+  Math.max(...intersection.reports.map((report) => report.cycleLength)) -
+  Math.min(...intersection.reports.map((report) => report.cycleLength));
 
 /**
  * Takes in unfiltered list of ways and returns the most relevent named main road for the intersection
@@ -73,10 +94,18 @@ export function calculateIntersectionAverageCycleTime(
 export function getMainWayForIntersection(ways: Way[]): Way | null {
   const waysWithNames = filterOutWaysWithoutName(ways);
   const cycleways = filterOnlyCycleways(waysWithNames);
-  const nonRoadWays = filterOutNonRoadWays(waysWithNames);
+  const onlyRoadWays = filterOutNonRoadWays(waysWithNames);
 
-  if (nonRoadWays.length > 0) {
-    return nonRoadWays[0];
+  if (onlyRoadWays.length > 0) {
+    // TODO: Pick way with the highest rated road classification if more than one
+    if (onlyRoadWays.length > 1) {
+      console.warn(
+        `Node ${ways[0].id} has multiple non-road ways ${JSON.stringify(
+          onlyRoadWays
+        )}. Picking the first one.`
+      );
+    }
+    return onlyRoadWays[0];
   }
 
   if (cycleways.length > 0) {

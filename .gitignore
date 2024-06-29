@@ -8,3 +8,5 @@ build/
 
 # Compiled JS for local maintenance script
 dist/
+
+maintenance-log.txt

@@ -27,8 +27,9 @@ export async function getIntersectionMeasurements(): Promise<
   return data.filter((formResponse) => formResponse.osm_node_id !== null);
 }
 
-const computedNodesSelectString = 
-  "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_cycle_time,average_total_red_duration,average_max_wait,human_name,council_name"
+
+// Can't be generated from an array; supabase does some static analysis
+const computedNodesSelectString = "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,human_name,council_name,is_nsw_state_road,osm_highway_classification,road_max_speed,average_cycle_time,average_green_duration,average_flashing_red_duration,average_flashing_and_solid_red_duration,average_solid_red_duration,cycle_time_max_difference";
 
 /**
  * Fetch row from the DB.
@@ -65,11 +66,19 @@ export async function insertComputedNodeProperties(
     latitude: properties.latitude,
     longitude: properties.longitude,
     is_road_oneway: properties.isRoadOneway,
+    
     average_cycle_time: properties.averageCycleTime,
-    average_total_red_duration: properties.averageTotalRedDuration,
-    average_max_wait: properties.averageMaxWait,
+    average_green_duration: properties.averageGreenDuration,
+    average_flashing_red_duration: properties.averageFlashingRedDuration,
+    average_flashing_and_solid_red_duration: properties.averageFlashingAndSolidRedDuration,
+    average_solid_red_duration: properties.averageSolidRedDuration,
+    cycle_time_max_difference: properties.cycleTimeMaxDifference,
+
     human_name: properties.humanName,
-    council_name: properties.councilName
+    council_name: properties.councilName,
+    is_nsw_state_road: properties.isNSWStateRoad,
+    osm_highway_classification: properties.osmHighwayClassification,
+    road_max_speed: properties.roadMaxSpeed,
   };
   const { error } = await serviceRoleSupabase
     .from("computed_node_properties")
@@ -100,10 +109,16 @@ function mapComputedNodeRowToProperties(
     longitude: row.longitude,
     isRoadOneway: row.is_road_oneway,
     averageCycleTime: row.average_cycle_time,
-    averageTotalRedDuration: row.average_total_red_duration,
-    averageMaxWait: row.average_max_wait,
+    averageGreenDuration: row.average_green_duration,
+    averageFlashingRedDuration: row.average_flashing_red_duration,
+    averageFlashingAndSolidRedDuration: row.average_flashing_and_solid_red_duration,
+    averageSolidRedDuration: row.average_solid_red_duration,
+    cycleTimeMaxDifference: row.cycle_time_max_difference,
     humanName: row.human_name,
-    councilName: row.council_name
+    councilName: row.council_name,
+    isNSWStateRoad: row.is_nsw_state_road,
+    osmHighwayClassification: row.osm_highway_classification,
+    roadMaxSpeed: row.road_max_speed,
   };
 }
 /**
