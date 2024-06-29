@@ -87,6 +87,15 @@ const IntersectionTable = ({
   );
 };
 
+const universalPlotChannels ={
+  "OSM Node ID": {
+    value: (d: IntersectionStatsWithComputed) => d.osmId.toString(),
+  },
+  "Name": {
+    value: (d: IntersectionStatsWithComputed) => d.humanName,
+  }
+}
+
 export default function Analysis() {
   const [intersections, setIntersections] = useState<
     IntersectionStatsWithComputed[] | undefined
@@ -124,17 +133,15 @@ export default function Analysis() {
           options={{
             grid: true,
             inset: 10,
+            color: { legend: true },
             marks: [
               Plot.frame(),
               Plot.dot(intersections, {
                 x: "averageCycleTime",
                 y: "numRoadLanes",
                 tip: true,
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                fill: "councilName",
+                channels:universalPlotChannels,
               }),
             ],
           }}
@@ -155,11 +162,7 @@ export default function Analysis() {
                 x: "averageCycleTime",
                 y: "cycleTimeMaxDifference",
                 tip: true,
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                channels: universalPlotChannels,
               }),
             ],
           }}
@@ -168,6 +171,7 @@ export default function Analysis() {
 
       <h2>Cycle time max delta between measurements / average</h2>
       <h3>Only includes intersections with more than one measurement</h3>
+      <p>This chart shows that while there are a number of </p>
       {intersections !== undefined ? (
         <PlotFigure
           options={{
@@ -185,11 +189,7 @@ export default function Analysis() {
                 x: "averageCycleTime",
                 y: "maxErrorRatio",
                 tip: true,
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                channels: universalPlotChannels,
               }),
             ],
           }}
@@ -208,17 +208,15 @@ export default function Analysis() {
                 x: "averageCycleTime",
                 y: "roadMaxSpeed",
                 tip: true,
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                channels: universalPlotChannels,
               }),
             ],
           }}
         />
       ) : null}
-      <h1>Average green duration vs average cycle time - coloured by state roads</h1>
+      <h1>NSW State Roads</h1>
+      <h2>Road speed limit vs average cycle time - coloured by state roads</h2>
+      <p>Only includes crossings detected within a Sydney Council</p>
       {intersections !== undefined ? (
         <PlotFigure
           options={{
@@ -227,21 +225,49 @@ export default function Analysis() {
             color: { legend: true },
             marks: [
               Plot.frame(),
-              Plot.dot(intersections, {
+              Plot.dot(intersections
+                .filter(i => i.councilName)
+                .map(i => ({...i,
+                  isNSWStateRoadString: i.isNSWStateRoad ? "NSW State Road" : "Unknown"
+                }))
+                , {
                 x: "averageCycleTime",
-                y: "averageGreenDuration",
+                y: "roadMaxSpeed",
                 tip: true,
-                fill: "isNSWStateRoad",
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                fill: "isNSWStateRoadString",
+                channels: universalPlotChannels,
               }),
             ],
           }}
         />
       ) : null}
+
+      <h2>Average green duration vs average cycle time - colour state roads</h2>
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            color: { legend: true },
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections
+                .filter(i => i.councilName)
+                .map(i => ({...i,
+                  isNSWStateRoadString: i.isNSWStateRoad ? "NSW State Road" : "Unknown"
+                })), {
+                x: "averageCycleTime",
+                y: "averageGreenDuration",
+                tip: true,
+                fill: "isNSWStateRoadString",
+                channels: universalPlotChannels,
+              }),
+            ],
+          }}
+        />
+      ) : null}
+
+
       <h1>Average green duration vs average cycle time - coloured by council name</h1>
       {intersections !== undefined ? (
         <PlotFigure
@@ -256,42 +282,13 @@ export default function Analysis() {
                 y: "averageGreenDuration",
                 tip: true,
                 fill: "councilName",
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
+                channels: universalPlotChannels,
               }),
             ],
           }}
         />
       ) : null}
 
-
-      <h1>Average red duration vs average cycle time - colour state roads</h1>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            color: { legend: true },
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections, {
-                x: "averageCycleTime",
-                y: "averageFlashingAndSolidRedDuration",
-                tip: true,
-                fill: "isNSWStateRoad",
-                channels: {
-                  "OSM Node ID": {
-                    value: (d) => d.osmId.toString(),
-                  },
-                },
-              }),
-            ],
-          }}
-        />
-      ) : null}
 
       <h2>Histogram of all measurements by cycle time</h2>
       <p>
