@@ -1,6 +1,6 @@
 
 import { supabase } from "../utils/supabase-client";
-import { IntersectionMeasurementResult, OSMNode } from "../types";
+import { ComputedNodePropertiesRow, IntersectionMeasurementResult, IntersectionStatsOSMComputed, OSMNode } from "../types";
 
 export async function getIntersectionMeasurements(): Promise<IntersectionMeasurementResult[]> {
   const { data, error } = await supabase
@@ -29,4 +29,40 @@ export async function updateNodeLatLong(nodeId: number, lat: number, lon: number
   if (error) {
     throw new Error(`Error updating db for node ${nodeId}: ${error}`);
   }
+}
+
+/**
+ * Fetch row from the DB.
+ * If row does not exist for the given nodeId, returns undefined.
+ */
+export async function fetchComputedNodeProperties(nodeId: number): Promise<ComputedNodePropertiesRow | undefined> {
+  const { data, error } = await supabase
+    .from('computed_node_properties')
+    .select('osm_node_id,num_road_lanes')
+    // .select('osm_node_id,num_road_lanes,is_road_oneway')
+    .eq('osm_node_id', nodeId)
+  
+  if (error) {
+    throw error;
+  }
+  if(data.length !== 1) {
+    return undefined;
+  }
+  return data[0];
+}
+export async function updateComputedNodeProperties(nodeId: number, properties: IntersectionStatsOSMComputed): Promise<void> {
+  const { error } = await supabase
+    .from('computed_node_properties')
+    .update({
+      osm_node_id: nodeId,
+      num_road_lanes: properties.numRoadLanes, 
+      // is_road_oneway: properties.isRoadOneway
+    })
+    .eq('osm_node_id', nodeId)
+  
+  if (error) {
+    throw new Error(`Error updating computed node properties DB for node ${nodeId}: ${error}`);
+  }
+  console.log("updated DB with computed node stats");
+  return;
 }

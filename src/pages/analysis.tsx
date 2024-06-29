@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
-import { IntersectionStats, Way } from "../types";
+import { IntersectionStats, IntersectionStatsLocalComputed, IntersectionStatsOSMComputed, Way } from "../types";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import {
   averageIntersectionTotalRedDuration,
@@ -14,26 +14,15 @@ import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
+import { fetchComputedNodeProperties, updateComputedNodeProperties } from "../api/db";
 
-type IntersectionStatsOSMComputed = {
-  isInCoS?: boolean;
-  isAStateRoad?: boolean;
-  numRoadLanes?: number;
-  isOneWay?: boolean;
-}
-
-type IntersectionStatsLocalComputed = {
-  /** Average of all measurements */
-  averageCycleTime: number;
-  averageTotalRedDuration: number;
-}
 
 
 async function computeOSMNodeStats(nodeId: number): Promise<IntersectionStatsOSMComputed> {
   const ways = await fetchOsmWaysForNode(nodeId);
   const mainWay = getMainWayForIntersection(ways);
   // TODO: Add error handling if num lanes is not an integer
-  const numRoadLanes = mainWay ? parseInt(mainWay.tags.lanes) : undefined;
+  const numRoadLanes = mainWay ? parseInt(mainWay.tags.lanes) : null;
   return { numRoadLanes };
 }
 
@@ -113,15 +102,41 @@ const IntersectionTable = ({
   );
 };
 
+/** Attempts to fetch cached stats for an OSM node from the DB.
+ * If it doesn't exist in the DB, fetches it from OSM API and caches it before returning.
+ */
+async function fetchOrGenerateExtraIntersectionStats(intersection: IntersectionStats): Promise<IntersectionStatsOSMComputed & IntersectionStatsLocalComputed> {
+  const localComputedStats: IntersectionStatsLocalComputed = {
+      // Local computed properties
+      averageCycleTime: intersectionAverageCycleTime(intersection),
+      averageTotalRedDuration: averageIntersectionTotalRedDuration(intersection)
+  }
+
+  const computedProperties = await fetchComputedNodeProperties(intersection.osmId);
+  if(computedProperties !== undefined) {
+    return {
+      // OSM data computed properties
+      numRoadLanes: computedProperties.num_road_lanes,
+      ...localComputedStats
+    };
+  }
+
+  const osmComputedStats = await computeOSMNodeStats(intersection.osmId);
+  await updateComputedNodeProperties(intersection.osmId, osmComputedStats);
+  return {
+    ...osmComputedStats,
+    ...localComputedStats
+  }
+}
+
 async function decorateIntersectionsWithExtraStats(intersections: IntersectionStats[]):
   Promise<(IntersectionStats
     & IntersectionStatsOSMComputed
     & IntersectionStatsLocalComputed
   )[]> {
-  let extraStats: IntersectionStatsOSMComputed[] = [];
+  let extraStats: (IntersectionStatsOSMComputed & IntersectionStatsLocalComputed)[] = [];
   for (let i = 0; i < intersections.length; i++) {
-    const osmNodeId = intersections[i].osmId;
-    const osmStats = await computeOSMNodeStats(osmNodeId);
+    const osmStats = await fetchOrGenerateExtraIntersectionStats(intersections[i]);
     extraStats.push(osmStats);
   }
 
@@ -129,16 +144,8 @@ async function decorateIntersectionsWithExtraStats(intersections: IntersectionSt
     return {
       ...intersection,
       ...extraStats[index],
-      ...computeLocalNodeStats(intersection)
     };
   });
-}
-
-function computeLocalNodeStats(intersection: IntersectionStats): IntersectionStatsLocalComputed {
-  return {
-    averageCycleTime: intersectionAverageCycleTime(intersection),
-    averageTotalRedDuration: averageIntersectionTotalRedDuration(intersection)
-  }
 }
 
 export default function Analysis() {

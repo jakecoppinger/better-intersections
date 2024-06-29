@@ -182,3 +182,21 @@ export interface OSMNode {
   lon: number
   tags: Record<string, string>
 }
+/** The fields returned from the database */
+export interface ComputedNodePropertiesRow {
+  osm_node_id: number;
+  num_road_lanes: number | null;
+  // is_road_oneway: boolean | null;
+}
+export interface IntersectionStatsOSMComputed {
+  // isInCoS?: boolean;
+  // isAStateRoad?: boolean;
+  numRoadLanes: number | null;
+  // isRoadOneway?: boolean;
+}
+
+export interface IntersectionStatsLocalComputed {
+  /** Average of all measurements */
+  averageCycleTime: number;
+  averageTotalRedDuration: number;
+}

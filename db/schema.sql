@@ -38,16 +38,46 @@ create table measurements (
   latitude float,
   longitude float
 );
+
+
 -- Set up Row Level Security (RLS)
 -- See https://supabase.com/docs/guides/auth/row-level-security for more details.
 alter table measurements
   enable row level security;
 
-create policy "Public measurements are viewable by everyone." on measurements
-  for select using (true);
+create policy "Public measurements are visible to everyone."
+on measurements for select
+to anon
+using ( true );
 
-create policy "Users can insert their own measurement." on measurements
-  for insert with check (auth.uid() = id);
+create policy "Users can insert their own measurement."
+on measurements for insert
+to authenticated
+with check ( (select auth.uid()) = user_id );
 
-create policy "Users can update own measurement." on measurements
-  for update using (auth.uid() = id);
+-- Cache for properties of an intersection either calculated from measurements, or from other
+-- OSM data.
+-- Can be wiped at any time. Recomputed by maintenance script.
+create table computed_node_properties (
+  osm_node_id bigint primary key,
+
+  -- Latitude and longitude of the OSM node
+  latitude float not null,
+  longitude float not null,
+
+  -- Number of road lanes at the crossing.
+  -- If no OSM lanes count tag is present, this property should be set to null
+  num_road_lanes int,
+
+  -- If the intersection road is oneway for cars
+  -- If no OSM wayway tag is present, this property should be set to false (OSM implied default)
+  is_road_oneway boolean
+);
+
+alter table computed_node_properties
+  enable row level security;
+
+create policy "Public computed_node_properties are visible to everyone."
+on computed_node_properties for select
+to anon
+using ( true );
