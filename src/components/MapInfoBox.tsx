@@ -71,6 +71,11 @@ export const MapInfoBox: FunctionComponent = () => {
               longest and shortest waits measured
             </Link>
           </li>
+          <li>
+            <Link to={`/analysis`}>
+              Analysis of data patterns
+            </Link>
+          </li>
           <li>Further reading on{" "}
             <Link
               target="_blank"

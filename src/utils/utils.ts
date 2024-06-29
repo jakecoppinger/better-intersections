@@ -73,11 +73,23 @@ export function averageIntersectionTotalRedDuration(intersection: IntersectionSt
   return totalCycleTime / intersection.reports.length;
 }
 
+/**
+ * Calculate the average of the maximum wait time for an intersection.
+ * Max wait is calculated as the sum of red and flashing red light durations.
+ */
 export function averageIntersectionMaxWait(intersection: IntersectionStats): number {
   return intersection
     .reports
     .reduce((acc, report) => acc + report.redDuration + report.flashingDuration, 0)
     / intersection.reports.length;
+}
+
+/**
+ * Calculate the average cycle time of all reports for an intersection.
+ * @param intersection 
+ */
+export function intersectionAverageCycleTime(intersection: IntersectionStats): number {
+  return intersection.reports.reduce((acc, report) => acc + report.cycleLength, 0) / intersection.reports.length;
 }
 
 interface MoveEndCallbackProps {
