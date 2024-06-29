@@ -1,16 +1,15 @@
-import { createClient } from '@supabase/supabase-js'
-import { getIntersectionMeasurements, insertComputedNodeProperties } from './api/db';
-import { supabaseUrl } from './config';
+import { createClient } from "@supabase/supabase-js";
+import { supabaseUrl } from "./config";
+import { computedNodeProperties } from "./utils/computed-node-properties";
+import { getIntersections } from "./utils/utils";
 
 /** This key should never be be publicly accessible. */
 const serviceRoleKey = process.env.SERVICE_ROLE_KEY;
-if(serviceRoleKey === undefined || serviceRoleKey === '') {
-  throw new Error('SERVICE_ROLE_KEY env var is not set');
+if (serviceRoleKey === undefined || serviceRoleKey === "") {
+  throw new Error("SERVICE_ROLE_KEY env var is not set");
 }
 
-export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey)
-
-
+export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey);
 
 /**
  * This function:
@@ -21,14 +20,19 @@ export const serviceRoleSupabase = createClient(supabaseUrl, serviceRoleKey)
  * - Inserts the computed properties into the computed_node_properties table
  */
 async function updateComputedNodeProperties() {
-  const intersections = await getIntersectionMeasurements();
-  const osmNodeIds = intersections.map(intersection => intersection.osm_node_id);
-  console.log(osmNodeIds);
-  console.log(`Found ${osmNodeIds.length} unique OSM node IDs in the measurements table`);
+  const intersections = (await getIntersections()).slice(0, 3);
+  const logProgress = true;
+  const richIntersections = await computedNodeProperties(
+    intersections,
+    logProgress,
+    serviceRoleSupabase
+  );
+
+  console.log(richIntersections);
 }
 
 async function main() {
-  console.log('Starting...');
+  console.log("Starting...");
   await updateComputedNodeProperties();
 
   // await insertComputedNodeProperties({
@@ -38,7 +42,7 @@ async function main() {
   //   longitude: 99,
   //   is_road_oneway: false,
   // }, serviceRoleSupabase);
-  console.log('done!');
+  console.log("done!");
 }
 
 main();

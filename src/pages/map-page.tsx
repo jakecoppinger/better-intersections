@@ -7,24 +7,28 @@ import {
   Marker,
   Popup,
   ViewStateChangeEvent,
-  Map
-} from "react-map-gl/dist/esm/exports-mapbox"
+  Map,
+} from "react-map-gl/dist/esm/exports-mapbox";
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
-import { DisplayMode, IntersectionFilterState, IntersectionStats } from "../types";
+import {
+  DisplayMode,
+  IntersectionFilterState,
+  IntersectionStats,
+  IntersectionStatsWithComputed,
+} from "../types";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { IntersectionCard } from "../components/IntersectionCard";
 import {
-  averageIntersectionTotalRedDuration,
   getIntersections,
   getCycleTimeMarkerColour,
   getMaxCycleTime,
   getNextLargestMultipleOf5,
   getMaxWaitMarkerColour,
-  averageIntersectionMaxWait
 } from "../utils/utils";
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
+import { computedNodeProperties } from "utils/computed-node-properties";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -38,9 +42,8 @@ interface State {
   //   // width: number;
   // };
   map?: MapboxMap | undefined;
-  points?: IntersectionStats[];
+  points?: IntersectionStatsWithComputed[];
   markers?: mapboxgl.Marker[];
-  filteredPoints?: IntersectionStats[];
 }
 
 const params = new URLSearchParams(window.location.search);
@@ -81,16 +84,12 @@ export function MapComponent() {
 
   const [displayMode, setDisplayMode] = useState<DisplayMode>("avg_cycle_time");
   useEffect(() => {
-
     async function getIntersectionsWrapper() {
       const intersections = await getIntersections();
+      const richIntersections = await computedNodeProperties(intersections);
       setState((s) => ({
         ...s,
-        points: intersections.filter(
-          (intersection) => intersection.lat && intersection.lon
-        ),
-        // Initially, show all points
-        // filteredPoints: intersections,
+        points: richIntersections,
       }));
     }
     getIntersectionsWrapper();
@@ -132,7 +131,9 @@ export function MapComponent() {
         max={max}
         updateFilter={setCycleTimeFilter}
         displayMode={displayMode}
-        updateDisplaymode={(newDisplayMode: DisplayMode) => { setDisplayMode(newDisplayMode) }}
+        updateDisplaymode={(newDisplayMode: DisplayMode) => {
+          setDisplayMode(newDisplayMode);
+        }}
       />
       <div id="map">
         {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
@@ -152,32 +153,32 @@ export function MapComponent() {
           <FullscreenControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
           {state.points
-            ? state.points.map((intersection: IntersectionStats) => {
-              const totalRedDuration =
-                averageIntersectionTotalRedDuration(intersection);
+            ? state.points.map((intersection) => {
+                const totalRedDuration = intersection.averageTotalRedDuration;
 
-              /* Check that the current intersection is within the cycle time filter range */
-              if (totalRedDuration >= min && totalRedDuration <= max) {
-                const markerColor = displayMode === 'max_ped_wait_time'
-                  ? getMaxWaitMarkerColour(averageIntersectionMaxWait(intersection))
-                  : getCycleTimeMarkerColour(totalRedDuration)
-                return (
-                  <Marker
-                    key={`${intersection.osmId}-${markerColor}`}
-                    latitude={intersection.lat}
-                    longitude={intersection.lon}
-                    onClick={() => {
-                      setPopupIntersection(intersection);
-                      if (!showPopup) {
-                        setShowPopup(true);
-                      }
-                    }}
-                    color={markerColor}
-                  />
-                );
-              }
-              return null;
-            })
+                /* Check that the current intersection is within the cycle time filter range */
+                if (totalRedDuration >= min && totalRedDuration <= max) {
+                  const markerColor =
+                    displayMode === "max_ped_wait_time"
+                      ? getMaxWaitMarkerColour(intersection.averageMaxWait)
+                      : getCycleTimeMarkerColour(totalRedDuration);
+                  return (
+                    <Marker
+                      key={`${intersection.osmId}-${markerColor}`}
+                      latitude={intersection.lat}
+                      longitude={intersection.lon}
+                      onClick={() => {
+                        setPopupIntersection(intersection);
+                        if (!showPopup) {
+                          setShowPopup(true);
+                        }
+                      }}
+                      color={markerColor}
+                    />
+                  );
+                }
+                return null;
+              })
             : null}
 
           {showPopup && popupIntersection ? (

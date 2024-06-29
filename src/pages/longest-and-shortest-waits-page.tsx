@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
-import { IntersectionStats, Way } from "../types";
+import { IntersectionStats, IntersectionStatsWithComputed, Way } from "../types";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import {
-  averageIntersectionTotalRedDuration,
   filterOutNonRoadWays,
   getIntersections,
   getMainWayForIntersection,
@@ -11,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
+import { computedNodeProperties } from "utils/computed-node-properties";
 
 const IntersectionTableRow = ({
   intersection,
@@ -89,32 +89,27 @@ const IntersectionTable = ({
 
 export default function LongestAndShortestWaits() {
   const [intersections, setIntersections] = useState<
-    IntersectionStats[] | undefined
+  IntersectionStatsWithComputed[] | undefined
   >(undefined);
 
   useEffect(() => {
     async function getIntersectionData() {
       const intersections = await getIntersections();
-      setIntersections(intersections);
+      const richIntersections = await computedNodeProperties(
+        intersections,
+      );
+      setIntersections(richIntersections);
     }
     getIntersectionData();
   }, []);
 
-  const intersectionsWithAverageTotalRedDuration = intersections
-    ? intersections.map((i) => {
-        return {
-          ...i,
-          averageTotalRedDuration: averageIntersectionTotalRedDuration(i),
-        };
-      })
-    : undefined;
-  const longestIntersectionsFirst = intersectionsWithAverageTotalRedDuration
-    ? intersectionsWithAverageTotalRedDuration
+  const longestIntersectionsFirst = intersections
+    ? intersections
         .sort((a, b) => b.averageTotalRedDuration - a.averageTotalRedDuration)
         .slice(0, Math.max(5))
     : undefined;
-  const shortestIntersectionsFirst = intersectionsWithAverageTotalRedDuration
-    ? intersectionsWithAverageTotalRedDuration
+  const shortestIntersectionsFirst = intersections
+    ? intersections
         .sort((a, b) => a.averageTotalRedDuration - b.averageTotalRedDuration)
         .slice(0, Math.max(5))
     : undefined;

@@ -1,10 +1,15 @@
 import { supabase as webSupabase } from "../utils/supabase-client";
 import {
+  ComputedNodeProperties,
   ComputedNodePropertiesRow,
   IntersectionMeasurementResult,
 } from "../types";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+/**
+ * Only returns intersections with valid OSM node IDs.
+ * @returns
+ */
 export async function getIntersectionMeasurements(): Promise<
   IntersectionMeasurementResult[]
 > {
@@ -19,9 +24,8 @@ export async function getIntersectionMeasurements(): Promise<
   if (error) {
     throw error;
   }
-  return data;
+  return data.filter((formResponse) => formResponse.osm_node_id !== null);
 }
-
 
 /**
  * Fetch row from the DB.
@@ -29,10 +33,12 @@ export async function getIntersectionMeasurements(): Promise<
  */
 export async function fetchComputedNodeProperties(
   nodeId: number
-): Promise<ComputedNodePropertiesRow | undefined> {
+): Promise<ComputedNodeProperties | undefined> {
   const { data, error } = await webSupabase
     .from("computed_node_properties")
-    .select("osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway")
+    .select(
+      "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,average_max_cycle_time,average_total_red_duration,average_max_wait"
+    )
     .eq("osm_node_id", nodeId);
 
   if (error) {
@@ -41,26 +47,49 @@ export async function fetchComputedNodeProperties(
   if (data.length !== 1) {
     return undefined;
   }
-  return data[0];
+  const row = data[0];
+
+  const renamedRow: ComputedNodeProperties = {
+    numRoadLanes: row.num_road_lanes,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    isRoadOneway: row.is_road_oneway,
+    averageMaxCycleTime: row.average_max_cycle_time,
+    averageTotalRedDuration: row.average_total_red_duration,
+    averageMaxWait: row.average_max_wait,
+  };
+
+  return renamedRow;
 }
 /**
  * This function can only be run by an admin user locally - it will fail on web builds due to RLS.
  */
 export async function insertComputedNodeProperties(
-  properties: ComputedNodePropertiesRow,
+  osmNode: number,
+  properties: ComputedNodeProperties,
   serviceRoleSupabase: SupabaseClient
 ): Promise<void> {
+  const rowProperties: ComputedNodePropertiesRow = {
+    osm_node_id: osmNode,
+    num_road_lanes: properties.numRoadLanes,
+    latitude: properties.latitude,
+    longitude: properties.longitude,
+    is_road_oneway: properties.isRoadOneway,
+    average_max_cycle_time: properties.averageMaxCycleTime,
+    average_total_red_duration: properties.averageTotalRedDuration,
+    average_max_wait: properties.averageMaxWait,
+  };
   const { error } = await serviceRoleSupabase
     .from("computed_node_properties")
     .insert({
-      ...properties,
+      ...rowProperties,
     });
 
   if (error) {
     throw new Error(
-      `Error inserting computed node properties DB for node ${
-        properties.osm_node_id
-      }: ${JSON.stringify(error)}`
+      `Error inserting computed node properties DB for node ${osmNode}: ${JSON.stringify(
+        error
+      )}`
     );
   }
   return;
