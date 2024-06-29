@@ -1,6 +1,6 @@
 import { parseStringPromise } from "xml2js";
 import { OSMNode, Way } from "../types";
-import { tagListToRecord } from "../utils/utils";
+import { generateOSMNodeUrl, tagListToRecord } from "../utils/utils";
 
 let totalLookups = 0;
 let dbCacheHits = 0;
@@ -128,6 +128,10 @@ export async function fetchOsmWaysForNode(nodeId: number): Promise<Way[]> {
     await fetch(`https://api.openstreetmap.org/api/0.6/node/${nodeId}/ways`)
   ).text();
   const osmApiResult = await parseStringPromise(response);
+  if(!osmApiResult.osm || !osmApiResult.osm.way) {
+    console.warn(`No ways found in OSM API response for OSM node ${nodeId} ${generateOSMNodeUrl(nodeId)}`);
+    return [];
+  }
   const ways: Way[] = osmApiResult.osm.way
     .map((way: any) => ({
       id: way.$.id,

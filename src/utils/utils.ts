@@ -9,6 +9,10 @@ import {
   Way,
 } from "../types";
 
+export function generateOSMNodeUrl(osmId: number): string {
+  return `https://www.openstreetmap.org/node/${osmId}`;
+}
+
 /** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
 export function isValidTrafficLightReport(
   formResponse: IntersectionMeasurementResult

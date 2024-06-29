@@ -28,7 +28,7 @@ import {
 } from "../utils/utils";
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
-import { computedNodeProperties } from "utils/computed-node-properties";
+import { computedNodeProperties } from "../utils/computed-node-properties";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";

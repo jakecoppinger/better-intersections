@@ -1,4 +1,4 @@
-import { IntersectionStats } from "types";
+import { IntersectionStats } from "../types";
 
 
 export function calculateAverageIntersectionTotalRedDuration(intersection: IntersectionStats): number {

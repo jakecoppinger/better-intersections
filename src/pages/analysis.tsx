@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
-import { computedNodeProperties } from "utils/computed-node-properties";
+import { computedNodeProperties } from "../utils/computed-node-properties";
 
 const IntersectionTableRow = ({
   intersection,

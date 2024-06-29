@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 // @ts-ignore
 import { HashLink } from "react-router-hash-link";
-import { computedNodeProperties } from "utils/computed-node-properties";
+import { computedNodeProperties } from "../utils/computed-node-properties";
 
 const IntersectionTableRow = ({
   intersection,
