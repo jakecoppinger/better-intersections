@@ -262,7 +262,7 @@ export default function Analysis() {
 
   return (
     <HeaderAndFooterWide pageTitle={"Analysis"}>
-      <p> An expansion of the Better Intersection Cinematic Universe!</p>
+      <p>An expansion of the Better Intersections Cinematic Universe!</p>
 
       <p>
         {" "}
@@ -290,11 +290,15 @@ export default function Analysis() {
         >
           open source on Github
         </Link>
-        . Contributions are very welcome!
+        . Contributions are very welcome! Please raise an issue if you find any
+        bugs, or feel free to contact me via email (
+        <Link to={"mailto:jake@jakecoppinger.com"}>jake@jakecoppinger.com</Link>
+        ) or <Link to={"https://mastodon.social/@jakecoppinger"}>Mastodon</Link>
+        .
       </p>
       <p>
         Please note: this is a living document and is still in a draft stage - I
-        wrote it in 2 days - Jake
+        wrote it in 2 days.
       </p>
 
       <h4>Data sources, implementation and caching concerns</h4>
@@ -326,7 +330,18 @@ export default function Analysis() {
         Sydney specifically.
       </p>
 
-      <h2>How far away from best practice?</h2>
+      <h2>Notes on best practice</h2>
+      <p>
+        More comprehensive details are at{" "}
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+        >
+          Shining a Light on the Traffic Signals of Sydney (July 2023)
+        </Link>
+        .
+      </p>
       <p>
         The City of Sydney{" "}
         <Link to="https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan">
@@ -770,7 +785,11 @@ export default function Analysis() {
         suggests there are a large number of crossings in the City of Sydney
         with nominal cycle times of 90 seconds. This matches with my
         investigation on{" "}
-        <Link to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/">
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+        >
           Shining a Light on the Traffic Signals of Sydney (July 2023)
         </Link>{" "}
         that the CBD grid is on a 90 second cycle time during peak hours.
@@ -916,6 +935,12 @@ export default function Analysis() {
         to its limited nature false negatives (ie. roads incorrectly classified{" "}
         <i>not</i> as a state road) are far more likely than false positives
         (ie. roads incorrectly classified as a state road).
+      </p>
+      <p>
+        Note that as state roads are optimised for "movement" rather than
+        "place" it is expected they will have higher speed limits and longer
+        cycle times than local roads. TfNSW control traffic signal timing no
+        matter which agency is the maintainer of the road.
       </p>
       <h2>
         Road speed limit vs average cycle time in City of Sydney- coloured by
