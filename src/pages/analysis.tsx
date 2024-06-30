@@ -5,7 +5,10 @@ import {
   IntersectionStatsWithComputed,
   Way,
 } from "../types";
-import { HeaderAndFooter } from "../components/HeaderAndFooter";
+import {
+  HeaderAndFooter,
+  HeaderAndFooterWide,
+} from "../components/HeaderAndFooter";
 import { getIntersections } from "../utils/utils";
 import { Link } from "react-router-dom";
 // @ts-ignore
@@ -242,9 +245,7 @@ export default function Analysis() {
   };
 
   return (
-    <HeaderAndFooter>
-      <p>A crowdsourced pedestrian traffic light timing map.</p>
-      <h1>Analysis</h1>
+    <HeaderAndFooterWide pageTitle={"Analysis"}>
       <p>
         These are a collection of charts picking apart the Better Intersections
         dataset. I hope they can demonstrate the value of open data in better
@@ -263,10 +264,18 @@ export default function Analysis() {
 
       <p>
         All code used to generate these charts is{" "}
-        <Link to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx">
+        <Link
+          to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           open source on Github
         </Link>
         . Contributions are very welcome!
+      </p>
+      <p>
+        Please note: this is a living document and is still in a draft stage - I
+        wrote it in 2 days.
       </p>
 
       <h4>Data sources, implementation and caching concerns</h4>
@@ -311,6 +320,11 @@ export default function Analysis() {
           </ul>
         </blockquote>
       </p>
+      <p>
+        I've added lines that display these best practice benchmarks where the
+        maximum wait time is displayed (calculated here as the sum of the
+        flashing red and solid red durations for the same traffic light sample).
+      </p>
 
       <h2>Histogram of average max waits in City of Sydney</h2>
       <p>
@@ -351,6 +365,19 @@ export default function Analysis() {
       />
 
       <h2>Average cycle time vs num road lanes, coloured by council</h2>
+      <p>
+        Strangely there aren't currently many samples outside the City of Sydney
+        of very wide roads. The outliers in the top left (lots of lanes,
+        relatively low max wait) tend to be light-rail adjacent main roads. One
+        example is Pitt St adjacent to Central Station (7 lanes):{" "}
+        <Link
+          to="https://betterintersections.jakecoppinger.com/intersection/node/3500777435"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          betterintersections.jakecoppinger.com/intersection/node/3500777435
+        </Link>
+      </p>
 
       <PlotFigure
         options={{
@@ -390,19 +417,32 @@ export default function Analysis() {
       </p>
       <p>
         The variation of the NorthWest T-Way at Westmead Hospital (node{" "}
-        <a href="https://www.openstreetmap.org/node/610196239">
+        <a
+          href="https://www.openstreetmap.org/node/610196239"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           openstreetmap.org/node/610196239
         </a>
         ) appears to have a huge variance. Perhaps this outlier is a measurement
         error and warrants further investigation. See details of all
         measurements at this intersection at{" "}
-        <Link to="https://betterintersections.jakecoppinger.com/intersection/node/610196239">
+        <Link
+          to="https://betterintersections.jakecoppinger.com/intersection/node/610196239"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           betterintersections.jakecoppinger.com/intersection/node/610196239
         </Link>
         .
       </p>
       <PlotFigure
         options={{
+          x: {
+            label: "Measurement time",
+            ...timeXAxisScaleOptions,
+          },
+          y: { label: "Max wait time (seconds)" },
           marks: [
             Plot.ruleY([0]),
             Plot.lineY(
@@ -441,7 +481,6 @@ export default function Analysis() {
               new Date("2023-03-15").getTime()
             ),
           ],
-          x: timeXAxisScaleOptions,
         }}
       />
       <h2>Change in cycle time per intersection over time</h2>
@@ -984,6 +1023,6 @@ export default function Analysis() {
         These examples pulled from {intersections.length} intersections which
         have a measurement - definitely not every intersection in Sydney.
       </p>
-    </HeaderAndFooter>
+    </HeaderAndFooterWide>
   );
 }
