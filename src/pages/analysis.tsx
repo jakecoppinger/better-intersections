@@ -158,9 +158,68 @@ export default function Analysis() {
     11256996862, // King st cycleway crossing at Elixabeth st, nortbound
   ];
 
+  function verticalLineAtDate(dateStr: string, text: string, strokeColour: string = "red") {
+    return [
+      Plot.ruleX([new Date(dateStr)], { stroke: strokeColour}),
+      Plot.text([{ x: new Date(dateStr), y: 0, text }], {
+        x: "x",
+        y: "y",
+        text: "text",
+        dy: -10, // Adjust vertical position
+        dx: 5, // Adjust horizontal position
+        // anchor: "start",  // Adjust the anchor position
+        fill: "black", // Set the color of the text
+      })
+    ];
+  }
+
   return (
     <HeaderAndFooter>
+      <p>A crowdsourced pedestrian traffic light timing map.</p>
       <h1>Analysis</h1>
+      <p>
+        These are a collection of charts on the Better Intersections dataset. I
+        hope they can = demonstrate the value of open data in better
+        understanding a complex, opaque system, but also as a tool for
+        communicating and demonstrating improvement over time (or lack of).
+      </p>
+
+      <p>
+        I've intentionally added charts to demonstrate the limitations of the
+        accuracy and coverage of the dataset. This is crowdsourced, volunteer
+        contributed data, and as such should not be used as a primary source of
+        truth for any decision making - but a useful tool for further
+        investigation nonetheless.
+      </p>
+
+      <p>
+        All code used to generate these charts is{" "}
+        <Link to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx">
+          open source on Github
+        </Link>
+        . contributions are very welcome!
+      </p>
+
+      <h4>Data sources, implementation and caching concerns</h4>
+      <p>
+        All geographic data is from OpenStreetMap. All measurement data is from
+        Better Intersections.
+      </p>
+
+      <p>
+        Generating these charts requires a large number of queries to Overpass
+        Turbo to fetch OpenStreetMap data (eg. fetching all traffic lights for
+        every council in Sydney). To mitigate load on these community-run
+        servers, all requests are made and cached to the Better Intersections
+        database at compile time.
+      </p>
+      <p>
+        Any intersections added since the last build will trigger client-side
+        requests to the OSM API, with the exception of categorising
+        intersections by council. This means any measurements since the latest
+        build within Sydney will not appear in charts that filter results by
+        Sydney specifically.
+      </p>
 
       <h2>Average cycle time vs num road lanes, coloured by council</h2>
 
@@ -299,8 +358,12 @@ export default function Analysis() {
       </p>
       <p>
         The answer stated is "Traffic lights in Sydney are managed and monitored
-        by Sydney Coordinated Adaptive Traffic System (SCATS). <b>We will monitor
-        the wait times along King Street after construction is complete.</b>" (emphasis mine)
+        by Sydney Coordinated Adaptive Traffic System (SCATS).{" "}
+        <b>
+          We will monitor the wait times along King Street after construction is
+          complete.
+        </b>
+        " (emphasis mine)
       </p>
 
       <p>
@@ -512,12 +575,12 @@ export default function Analysis() {
       />
 
       <h2>
-        How many measurements are of each crossing in the dataset in the City of
-        Sydney?
+        How many measurements are there of each crossing in the dataset in the
+        City of Sydney?
       </h2>
       <p>
-        The number of measurements / crossing in CoS is currently comparable to
-        the wider dataset
+        This indicates the number of measurements per crossing in CoS is
+        currently comparable to the wider dataset.
       </p>
       <PlotFigure
         options={{
@@ -543,6 +606,10 @@ export default function Analysis() {
       />
 
       <h2>Cycle time by first measurement time</h2>
+      <p>
+        This indicates there are cycles of volunteer contribution to Better
+        Intersections data.
+      </p>
       <PlotFigure
         options={{
           grid: true,
@@ -561,6 +628,9 @@ export default function Analysis() {
                 channels: universalPlotChannels,
               }
             ),
+
+            Plot.ruleX([new Date("2023-09-25")], { stroke: "red" }),
+            ...verticalLineAtDate("2023-09-25", "Line:Jake Coppinger ABC interview"),
           ],
           x: timeXAxisScaleOptions,
         }}
