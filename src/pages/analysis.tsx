@@ -111,17 +111,14 @@ export default function Analysis() {
       </HeaderAndFooter>
     );
   }
-  /** "explode" all measurement reports into their own object. Only includes intersections with
-   * more than 1 report
+  /** "explode" all measurement reports into their own object.
    */
-  const explodedIntersections = intersections
-    .filter((intersection) => intersection.reports.length > 1)
-    .flatMap((intersection) =>
-      intersection.reports.map((report) => ({
-        ...report,
-        ...intersection,
-      }))
-    );
+  const explodedIntersections = intersections.flatMap((intersection) =>
+    intersection.reports.map((report) => ({
+      ...report,
+      ...intersection,
+    }))
+  );
 
   const longestIntersectionsFirst = intersections
     .sort(
@@ -164,18 +161,75 @@ export default function Analysis() {
     strokeColour: string = "red"
   ) {
     return [
-      Plot.ruleX([new Date(dateStr)], { stroke: strokeColour }),
+      Plot.ruleX([new Date(dateStr)], { stroke: strokeColour, strokeWidth: 2 }),
       Plot.text([{ x: new Date(dateStr), y: 0, text }], {
         x: "x",
         y: "y",
         text: "text",
         dy: -10, // Adjust vertical position
         dx: 5, // Adjust horizontal position
+        textAnchor: "start",
         // anchor: "start",  // Adjust the anchor position
-        fill: "black", // Set the color of the text
+        fill: strokeColour, // Set the color of the text
       }),
     ];
   }
+
+  /**
+   * @param axis If x, shows a vertical line for an "x" number.
+   * If y, shows a horizontal line for a "y" number
+   * @param textAxisOffset
+   * @returns
+   */
+  function cosBestPracticeLines(axis: "x" | "y", textAxisOffset: number = 0) {
+    const target = 45;
+    const stretch = 30;
+    const textPlot = (text: string, progress: number) => {
+      if (axis === "x") {
+        return Plot.text([{ x: progress, y: 0 + textAxisOffset, text }], {
+          x: "x",
+          y: "y",
+          text: "text",
+          dy: -10,
+          dx: 10,
+          frameAnchor: "left",
+          fill: "white",
+          rotate: -90,
+        });
+      }
+      return Plot.text(
+        [
+          {
+            y: progress,
+            x: 0 + textAxisOffset,
+            text,
+          },
+        ],
+        {
+          x: "x",
+          y: "y",
+          text: "text",
+          dy: 10,
+          dx: 10,
+          frameAnchor: "left",
+          fill: "black",
+        }
+      );
+    };
+
+    return [
+      textPlot("30s target (CoS)", stretch),
+      textPlot("45s max (CoS)", target),
+      axis === "x"
+        ? Plot.ruleX([stretch], { stroke: "green", strokeWidth: 2 })
+        : Plot.ruleY([stretch], { stroke: "green", strokeWidth: 2 }),
+
+      axis === "x"
+        ? Plot.ruleX([target], { stroke: "orange", strokeWidth: 2 })
+        : Plot.ruleY([target], { stroke: "orange", strokeWidth: 2 }),
+    ];
+  }
+
   const histogramPercentageYAxis = (label: string): Plot.ScaleOptions => {
     return {
       tickFormat: (d: number) => {
@@ -258,6 +312,44 @@ export default function Analysis() {
         </blockquote>
       </p>
 
+      <h2>Histogram of average max waits in City of Sydney</h2>
+      <p>
+        Histogram buckets (columns): 10 second buckets centred on multiples of 5
+        that aren't multiples of 10. eg: all mesurements between 15 and 25
+        seconds are placed in the 20 second bucket (column).
+      </p>
+      <p>
+        Average max wait of a crossing is calculated by summing the flashing red
+        and solid red times of each measurement, then averaging across all
+        measurements at that crossing.
+      </p>
+      <PlotFigure
+        options={{
+          y: histogramPercentageYAxis("Percentage of total intersections"),
+          marks: [
+            Plot.rectY(
+              intersections.filter(
+                (i) => i.councilName === "Council of the City of Sydney"
+              ),
+              Plot.binX(
+                { y: "count" },
+                {
+                  thresholds: (x) => {
+                    return [
+                      5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135,
+                      145, 155, 165, 175, 185, 195, 205,
+                    ];
+                  },
+                  x: "averageFlashingAndSolidRedDuration",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+            ...cosBestPracticeLines("x"),
+          ],
+        }}
+      />
+
       <h2>Average cycle time vs num road lanes, coloured by council</h2>
 
       <PlotFigure
@@ -280,7 +372,7 @@ export default function Analysis() {
 
       <h1>Change over time</h1>
 
-      <h2>Change in cycle time per intersection over time</h2>
+      <h2>Change in max wait per intersection over time</h2>
       <p>
         Only includes intersections with more than one measurement, meaning{" "}
         <b>
@@ -313,6 +405,50 @@ export default function Analysis() {
         options={{
           marks: [
             Plot.ruleY([0]),
+            Plot.lineY(
+              explodedIntersections.map((i) => ({
+                ...i,
+                flashingRedAndSolidRedLength:
+                  i.flashingDuration + i.redDuration,
+              })),
+              {
+                x: "timestamp",
+                y: "flashingRedAndSolidRedLength",
+                stroke: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+            Plot.dot(
+              explodedIntersections.map((i) => ({
+                ...i,
+                flashingRedAndSolidRedLength:
+                  i.flashingDuration + i.redDuration,
+              })),
+              {
+                x: "timestamp",
+                y: "flashingRedAndSolidRedLength",
+                stroke: "osmId",
+                fill: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+            ...cosBestPracticeLines(
+              "y",
+              // The text is actually placed on the graph, so need to add an offset so
+              // the scale doesn't go to almost 0
+              new Date("2023-03-15").getTime()
+            ),
+          ],
+          x: timeXAxisScaleOptions,
+        }}
+      />
+      <h2>Change in cycle time per intersection over time</h2>
+      <PlotFigure
+        options={{
+          marks: [
+            Plot.ruleY([0]),
             Plot.lineY(explodedIntersections, {
               x: "timestamp",
               y: "cycleLength",
@@ -334,7 +470,7 @@ export default function Analysis() {
       />
 
       <h2>
-        Change in cycle time per intersection over time, City of Sydney only
+        Change in max wait time per intersection over time, City of Sydney only
       </h2>
       <p>
         As above, however only includes crossings within the City of Sydney
@@ -369,6 +505,12 @@ export default function Analysis() {
                 tip: "x",
                 channels: universalPlotChannels,
               }
+            ),
+            ...cosBestPracticeLines(
+              "y",
+              // The text is actually placed on the graph, so need to add an offset so
+              // the scale doesn't go to almost 0
+              new Date("2023-03-15").getTime()
             ),
           ],
           x: timeXAxisScaleOptions,
@@ -441,6 +583,7 @@ export default function Analysis() {
                 channels: universalPlotChannels,
               }
             ),
+            ...cosBestPracticeLines("y", new Date("2023-03-25").getTime()),
           ],
           x: timeXAxisScaleOptions,
         }}
@@ -551,7 +694,7 @@ export default function Analysis() {
         buckets centred on decades
       </h2>
       <p>
-        There are a lot more 10 second cycle times than the wider dataset. This
+        There are a lot more 90 second cycle times than the wider dataset. This
         suggests there are a large number of crossings in the City of Sydney
         with nominal cycle times of 90 seconds. This matches with my
         investigation on{" "}
@@ -667,38 +810,10 @@ export default function Analysis() {
             ),
 
             Plot.ruleX([new Date("2023-09-25")], { stroke: "red" }),
-            ...verticalLineAtDate(
-              "2023-09-25",
-              "Line:Jake Coppinger ABC interview"
-            ),
+            ...verticalLineAtDate("2023-09-25", "ABC interview", "green"),
           ],
           x: timeXAxisScaleOptions,
           y: { label: "Average cycle time (seconds)" },
-        }}
-      />
-
-      <h1>Measurement accuracy</h1>
-      <h2>Average cycle time vs cycle time max delta </h2>
-      <h3>Only includes intersections with more than one measurement</h3>
-
-      <PlotFigure
-        options={{
-          grid: true,
-          inset: 10,
-          marks: [
-            Plot.frame(),
-            Plot.dot(
-              intersections.filter(
-                (intersection) => intersection.reports.length > 1
-              ),
-              {
-                x: "averageCycleTime",
-                y: "cycleTimeMaxDifference",
-                tip: true,
-                channels: universalPlotChannels,
-              }
-            ),
-          ],
         }}
       />
 
@@ -731,7 +846,45 @@ export default function Analysis() {
         as a state road) are far more likely than false positives (ie. roads
         incorrectly classified as a state road).
       </p>
-      <h2>Road speed limit vs average cycle time - coloured by state roads</h2>
+      <h2>
+        Road speed limit vs average cycle time in City of Sydney- coloured by
+        state roads
+      </h2>
+      <PlotFigure
+        options={{
+          y: { label: "Road speed limit (km/h)" },
+          x: { label: "Average max wait (seconds)" },
+          grid: true,
+          inset: 10,
+          color: { legend: true },
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections
+                .filter(
+                  (i) => i.councilName === "Council of the City of Sydney"
+                )
+                .map((i) => ({
+                  ...i,
+                  isNSWStateRoadString: i.isNSWStateRoad
+                    ? "NSW State Road"
+                    : "Unknown",
+                })),
+              {
+                x: "averageFlashingAndSolidRedDuration",
+                y: "roadMaxSpeed",
+                tip: true,
+                fill: "isNSWStateRoadString",
+                channels: universalPlotChannels,
+              }
+            ),
+
+            ...cosBestPracticeLines("x", 40),
+          ],
+        }}
+      />
+
+      <h2>Road speed limit vs average max wait - coloured by state roads</h2>
       <p>Only includes crossings detected within a Sydney Council</p>
       <PlotFigure
         options={{

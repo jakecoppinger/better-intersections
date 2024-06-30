@@ -48,7 +48,7 @@ export const calculateAverageFlashingAndSolidRedDuration = (
   intersection: IntersectionStats
 ): number =>
   intersection.reports.reduce(
-    (acc, report) => acc + report.flashingDuration + report.redDuration,
+    (acc, report) => acc + (report.flashingDuration + report.redDuration),
     0
   ) / intersection.reports.length;
 
@@ -98,7 +98,7 @@ export function getMainWayForIntersection(ways: Way[]): Way | null {
 
   if (onlyRoadWays.length > 0) {
     // TODO: Pick way with the highest rated road classification if more than one
-    
+
     // if (onlyRoadWays.length > 1) {
     //   console.warn(
     //     `Node ${ways[0].id} has multiple non-road ways ${JSON.stringify(
