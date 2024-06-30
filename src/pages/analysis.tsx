@@ -156,6 +156,8 @@ export default function Analysis() {
     type: "time",
   };
 
+  // Hardcoded!! (though nodes with adjacent road with king st in name are also included in the
+  // logic where this is used)
   const kingStreetCrossings: number[] = [
     9006017855, // King st offramp
     403820531, // Cycleway light at King & Clarance
@@ -260,20 +262,23 @@ export default function Analysis() {
 
   return (
     <HeaderAndFooterWide pageTitle={"Analysis"}>
+      <p> An expansion of the Better Intersection Cinematic Universe!</p>
+
       <p>
+        {" "}
         These are a collection of charts picking apart the Better Intersections
-        dataset. I hope they can demonstrate the value of open data in better
-        understanding a complex, opaque system, but also as a tool for
-        communicating and demonstrating improvement over time (or possibly lack
-        thereof).
+        dataset. They provide multiple avenues to find further patterns in
+        complex and incomplete date, but also as a tool for communicating and
+        demonstrating improvement over time (or perhaps lack thereof).
       </p>
 
       <p>
         I've intentionally added charts to demonstrate the limitations of the
-        accuracy and coverage of the dataset. This is crowdsourced, volunteer
-        contributed data, and as such should not be used as a primary source of
-        truth for any decision making - but a useful tool for further
-        investigation nonetheless.
+        current accuracy and coverage of the dataset. Please note that the data
+        is crowdsourced by a relatively small number of volunteers - for which I
+        am incredibly grateful to those who have contributed! - and as such
+        should not be used as a primary source of truth for any decision making
+        (yet) - but a useful tool for further investigation nonetheless!
       </p>
 
       <p>
@@ -289,13 +294,21 @@ export default function Analysis() {
       </p>
       <p>
         Please note: this is a living document and is still in a draft stage - I
-        wrote it in 2 days.
+        wrote it in 2 days - Jake
       </p>
 
       <h4>Data sources, implementation and caching concerns</h4>
       <p>
         All geographic data is from OpenStreetMap. All measurement data is from
-        Better Intersections.
+        Better Intersections. Charts are generated using{" "}
+        <Link
+          to="https://observablehq.com/plot/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Observable Plot
+        </Link>
+        .
       </p>
 
       <p>
