@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchOsmWaysForNode } from "../api/osm";
-import {
-  IntersectionStats,
-  IntersectionStatsWithComputed,
-  Way,
-} from "../types";
+import { IntersectionStatsWithComputed, Way } from "../types";
 import {
   HeaderAndFooter,
   HeaderAndFooterWide,
@@ -114,14 +110,24 @@ export default function Analysis() {
       </HeaderAndFooter>
     );
   }
-  /** "explode" all measurement reports into their own object.
+  /**
+   *  "explode" all measurement reports in each intersection into their own object.
    */
-  const explodedIntersections = intersections.flatMap((intersection) =>
-    intersection.reports.map((report) => ({
-      ...report,
+  const explodedIntersections = intersections
+    // If we only have one report, duplicate it so we can still plot it and not receive an error
+    .map((intersection) => ({
       ...intersection,
+      reports:
+        intersection.reports.length === 1
+          ? [intersection.reports[0], intersection.reports[0]]
+          : intersection.reports,
     }))
-  );
+    .flatMap((intersection) =>
+      intersection.reports.map((report) => ({
+        ...report,
+        ...intersection,
+      }))
+    );
 
   const longestIntersectionsFirst = intersections
     .sort(
@@ -184,7 +190,15 @@ export default function Analysis() {
    * @param textAxisOffset
    * @returns
    */
-  function cosBestPracticeLines(axis: "x" | "y", textAxisOffset: number = 0) {
+  function cosBestPracticeLines({
+    axis,
+    textAxisOffset = 0,
+    textColour,
+  }: {
+    axis: "x" | "y";
+    textAxisOffset?: number;
+    textColour?: string;
+  }) {
     const target = 45;
     const stretch = 30;
     const textPlot = (text: string, progress: number) => {
@@ -196,7 +210,7 @@ export default function Analysis() {
           dy: -10,
           dx: 10,
           frameAnchor: "left",
-          fill: "white",
+          fill: textColour || "white",
           rotate: -90,
         });
       }
@@ -215,7 +229,7 @@ export default function Analysis() {
           dy: 10,
           dx: 10,
           frameAnchor: "left",
-          fill: "black",
+          fill: textColour || "black",
         }
       );
     };
@@ -359,7 +373,7 @@ export default function Analysis() {
               )
             ),
             Plot.ruleY([0]),
-            ...cosBestPracticeLines("x"),
+            ...cosBestPracticeLines({ axis: "x" }),
           ],
         }}
       />
@@ -381,18 +395,21 @@ export default function Analysis() {
 
       <PlotFigure
         options={{
+          x: { label: "Average max wait (s)" },
+          y: { label: "Number of road lanes" },
           grid: true,
           inset: 10,
           color: { legend: true },
           marks: [
             Plot.frame(),
             Plot.dot(intersections, {
-              x: "averageCycleTime",
+              x: "averageFlashingAndSolidRedDuration",
               y: "numRoadLanes",
               tip: true,
               fill: "councilName",
               channels: universalPlotChannels,
             }),
+            ...cosBestPracticeLines({ axis: "x", textColour: "black" }),
           ],
         }}
       />
@@ -474,12 +491,12 @@ export default function Analysis() {
                 channels: universalPlotChannels,
               }
             ),
-            ...cosBestPracticeLines(
-              "y",
+            ...cosBestPracticeLines({
+              axis: "y",
               // The text is actually placed on the graph, so need to add an offset so
               // the scale doesn't go to almost 0
-              new Date("2023-03-15").getTime()
-            ),
+              textAxisOffset: new Date("2023-03-15").getTime(),
+            }),
           ],
         }}
       />
@@ -545,12 +562,12 @@ export default function Analysis() {
                 channels: universalPlotChannels,
               }
             ),
-            ...cosBestPracticeLines(
-              "y",
+            ...cosBestPracticeLines({
+              axis: "y",
               // The text is actually placed on the graph, so need to add an offset so
               // the scale doesn't go to almost 0
-              new Date("2023-03-15").getTime()
-            ),
+              textAxisOffset: new Date("2023-03-15").getTime(),
+            }),
           ],
           x: timeXAxisScaleOptions,
         }}
@@ -622,7 +639,10 @@ export default function Analysis() {
                 channels: universalPlotChannels,
               }
             ),
-            ...cosBestPracticeLines("y", new Date("2023-03-25").getTime()),
+            ...cosBestPracticeLines({
+              axis: "y",
+              textAxisOffset: new Date("2023-03-25").getTime(),
+            }),
           ],
           x: timeXAxisScaleOptions,
         }}
@@ -878,12 +898,11 @@ export default function Analysis() {
       <p>
         I'm not aware of a comprehensive, machine readable dataset of state
         roads in NSW (let alone a OpenStreetMap compatible dataset). In the
-        meantime I've started manually writing a list of road names that are
+        meantime I've started a manually updated list of road names that are
         state roads. This is not comprehensive and may be incorrect, however due
-        to it's manual nature false negatives (ie. roads incorrectly classified{" "}
-        <i>not</i>
-        as a state road) are far more likely than false positives (ie. roads
-        incorrectly classified as a state road).
+        to its limited nature false negatives (ie. roads incorrectly classified{" "}
+        <i>not</i> as a state road) are far more likely than false positives
+        (ie. roads incorrectly classified as a state road).
       </p>
       <h2>
         Road speed limit vs average cycle time in City of Sydney- coloured by
@@ -918,7 +937,7 @@ export default function Analysis() {
               }
             ),
 
-            ...cosBestPracticeLines("x", 40),
+            ...cosBestPracticeLines({ axis: "x", textAxisOffset: 40 }),
           ],
         }}
       />
