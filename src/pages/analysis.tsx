@@ -148,6 +148,42 @@ export default function Analysis() {
         />
       ) : null}
 
+      <h1>Measurement distribution</h1>
+      <h2>Cycle time by first measurement time</h2>
+
+      {intersections !== undefined ? (
+        <PlotFigure
+          options={{
+            grid: true,
+            inset: 10,
+            marks: [
+              Plot.frame(),
+              Plot.dot(intersections
+                .map(i => ({
+                  ...i,
+                  firstMeasurementTime: new Date(i.reports[0].timestamp)
+                })), {
+                x: "firstMeasurementTime",
+                y: "averageCycleTime",
+                tip: true,
+                channels: universalPlotChannels,
+              }),
+            ],
+            x: {
+              tickFormat: (d: Date) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              },
+              ticks: 7,
+              label: "Time",
+              type: "time",
+            }
+          }}
+        />
+      ) : null}
+
       <h1>Measurement accuracy</h1>
       <h2>Average cycle time vs cycle time max delta </h2>
       <h3>Only includes intersections with more than one measurement</h3>
