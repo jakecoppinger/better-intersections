@@ -50,7 +50,7 @@ const IntersectionTableRow = ({
           {intersection.osmId}
         </Link>
       </td>
-      <td>{intersection.averageFlashingAndSolidRedDuration} sec. (max wait)</td>
+      <td>{intersection.averageFlashingAndSolidRedDuration} sec.</td>
       <td>{intersection.reports.length} </td>
     </tr>
   );
@@ -158,9 +158,13 @@ export default function Analysis() {
     11256996862, // King st cycleway crossing at Elixabeth st, nortbound
   ];
 
-  function verticalLineAtDate(dateStr: string, text: string, strokeColour: string = "red") {
+  function verticalLineAtDate(
+    dateStr: string,
+    text: string,
+    strokeColour: string = "red"
+  ) {
     return [
-      Plot.ruleX([new Date(dateStr)], { stroke: strokeColour}),
+      Plot.ruleX([new Date(dateStr)], { stroke: strokeColour }),
       Plot.text([{ x: new Date(dateStr), y: 0, text }], {
         x: "x",
         y: "y",
@@ -169,19 +173,30 @@ export default function Analysis() {
         dx: 5, // Adjust horizontal position
         // anchor: "start",  // Adjust the anchor position
         fill: "black", // Set the color of the text
-      })
+      }),
     ];
   }
+  const histogramPercentageYAxis = (label: string): Plot.ScaleOptions => {
+    return {
+      tickFormat: (d: number) => {
+        return Math.round((d / intersections.length) * 100) + "%";
+      },
+      ticks: 10,
+      label,
+      grid: true,
+    };
+  };
 
   return (
     <HeaderAndFooter>
       <p>A crowdsourced pedestrian traffic light timing map.</p>
       <h1>Analysis</h1>
       <p>
-        These are a collection of charts picking apart the Better Intersections dataset. I
-        hope they can demonstrate the value of open data in better
+        These are a collection of charts picking apart the Better Intersections
+        dataset. I hope they can demonstrate the value of open data in better
         understanding a complex, opaque system, but also as a tool for
-        communicating and demonstrating improvement over time (or possibly lack thereof).
+        communicating and demonstrating improvement over time (or possibly lack
+        thereof).
       </p>
 
       <p>
@@ -196,7 +211,8 @@ export default function Analysis() {
         All code used to generate these charts is{" "}
         <Link to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx">
           open source on Github
-        </Link>. Contributions are very welcome!
+        </Link>
+        . Contributions are very welcome!
       </p>
 
       <h4>Data sources, implementation and caching concerns</h4>
@@ -218,6 +234,28 @@ export default function Analysis() {
         intersections by council. This means any measurements since the latest
         build within Sydney will not appear in charts that filter results by
         Sydney specifically.
+      </p>
+
+      <h2>How far away from best practice?</h2>
+      <p>
+        The City of Sydney{" "}
+        <Link to="https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan">
+          "A City for Walking: Strategy and Action Plan - Continuing the Vision"
+        </Link>{" "}
+        draft states action 4 (pg 36) is:
+      </p>
+      <p>
+        <blockquote>
+          We will work with Transport for NSW to ensure that signal phasing
+          prioritises people walking. The City will advocate for:{" "}
+          <ul>
+            <li>Automated pedestrian phases </li>
+            <li>
+              A maximum wait time at intersections of 45 seconds for people
+              walking with a target of 30 seconds
+            </li>
+          </ul>
+        </blockquote>
       </p>
 
       <h2>Average cycle time vs num road lanes, coloured by council</h2>
@@ -418,7 +456,7 @@ export default function Analysis() {
       </p>
       <PlotFigure
         options={{
-          y: { grid: true },
+          y: histogramPercentageYAxis("Percentage of total intersections"),
           marks: [
             Plot.rectY(
               intersections,
@@ -447,7 +485,7 @@ export default function Analysis() {
       </p>
       <PlotFigure
         options={{
-          y: { grid: true },
+          y: histogramPercentageYAxis("Percentage of total intersections"),
           marks: [
             Plot.rectY(
               intersections,
@@ -468,6 +506,7 @@ export default function Analysis() {
           ],
         }}
       />
+
       <h2>
         Histogram of all crossings average cycle times, 10 second buckets
         centred on decades
@@ -485,7 +524,7 @@ export default function Analysis() {
       </p>
       <PlotFigure
         options={{
-          y: { grid: true },
+          y: histogramPercentageYAxis("Percentage of total intersections"),
           marks: [
             Plot.rectY(
               intersections,
@@ -523,7 +562,6 @@ export default function Analysis() {
       </p>
       <PlotFigure
         options={{
-          y: { grid: true },
           marks: [
             Plot.rectY(
               intersections.filter(
@@ -629,9 +667,13 @@ export default function Analysis() {
             ),
 
             Plot.ruleX([new Date("2023-09-25")], { stroke: "red" }),
-            ...verticalLineAtDate("2023-09-25", "Line:Jake Coppinger ABC interview"),
+            ...verticalLineAtDate(
+              "2023-09-25",
+              "Line:Jake Coppinger ABC interview"
+            ),
           ],
           x: timeXAxisScaleOptions,
+          y: { label: "Average cycle time (seconds)" },
         }}
       />
 
@@ -652,35 +694,6 @@ export default function Analysis() {
               {
                 x: "averageCycleTime",
                 y: "cycleTimeMaxDifference",
-                tip: true,
-                channels: universalPlotChannels,
-              }
-            ),
-          ],
-        }}
-      />
-
-      <h2>Cycle time max delta between measurements / average</h2>
-      <h3>Only includes intersections with more than one measurement</h3>
-      <p>This chart shows that while there are a number of </p>
-
-      <PlotFigure
-        options={{
-          y: { percent: true },
-          grid: true,
-          inset: 10,
-          marks: [
-            Plot.frame(),
-            Plot.dot(
-              intersections
-                .filter((intersection) => intersection.reports.length > 1)
-                .map((i) => ({
-                  ...i,
-                  maxErrorRatio: i.cycleTimeMaxDifference / i.averageCycleTime,
-                })),
-              {
-                x: "averageCycleTime",
-                y: "maxErrorRatio",
                 tip: true,
                 channels: universalPlotChannels,
               }
@@ -802,10 +815,11 @@ export default function Analysis() {
 
       <h1>Longest pedestrian intersection wait times measured</h1>
       <p>
-        These examples pulled from {intersections.length} crossings which
-        have a measurement - definitely not every intersection in Sydney.
+        These examples pulled from {intersections.length} crossings which have a
+        measurement - definitely not every intersection in Sydney.
       </p>
       <IntersectionTable intersections={longestIntersectionsFirst} />
+      <br></br>
       <IntersectionTable intersections={shortestIntersectionsFirst} />
       <p>
         Know of any intersections that should be on this list? See the{" "}
