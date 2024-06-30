@@ -58,9 +58,7 @@ const IntersectionTableRow = ({
 const IntersectionTable = ({
   intersections,
 }: {
-  intersections:
-    | IntersectionStatsWithComputed[]
-    | undefined;
+  intersections: IntersectionStatsWithComputed[];
 }) => {
   return (
     <table>
@@ -73,28 +71,22 @@ const IntersectionTable = ({
         </tr>
       </thead>
       <tbody>
-        {intersections !== undefined ? (
-          intersections.map((i) => (
-            <IntersectionTableRow key={i.osmId} intersection={i} />
-          ))
-        ) : (
-          <tr>
-            <td>Loading...</td>
-          </tr>
-        )}
+        {intersections.map((i) => (
+          <IntersectionTableRow key={i.osmId} intersection={i} />
+        ))}
       </tbody>
     </table>
   );
 };
 
-const universalPlotChannels ={
+const universalPlotChannels = {
   "OSM Node ID": {
     value: (d: IntersectionStatsWithComputed) => d.osmId.toString(),
   },
-  "Name": {
+  Name: {
     value: (d: IntersectionStatsWithComputed) => d.humanName,
-  }
-}
+  },
+};
 
 export default function Analysis() {
   const [intersections, setIntersections] = useState<
@@ -112,263 +104,632 @@ export default function Analysis() {
     getIntersectionData();
   }, []);
 
+  if (intersections === undefined) {
+    return (
+      <HeaderAndFooter>
+        <h1>Loading...</h1>
+      </HeaderAndFooter>
+    );
+  }
+  /** "explode" all measurement reports into their own object. Only includes intersections with
+   * more than 1 report
+   */
+  const explodedIntersections = intersections
+    .filter((intersection) => intersection.reports.length > 1)
+    .flatMap((intersection) =>
+      intersection.reports.map((report) => ({
+        ...report,
+        ...intersection,
+      }))
+    );
+
   const longestIntersectionsFirst = intersections
-    ? intersections
-        .sort((a, b) => b.averageFlashingAndSolidRedDuration - a.averageFlashingAndSolidRedDuration)
-        .slice(0, Math.max(5))
-    : undefined;
+    .sort(
+      (a, b) =>
+        b.averageFlashingAndSolidRedDuration -
+        a.averageFlashingAndSolidRedDuration
+    )
+    .slice(0, Math.max(5));
   const shortestIntersectionsFirst = intersections
-    ? intersections
-        .sort((a, b) => a.averageFlashingAndSolidRedDuration - b.averageFlashingAndSolidRedDuration)
-        .slice(0, Math.max(5))
-    : undefined;
+    .sort(
+      (a, b) =>
+        a.averageFlashingAndSolidRedDuration -
+        b.averageFlashingAndSolidRedDuration
+    )
+    .slice(0, Math.max(5));
+  const timeXAxisScaleOptions: Plot.ScaleOptions = {
+    tickFormat: (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+      // const day = String(d.getDate()).padStart(2, "0");
+      // return `${year}-${month}-${day}`;
+    },
+    ticks: 7,
+    label: "Time",
+    type: "time",
+  };
+
+  const kingStreetCrossings: number[] = [
+    9006017855, // King st offramp
+    403820531, // Cycleway light at King & Clarance
+    10245932146, // Pedestrian light crossing Clarance at King
+    10927817004, // Crossing York St at King
+    11256996862, // King st cycleway crossing at Elixabeth st, nortbound
+  ];
 
   return (
     <HeaderAndFooter>
       <h1>Analysis</h1>
 
       <h2>Average cycle time vs num road lanes, coloured by council</h2>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            color: { legend: true },
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections, {
-                x: "averageCycleTime",
-                y: "numRoadLanes",
-                tip: true,
-                fill: "councilName",
-                channels:universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
 
-      <h1>Measurement distribution</h1>
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          color: { legend: true },
+          marks: [
+            Plot.frame(),
+            Plot.dot(intersections, {
+              x: "averageCycleTime",
+              y: "numRoadLanes",
+              tip: true,
+              fill: "councilName",
+              channels: universalPlotChannels,
+            }),
+          ],
+        }}
+      />
+
+      <h1>Change over time</h1>
+
+      <h2>Change in cycle time per intersection over time</h2>
+      <p>
+        Only includes intersections with more than one measurement, meaning{" "}
+        <b>
+          if you see a dot which appears to be missing a line, that means the
+          measurements taken at the same time were so similar that they overlap.
+        </b>
+      </p>
+      <p>
+        Vertical lines show a wide variance in measurements taken at the exact
+        same time.
+      </p>
+      <p>
+        If these lines all go down, cycle times across all crossings are
+        dropping.
+      </p>
+      <p>
+        The variation of the NorthWest T-Way at Westmead Hospital (node{" "}
+        <a href="https://www.openstreetmap.org/node/610196239">
+          openstreetmap.org/node/610196239
+        </a>
+        ) appears to have a huge variance. Perhaps this outlier is a measurement
+        error and warrants further investigation. See details of all
+        measurements at this intersection at{" "}
+        <Link to="https://betterintersections.jakecoppinger.com/intersection/node/610196239">
+          betterintersections.jakecoppinger.com/intersection/node/610196239
+        </Link>
+        .
+      </p>
+      <PlotFigure
+        options={{
+          marks: [
+            Plot.ruleY([0]),
+            Plot.lineY(explodedIntersections, {
+              x: "timestamp",
+              y: "cycleLength",
+              stroke: "osmId",
+              tip: "x",
+              channels: universalPlotChannels,
+            }),
+            Plot.dot(explodedIntersections, {
+              x: "timestamp",
+              y: "cycleLength",
+              stroke: "osmId",
+              fill: "osmId",
+              tip: "x",
+              channels: universalPlotChannels,
+            }),
+          ],
+          x: timeXAxisScaleOptions,
+        }}
+      />
+
+      <h2>
+        Change in cycle time per intersection over time, City of Sydney only
+      </h2>
+      <p>
+        As above, however only includes crossings within the City of Sydney
+        council.
+      </p>
+
+      <PlotFigure
+        options={{
+          marks: [
+            Plot.ruleY([0]),
+            Plot.lineY(
+              explodedIntersections.filter(
+                (i) => i.councilName === "Council of the City of Sydney"
+              ),
+              {
+                x: "timestamp",
+                y: "cycleLength",
+                stroke: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+            Plot.dot(
+              explodedIntersections.filter(
+                (i) => i.councilName === "Council of the City of Sydney"
+              ),
+              {
+                x: "timestamp",
+                y: "cycleLength",
+                stroke: "osmId",
+                fill: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+          ],
+          x: timeXAxisScaleOptions,
+        }}
+      />
+
+      <h2>
+        Change in cycle time per intersection over time, City of Sydney King
+        Street adjacent signals only
+      </h2>
+      <p>
+        As above, however only includes crossings along or adjacent to King
+        Street City of Sydney council.
+      </p>
+
+      <p>
+        The{" "}
+        <Link to="https://www.transport.nsw.gov.au/system/files/media/documents/2024/King-Street-cycleway_consultation-report_February-2024.pdf">
+          King Street Cycleway Community consultation report (February 2024)
+        </Link>{" "}
+        includes in the feedback a question: "Currently there are substantial
+        wait times for people riding bikes at traffic lights, which encourages
+        non-compliance for cyclists. How will you fix this?"
+      </p>
+      <p>
+        The answer stated is "Traffic lights in Sydney are managed and monitored
+        by Sydney Coordinated Adaptive Traffic System (SCATS). <b>We will monitor
+        the wait times along King Street after construction is complete.</b>" (emphasis mine)
+      </p>
+
+      <p>
+        This chart will demonstrate publicly if any improvements are made after
+        construction completes, hopefully next year!
+      </p>
+
+      <PlotFigure
+        options={{
+          marks: [
+            Plot.ruleY([0]),
+            Plot.lineY(
+              explodedIntersections.filter(
+                (i) =>
+                  (i.humanName && i.humanName.includes("King Street")) ||
+                  kingStreetCrossings.includes(i.osmId)
+              ),
+              {
+                x: "timestamp",
+                y: "cycleLength",
+                stroke: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+            Plot.dot(
+              explodedIntersections.filter(
+                (i) =>
+                  (i.humanName && i.humanName.includes("King Street")) ||
+                  kingStreetCrossings.includes(i.osmId)
+              ),
+              {
+                x: "timestamp",
+                y: "cycleLength",
+                stroke: "osmId",
+                fill: "osmId",
+                tip: "x",
+                channels: universalPlotChannels,
+              }
+            ),
+          ],
+          x: timeXAxisScaleOptions,
+        }}
+      />
+
+      <h1>Dataset and measurement distribution</h1>
+
+      <h2>
+        Histogram of average cycle time of all crossings, 1 second buckets
+      </h2>
+      <p>
+        Cycle time of a crossing is average of all measurements at that crossing
+      </p>
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections,
+              Plot.binX(
+                { y: "count" },
+                {
+                  interval: 1,
+                  x: "averageCycleTime",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+      <h2>
+        Histogram of all crossings average cycle times, 10 second buckets
+        centred on multiples of 5
+      </h2>
+      <p>
+        Eg, all mesurements between 10 and 20 seconds are placed in the 15
+        second bucket (column).
+      </p>
+      <p>
+        Cycle time of a crossing is average of all measurements at that crossing
+      </p>
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections,
+              Plot.binX(
+                { y: "count" },
+                {
+                  thresholds: (x) => {
+                    return [
+                      0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130,
+                      140, 150, 160, 170, 180, 190, 200,
+                    ];
+                  },
+                  x: "averageCycleTime",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+      <h2>
+        Histogram of all crossings average cycle times, 10 second buckets
+        centred on decades
+      </h2>
+      <p>
+        Eg, all mesurements between 15 and 25 seconds are placed in the 20
+        second bucket (column).
+      </p>
+      <p>
+        <b>Notice how different this is to the above!</b> This suggests SCATS
+        programming tends towards cycle times set at durations a multiple of 10.
+      </p>
+      <p>
+        Cycle time of a crossing is average of all measurements at that crossing
+      </p>
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections,
+              Plot.binX(
+                { y: "count" },
+                {
+                  thresholds: (x) => {
+                    return [
+                      5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135,
+                      145, 155, 165, 175, 185, 195, 205,
+                    ];
+                  },
+                  x: "averageCycleTime",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+
+      <h2>
+        Histogram of City of Sydney crossing average cycle times, 10 second
+        buckets centred on decades
+      </h2>
+      <p>
+        There are a lot more 10 second cycle times than the wider dataset. This
+        suggests there are a large number of crossings in the City of Sydney
+        with nominal cycle times of 90 seconds. This matches with my
+        investigation on{" "}
+        <Link to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/">
+          Shining a Light on the Traffic Signals of Sydney (July 2023)
+        </Link>{" "}
+        that the CBD grid is on a 90 second cycle time during peak hours.
+      </p>
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections.filter(
+                (i) => i.councilName === "Council of the City of Sydney"
+              ),
+              Plot.binX(
+                { y: "count" },
+                {
+                  thresholds: (x) => {
+                    return [
+                      5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135,
+                      145, 155, 165, 175, 185, 195, 205,
+                    ];
+                  },
+                  x: "averageCycleTime",
+                  // cumulative: true
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+
+      <h2>How many measurements are there of each crossing in the dataset?</h2>
+      <p>The vast majority of crossings only have one measurement</p>
+
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections.map((i) => ({
+                ...i,
+                numReports: i.reports.length,
+              })),
+              Plot.binX(
+                { y: "count" },
+                {
+                  interval: 1,
+                  x: "numReports",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+
+      <h2>
+        How many measurements are of each crossing in the dataset in the City of
+        Sydney?
+      </h2>
+      <p>
+        The number of measurements / crossing in CoS is currently comparable to
+        the wider dataset
+      </p>
+      <PlotFigure
+        options={{
+          y: { grid: true },
+          marks: [
+            Plot.rectY(
+              intersections
+                .filter(
+                  (i) => i.councilName === "Council of the City of Sydney"
+                )
+                .map((i) => ({ ...i, numReports: i.reports.length })),
+              Plot.binX(
+                { y: "count" },
+                {
+                  interval: 1,
+                  x: "numReports",
+                }
+              )
+            ),
+            Plot.ruleY([0]),
+          ],
+        }}
+      />
+
       <h2>Cycle time by first measurement time</h2>
-
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections
-                .map(i => ({
-                  ...i,
-                  firstMeasurementTime: new Date(i.reports[0].timestamp)
-                })), {
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections.map((i) => ({
+                ...i,
+                firstMeasurementTime: new Date(i.reports[0].timestamp),
+              })),
+              {
                 x: "firstMeasurementTime",
                 y: "averageCycleTime",
                 tip: true,
                 channels: universalPlotChannels,
-              }),
-            ],
-            x: {
-              tickFormat: (d: Date) => {
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-              },
-              ticks: 7,
-              label: "Time",
-              type: "time",
-            }
-          }}
-        />
-      ) : null}
+              }
+            ),
+          ],
+          x: timeXAxisScaleOptions,
+        }}
+      />
 
       <h1>Measurement accuracy</h1>
       <h2>Average cycle time vs cycle time max delta </h2>
       <h3>Only includes intersections with more than one measurement</h3>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections.filter(intersection => intersection.reports.length>1), {
+
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections.filter(
+                (intersection) => intersection.reports.length > 1
+              ),
+              {
                 x: "averageCycleTime",
                 y: "cycleTimeMaxDifference",
                 tip: true,
                 channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
+              }
+            ),
+          ],
+        }}
+      />
 
       <h2>Cycle time max delta between measurements / average</h2>
       <h3>Only includes intersections with more than one measurement</h3>
       <p>This chart shows that while there are a number of </p>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            y: {percent: true},
-            grid: true,
-            inset: 10,
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections
-                .filter(intersection => intersection.reports.length>1)
-                .map(i => ({
-                  ...i, 
-                  maxErrorRatio: i.cycleTimeMaxDifference / i.averageCycleTime}))
-              , {
+
+      <PlotFigure
+        options={{
+          y: { percent: true },
+          grid: true,
+          inset: 10,
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections
+                .filter((intersection) => intersection.reports.length > 1)
+                .map((i) => ({
+                  ...i,
+                  maxErrorRatio: i.cycleTimeMaxDifference / i.averageCycleTime,
+                })),
+              {
                 x: "averageCycleTime",
                 y: "maxErrorRatio",
                 tip: true,
                 channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
+              }
+            ),
+          ],
+        }}
+      />
 
       <h1>Average cycle time vs road max speed</h1>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections, {
-                x: "averageCycleTime",
-                y: "roadMaxSpeed",
-                tip: true,
-                channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
+
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          marks: [
+            Plot.frame(),
+            Plot.dot(intersections, {
+              x: "averageCycleTime",
+              y: "roadMaxSpeed",
+              tip: true,
+              channels: universalPlotChannels,
+            }),
+          ],
+        }}
+      />
+
       <h1>NSW State Roads</h1>
+      <p>
+        I'm not aware of a comprehensive, machine readable dataset of state
+        roads in NSW (let alone a OpenStreetMap compatible dataset). In the
+        meantime I've started manually writing a list of road names that are
+        state roads. This is not comprehensive and may be incorrect, however due
+        to it's manual nature false negatives (ie. roads incorrectly classified{" "}
+        <i>not</i>
+        as a state road) are far more likely than false positives (ie. roads
+        incorrectly classified as a state road).
+      </p>
       <h2>Road speed limit vs average cycle time - coloured by state roads</h2>
       <p>Only includes crossings detected within a Sydney Council</p>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            color: { legend: true },
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections
-                .filter(i => i.councilName)
-                .map(i => ({...i,
-                  isNSWStateRoadString: i.isNSWStateRoad ? "NSW State Road" : "Unknown"
-                }))
-                , {
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          color: { legend: true },
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections
+                .filter((i) => i.councilName)
+                .map((i) => ({
+                  ...i,
+                  isNSWStateRoadString: i.isNSWStateRoad
+                    ? "NSW State Road"
+                    : "Unknown",
+                })),
+              {
                 x: "averageCycleTime",
                 y: "roadMaxSpeed",
                 tip: true,
                 fill: "isNSWStateRoadString",
                 channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
+              }
+            ),
+          ],
+        }}
+      />
 
       <h2>Average green duration vs average cycle time - colour state roads</h2>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            color: { legend: true },
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections
-                .filter(i => i.councilName)
-                .map(i => ({...i,
-                  isNSWStateRoadString: i.isNSWStateRoad ? "NSW State Road" : "Unknown"
-                })), {
+
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          color: { legend: true },
+          marks: [
+            Plot.frame(),
+            Plot.dot(
+              intersections
+                .filter((i) => i.councilName)
+                .map((i) => ({
+                  ...i,
+                  isNSWStateRoadString: i.isNSWStateRoad
+                    ? "NSW State Road"
+                    : "Unknown",
+                })),
+              {
                 x: "averageCycleTime",
                 y: "averageGreenDuration",
                 tip: true,
                 fill: "isNSWStateRoadString",
                 channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
+              }
+            ),
+          ],
+        }}
+      />
 
+      <h1>
+        Average green duration vs average cycle time - coloured by council name
+      </h1>
 
-      <h1>Average green duration vs average cycle time - coloured by council name</h1>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            grid: true,
-            inset: 10,
-            color: { legend: true },
-            marks: [
-              Plot.frame(),
-              Plot.dot(intersections, {
-                x: "averageCycleTime",
-                y: "averageGreenDuration",
-                tip: true,
-                fill: "councilName",
-                channels: universalPlotChannels,
-              }),
-            ],
-          }}
-        />
-      ) : null}
-
-
-      <h2>Histogram of all measurements by cycle time</h2>
-      <p>
-        Cycle time of a crossing is average of all measurements at that crossing
-      </p>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            y: { grid: true },
-            marks: [
-              Plot.rectY(
-                intersections,
-                Plot.binX(
-                  { y: "count" },
-                  {
-                    interval: 5,
-                    x: "averageCycleTime",
-                  }
-                )
-              ),
-              Plot.ruleY([0]),
-            ],
-          }}
-        />
-      ) : null}
-
-      <h3>as above, cumulative distribution</h3>
-      {intersections !== undefined ? (
-        <PlotFigure
-          options={{
-            y: { grid: true },
-            marks: [
-              Plot.rectY(
-                intersections,
-                Plot.binX(
-                  { y: "count" },
-                  { x: "averageCycleTime", cumulative: true, interval: 5 }
-                )
-              ),
-              Plot.ruleY([0]),
-            ],
-          }}
-        />
-      ) : null}
+      <PlotFigure
+        options={{
+          grid: true,
+          inset: 10,
+          color: { legend: true },
+          marks: [
+            Plot.frame(),
+            Plot.dot(intersections, {
+              x: "averageCycleTime",
+              y: "averageGreenDuration",
+              tip: true,
+              fill: "councilName",
+              channels: universalPlotChannels,
+            }),
+          ],
+        }}
+      />
 
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <IntersectionTable intersections={shortestIntersectionsFirst} />
@@ -378,12 +739,10 @@ export default function Analysis() {
           instructions for contributing!
         </HashLink>
       </p>
-      {intersections ? (
-        <p>
-          These examples pulled from {intersections.length} intersections which
-          have a measurement - definitely not every intersection in Sydney.
-        </p>
-      ) : null}
+      <p>
+        These examples pulled from {intersections.length} intersections which
+        have a measurement - definitely not every intersection in Sydney.
+      </p>
     </HeaderAndFooter>
   );
 }
