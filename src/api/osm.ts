@@ -1,8 +1,6 @@
-
-import { parseStringPromise } from 'xml2js';
-import { OSMNode, Way } from '../types';
-import { tagListToRecord } from '../utils/utils';
-import { updateNodeLatLong } from './db';
+import { parseStringPromise } from "xml2js";
+import { OSMNode, Way } from "../types";
+import { generateOSMNodeUrl, tagListToRecord } from "../utils/utils";
 
 let totalLookups = 0;
 let dbCacheHits = 0;
@@ -12,14 +10,20 @@ let dbCacheMisses = 0;
  * Log debug output of the OSM cache hit rate. Run this after fetching all nodes.
  */
 export function logOSMCacheStats() {
-  console.log(`OSM API cache stats: Loaded ${totalLookups} nodes. ${dbCacheMisses} DB cache misses. ${dbCacheHits / (dbCacheHits + dbCacheMisses) * 100}% DB cache hit rate,`);
+  console.log(
+    `OSM API cache stats: Loaded ${totalLookups} nodes. ${dbCacheMisses} DB cache misses. ${
+      (dbCacheHits / (dbCacheHits + dbCacheMisses)) * 100
+    }% DB cache hit rate,`
+  );
 }
 /*
 Function that checks if the node is in the JSON cache or already stored in our DB, if not, it
 fetches it from the OSM API (using requestOsmNodePosition).
 */
-export async function getOsmNodePosition(osmNode: number,
-  nodeIdLocationLookup: Record<number, { lat: number, lon: number }>): Promise<{ lat: number, lon: number }> {
+export async function getOsmNodePosition(
+  osmNode: number,
+  nodeIdLocationLookup: Record<number, { lat: number; lon: number }>
+): Promise<{ lat: number; lon: number }> {
   totalLookups += 1;
 
   const possibleDBCacheHit = nodeIdLocationLookup[osmNode];
@@ -32,7 +36,6 @@ export async function getOsmNodePosition(osmNode: number,
   return await requestOsmNodePosition(osmNode);
 }
 
-
 /**
  * Makes a request to the OSM API to fetch the raw node data.
  * If the node has been deleted, it will fetch the last version of the node from the history API.
@@ -40,33 +43,49 @@ export async function getOsmNodePosition(osmNode: number,
  * @returns Raw JSON for the node from the OSM API
  */
 async function requestRawOsmNode(osmNode: number): Promise<any> {
-  const response = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`)
+  const response = await fetch(
+    `https://api.openstreetmap.org/api/0.6/node/${osmNode}`
+  );
   if (response.status !== 200) {
     if (response.status === 410) {
-      console.log(`Warning: OSM node ${osmNode} has been deleted. Fetching via history instead.`);
-      const historyResponse = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}/history`)
+      console.log(
+        `Warning: OSM node ${osmNode} has been deleted. Fetching via history instead.`
+      );
+      const historyResponse = await fetch(
+        `https://api.openstreetmap.org/api/0.6/node/${osmNode}/history`
+      );
       if (historyResponse.status !== 200) {
-        throw new Error(`HTTP ${historyResponse.status}: History for OSM node ${osmNode} could not be fetched`);
+        throw new Error(
+          `HTTP ${historyResponse.status}: History for OSM node ${osmNode} could not be fetched`
+        );
       }
       const historyResponseString: string = await historyResponse.text();
       const parsedResult = await parseStringPromise(historyResponseString);
       const numVersions = parsedResult.osm.node.length;
       if (numVersions === 0) {
-        throw new Error(`No node array found in history API response for OSM node ${osmNode}`);
+        throw new Error(
+          `No node array found in history API response for OSM node ${osmNode}`
+        );
       }
       if (numVersions === 1) {
-        throw new Error(`Node ${osmNode} has only one version, but it is deleted, which should be impossible.`);
+        throw new Error(
+          `Node ${osmNode} has only one version, but it is deleted, which should be impossible.`
+        );
       }
       // We want the second-to-last version, which is the last undeleted version.
       return parsedResult.osm.node[numVersions - 2];
     }
-    throw new Error(`HTTP ${response.status}: OSM node ${osmNode} could not be fetched`);
+    throw new Error(
+      `HTTP ${response.status}: OSM node ${osmNode} could not be fetched`
+    );
   }
 
   const responseString: string = await response.text();
   const osmApiResult = await parseStringPromise(responseString);
   if (!osmApiResult.osm.node || osmApiResult.osm.node.length === 0) {
-    throw new Error(`No node array found in API response for OSM node ${osmNode}`);
+    throw new Error(
+      `No node array found in API response for OSM node ${osmNode}`
+    );
   }
   return osmApiResult.osm.node[0];
 }
@@ -77,8 +96,11 @@ async function requestRawOsmNode(osmNode: number): Promise<any> {
  * @param osmNode String or number of the OSM Node.
  * @returns Object containing the latitude, longitude and tags of the node.
  */
-export async function requestOsmNodePosition(osmNode: string | number): Promise<OSMNode> {
+export async function requestOsmNodePosition(
+  osmNode: number
+): Promise<OSMNode> {
   const rawNode = await requestRawOsmNode(parseInt(osmNode.toString()));
+  const id = rawNode.$.id as number;
   const latString: string | undefined = rawNode.$.lat;
   const lonString: string | undefined = rawNode.$.lon;
 
@@ -88,18 +110,8 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
   const lat = parseFloat(latString);
   const lon = parseFloat(lonString);
 
-
   if (lat > 90 || lat < -90) {
     throw new Error(`Invalid latitude: ${lat}`);
-  }
-
-  try {
-    // Update DB with lat/lon so we don't have to fetch it again
-    await updateNodeLatLong(parseFloat(osmNode as string), lat, lon);
-  } catch (e) {
-    // TODO: Add error logging to DB
-    console.error(`Unable to update lat/lon in db for node ${osmNode}. This is a non-fatal error but unexpected.`);
-    console.log(e);
   }
 
   // Extract tags
@@ -109,14 +121,18 @@ export async function requestOsmNodePosition(osmNode: string | number): Promise<
     tags[tag.$.k] = tag.$.v;
   });
 
-  return { lat, lon, tags };
+  return { type: 'node', id, lat, lon, tags };
 }
 
-export async function fetchOsmWaysForNode(nodeId: string | number): Promise<Way[]> {
+export async function fetchOsmWaysForNode(nodeId: number): Promise<Way[]> {
   const response: string = await (
     await fetch(`https://api.openstreetmap.org/api/0.6/node/${nodeId}/ways`)
   ).text();
   const osmApiResult = await parseStringPromise(response);
+  if(!osmApiResult.osm || !osmApiResult.osm.way) {
+    console.warn(`No ways found in OSM API response for OSM node ${nodeId} ${generateOSMNodeUrl(nodeId)}`);
+    return [];
+  }
   const ways: Way[] = osmApiResult.osm.way
     .map((way: any) => ({
       id: way.$.id,
@@ -128,7 +144,6 @@ export async function fetchOsmWaysForNode(nodeId: string | number): Promise<Way[
 }
 
 export async function isNodeValid(osmNode: string) {
-
   const nodeRegex = /^[0-9]{1,10}$/;
 
   if (!nodeRegex.test(osmNode)) {
@@ -140,7 +155,9 @@ export async function isNodeValid(osmNode: string) {
     return false;
   }
 
-  const response: Response = await fetch(`https://api.openstreetmap.org/api/0.6/node/${osmNode}`);
+  const response: Response = await fetch(
+    `https://api.openstreetmap.org/api/0.6/node/${osmNode}`
+  );
   if (response.status === 200) {
     return true;
   } else {

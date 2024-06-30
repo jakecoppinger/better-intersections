@@ -2,9 +2,11 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@observablehq/plot": "^0.6.15",
     "@supabase/supabase-js": "^2.33.2",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
@@ -35,9 +37,10 @@
     }
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false",
+    "start": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts start",
+    "build": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts build",
+    "test": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts test --watchAll=false",
+    "start-maintenance": "cp tsconfigs/node.tsconfig.json tsconfig.json && tsc && NODE_NO_WARNINGS=1 node --max_old_space_size=4096 --trace-warnings  --experimental-specifier-resolution=node ./dist/local-maintenance-entrypoint.js",
     "deploy": "npm run test && npm run build && npx wrangler pages deploy ./build/"
   },
   "eslintConfig": {

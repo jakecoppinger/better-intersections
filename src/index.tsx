@@ -10,7 +10,7 @@ import {ContributeMeasurementPage} from "./pages/contribute-measurement-page";
 import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
-import LongestAndShortestWaits from "./pages/longest-and-shortest-waits-page";
+import Analysis from "./pages/analysis";
 
 const router = createBrowserRouter([
   {
@@ -31,8 +31,8 @@ const router = createBrowserRouter([
     loader: nodeIdLoader,
   },
   {
-    path: "/longest-and-shortest-waits",
-    element: <LongestAndShortestWaits />,
+    path: "/analysis",
+    element: <Analysis/>,
   },
   {
     path: "/contribute-measurement/:nodeId",

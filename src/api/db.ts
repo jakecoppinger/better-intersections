@@ -1,9 +1,19 @@
+import { supabase as webSupabase } from "../utils/supabase-client";
+import {
+  ComputedNodeProperties,
+  ComputedNodePropertiesRow,
+  IntersectionMeasurementResult,
+} from "../types";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-import { supabase } from "../utils/supabase-client";
-import { IntersectionMeasurementResult, OSMNode } from "../types";
-
-export async function getIntersectionMeasurements(): Promise<IntersectionMeasurementResult[]> {
-  const { data, error } = await supabase
+/**
+ * Only returns intersections with valid OSM node IDs.
+ * @returns
+ */
+export async function getIntersectionMeasurements(): Promise<
+  IntersectionMeasurementResult[]
+> {
+  const { data, error } = await webSupabase
     .from("measurements")
     // user_id is not excluded here for security reasons -
     // user_id references a record in the (locked down) auth table
@@ -14,19 +24,120 @@ export async function getIntersectionMeasurements(): Promise<IntersectionMeasure
   if (error) {
     throw error;
   }
-  return data;
+  return data.filter((formResponse) => formResponse.osm_node_id !== null);
+}
+
+
+// Can't be generated from an array; supabase does some static analysis
+const computedNodesSelectString = "osm_node_id,num_road_lanes,latitude,longitude,is_road_oneway,human_name,council_name,is_nsw_state_road,osm_highway_classification,road_max_speed,average_cycle_time,average_green_duration,average_flashing_red_duration,average_flashing_and_solid_red_duration,average_solid_red_duration,cycle_time_max_difference";
+
+/**
+ * Fetch row from the DB.
+ * If row does not exist for the given nodeId, returns undefined.
+ */
+export async function fetchComputedNodeProperties(
+  nodeId: number
+): Promise<ComputedNodeProperties | undefined> {
+  const { data, error } = await webSupabase
+    .from("computed_node_properties")
+    .select(computedNodesSelectString)
+    .eq("osm_node_id", nodeId);
+
+  if (error) {
+    throw error;
+  }
+  if (data.length !== 1) {
+    return undefined;
+  }
+  const row = data[0];
+  return mapComputedNodeRowToProperties(row);
+}
+/**
+ * This function can only be run by an admin user locally - it will fail on web builds due to RLS.
+ */
+export async function insertComputedNodeProperties(
+  osmNode: number,
+  properties: ComputedNodeProperties,
+  serviceRoleSupabase: SupabaseClient
+): Promise<void> {
+  const rowProperties: ComputedNodePropertiesRow = {
+    osm_node_id: osmNode,
+    num_road_lanes: properties.numRoadLanes,
+    latitude: properties.latitude,
+    longitude: properties.longitude,
+    is_road_oneway: properties.isRoadOneway,
+    
+    average_cycle_time: properties.averageCycleTime,
+    average_green_duration: properties.averageGreenDuration,
+    average_flashing_red_duration: properties.averageFlashingRedDuration,
+    average_flashing_and_solid_red_duration: properties.averageFlashingAndSolidRedDuration,
+    average_solid_red_duration: properties.averageSolidRedDuration,
+    cycle_time_max_difference: properties.cycleTimeMaxDifference,
+
+    human_name: properties.humanName,
+    council_name: properties.councilName,
+    is_nsw_state_road: properties.isNSWStateRoad,
+    osm_highway_classification: properties.osmHighwayClassification,
+    road_max_speed: properties.roadMaxSpeed,
+  };
+  const { error } = await serviceRoleSupabase
+    .from("computed_node_properties")
+    .insert({
+      ...rowProperties,
+    });
+
+  if (error) {
+    throw new Error(
+      `Error inserting computed node properties DB for node ${osmNode}: ${JSON.stringify(
+        error
+      )}`
+    );
+  }
+  return;
 }
 
 /**
- * Set the latitude and longitude of a node in the database.
+ * Map from the DB schema fields to the TypeScript interface.
  */
-export async function updateNodeLatLong(nodeId: number, lat: number, lon: number) {
-  const { error } = await supabase
-    .from('measurements')
-    .update({ latitude: lat, longitude: lon})
-    .eq('osm_node_id', nodeId)
-  
+function mapComputedNodeRowToProperties(
+  row: ComputedNodePropertiesRow
+): ComputedNodeProperties {
+  return {
+    osmId: row.osm_node_id,
+    numRoadLanes: row.num_road_lanes,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    isRoadOneway: row.is_road_oneway,
+    averageCycleTime: row.average_cycle_time,
+    averageGreenDuration: row.average_green_duration,
+    averageFlashingRedDuration: row.average_flashing_red_duration,
+    averageFlashingAndSolidRedDuration: row.average_flashing_and_solid_red_duration,
+    averageSolidRedDuration: row.average_solid_red_duration,
+    cycleTimeMaxDifference: row.cycle_time_max_difference,
+    humanName: row.human_name,
+    councilName: row.council_name,
+    isNSWStateRoad: row.is_nsw_state_road,
+    osmHighwayClassification: row.osm_highway_classification,
+    roadMaxSpeed: row.road_max_speed,
+  };
+}
+/**
+ * Fetch all the cached node properties from the DB at once.
+ */
+export async function fetchAllCachedNodeProperties(): Promise<
+  ComputedNodeProperties[]
+> {
+  const { data, error } = await webSupabase
+    .from("computed_node_properties")
+    .select(computedNodesSelectString);
+
   if (error) {
-    throw new Error(`Error updating db for node ${nodeId}: ${error}`);
+    throw error;
   }
+  if (!data) {
+    throw new Error(
+      "No cached node properties (not even empty array) returned from DB."
+    );
+  }
+  return data.map(mapComputedNodeRowToProperties);
 }

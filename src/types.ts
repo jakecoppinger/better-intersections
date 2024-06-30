@@ -1,46 +1,48 @@
 export interface FormResponse {
-  "Timestamp": string,
-  "Email Address": string,
-  "Score": string,
-  "Optional: What time (to the nearest 15 min) did you measure this?\nIf not specified assumes current time.": string,
-  "Optional: What code is on the traffic light control box?\nUsually a number on yellow background, on a metal box near the intersection.": string,
-  "Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)": string,
-  "What is the name of the road parallel to you (if at traffic lights) or another landmark if a mid block crossing?": string,
-  "How many seconds was the pedestrian light green for?": string,
-  "How many seconds was the pedestrian light flashing red for?": string,
-  "How many seconds was the pedestrian light solid red for?": string,
-  "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)": string,
-  "What sort of crossing is this?": string,
-  "Optional: Any other notes or observations?\n(possible improvements)": string,
-  "Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)": "Yes" | "No" | ""
+  Timestamp: string;
+  "Email Address": string;
+  Score: string;
+  "Optional: What time (to the nearest 15 min) did you measure this?\nIf not specified assumes current time.": string;
+  "Optional: What code is on the traffic light control box?\nUsually a number on yellow background, on a metal box near the intersection.": string;
+  "Describe the location (road you're crossing & nearest feature, adjacent road if traffic lights, or coordinates)": string;
+  "What is the name of the road parallel to you (if at traffic lights) or another landmark if a mid block crossing?": string;
+  "How many seconds was the pedestrian light green for?": string;
+  "How many seconds was the pedestrian light flashing red for?": string;
+  "How many seconds was the pedestrian light solid red for?": string;
+  "Optional: What is the OpenStreetMap node ID of the intersection? (exact crossing node preferable)": string;
+  "What sort of crossing is this?": string;
+  "Optional: Any other notes or observations?\n(possible improvements)": string;
+  "Can cars cross while the light is flashing red? (is the crossing unprotected when flashing red?)":
+    | "Yes"
+    | "No"
+    | "";
 }
 
 export interface TrafficLightReport {
   /** Timestamp of the Google Form submission, or timestamp given if provided */
   timestamp: Date | string;
   /** OpenStreetMap node ID of the intersection */
-  osmId: string | number;
+  osmId: number;
   lat: number;
   lon: number;
   /** How long is the traffic light solid green for */
-  greenDuration: number,
+  greenDuration: number;
   /** How long is the traffic flashing red/orange countdown/flashing orange (bicycle lanterns) for */
-  flashingDuration: number,
+  flashingDuration: number;
   /** How long is the traffic light solid red for until the next green light*/
-  redDuration: number,
-  notes?: string,
+  redDuration: number;
+  notes?: string;
   /** Derived field. Length of full cycle */
-  cycleLength: number,
+  cycleLength: number;
   /** Is the crossing unprotected when flashing red? Boolean or null when unknown */
-  unprotectedOnFlashingRed: boolean | null
+  unprotectedOnFlashingRed: boolean | null;
 }
-
 
 export interface IntersectionStats {
   /** OpenStreetMap node ID of the intersection */
-  osmId: string | number;
-  lat: number,
-  lon: number,
+  osmId: number;
+  lat: number;
+  lon: number;
   reports: TrafficLightReport[];
 }
 
@@ -97,7 +99,10 @@ export interface DisplayModeState {
   displayMode: DisplayMode;
 }
 
-export type CrossingLanternType = "pedestrian" | "pedestrian_and_bicycle" | "bicycle";
+export type CrossingLanternType =
+  | "pedestrian"
+  | "pedestrian_and_bicycle"
+  | "bicycle";
 export type UnprotectedCrossing = "yes" | "no" | "delayed" | "not_sure";
 export type IsScrambleCrossing = "yes" | "no" | "unknown";
 export type IsTwoStageCrossing = "yes" | "no" | "unknown";
@@ -111,8 +116,8 @@ export interface IntersectionForm {
   // updated_at: Date;
 
   custom_updated_at: string | null;
-  /** 
-   * Describe the location (road you're crossing & nearest feature, 
+  /**
+   * Describe the location (road you're crossing & nearest feature,
    * adjacent road if traffic lights, or coordinates).
    */
   location_description: string | null;
@@ -126,18 +131,18 @@ export interface IntersectionForm {
   /** How many seconds was the pedestrian light solid red for? */
   solid_red_light_duration: number;
 
-  /** 
-   * Optional: What is the OpenStreetMap node ID of the intersection? 
+  /**
+   * Optional: What is the OpenStreetMap node ID of the intersection?
    * (exact crossing node preferable).
    * TODO: Separate intersection into a different table.
    */
   osm_node_id: number | null;
 
   /** What sort of crossing is this? */
-  crossing_lantern_type: CrossingLanternType
+  crossing_lantern_type: CrossingLanternType;
 
-  /** 
-   * Can cars cross while the light is flashing red? 
+  /**
+   * Can cars cross while the light is flashing red?
    * (is the crossing unprotected when flashing red?)
    */
   unprotected_crossing: UnprotectedCrossing;
@@ -174,11 +179,130 @@ export interface IntersectionMeasurementResult extends IntersectionForm {
   /** Unique serial id of intersection measurement */
   id: string;
   /** timestamp with time zone is mapped to JavaScript's Date */
-  updated_at: Date; 
+  updated_at: Date;
+}
+export interface RawOSMCrossing {
+  type: "node",
+  id: number,
+  lat: number,
+  lon: number,
+  // tags: {
+  // },
+}
+export interface OSMWay {
+  type: "way",
+  id: number,
+  nodes: number[],
+  geometry: { lat: number, lon: number }[],
+  tags: {
+    highway?: string,
+    maxspeed?: string,
+    lanes?: string,
+    lit?: string,
+    name?: string,
+    oneway?: string,
+    sidewalk?: string,
+    source?: string,
+    width?: string,
+    bicycle?: string,
+    surface?: string,
+    opening_date?: string,
+  },
+
+  bounds: {
+    minlat: number,
+    minlon: number,
+    maxlat: number,
+    maxlon: number,
+  }
 }
 
+export interface OSMRelation {
+  type: "relation",
+  id: number,
+  tags: {
+    name?: string,
+    ["name:en"]?: string,
+    type?: string,
+    boundary?: string,
+    admin_level?: string,
+    ref?: string,
+    place?: string,
+    source?: string,
+    wikidata?: string,
+    wikipedia?: string,
+  },
+}
 export interface OSMNode {
-  lat: number
-  lon: number
-  tags: Record<string, string>
+  type: "node",
+  /** todo. is it string? */
+  id: number,
+  lat: number,
+  lon: number,
+  tags: Record<string, string>;
+}
+
+export interface ComputedNodeProperties {
+  osmId: number;
+
+  latitude: number;
+  longitude: number;
+
+  numRoadLanes: number | null;
+  isRoadOneway: boolean;
+
+  averageCycleTime: number;
+  averageGreenDuration: number;
+  averageFlashingRedDuration: number;
+  averageFlashingAndSolidRedDuration: number;
+  averageSolidRedDuration: number;
+  cycleTimeMaxDifference: number;
+
+  humanName: string | null;
+  councilName: string | null;
+  isNSWStateRoad: boolean | null;
+  osmHighwayClassification: string | null;
+  roadMaxSpeed: number | null;
+}
+export interface IntersectionStatsWithComputed extends IntersectionStats {
+  latitude: number;
+  longitude: number;
+
+  numRoadLanes: number | null;
+  isRoadOneway: boolean;
+
+  averageCycleTime: number;
+  averageGreenDuration: number;
+  averageFlashingRedDuration: number;
+  averageFlashingAndSolidRedDuration: number;
+  averageSolidRedDuration: number;
+  cycleTimeMaxDifference: number;
+
+  humanName: string | null;
+  councilName: string | null;
+  isNSWStateRoad: boolean | null;
+  osmHighwayClassification: string | null;
+  roadMaxSpeed: number | null;
+}
+
+/** The fields returned from the database */
+export interface ComputedNodePropertiesRow {
+  osm_node_id: number;
+  latitude: number;
+  longitude: number;
+  num_road_lanes: number | null;
+  is_road_oneway: boolean;
+
+  average_cycle_time: number;
+  average_green_duration: number,
+  average_flashing_red_duration: number;
+  average_flashing_and_solid_red_duration: number;
+  average_solid_red_duration: number;
+  cycle_time_max_difference: number;
+
+  human_name: string | null;
+  council_name: string | null;
+  is_nsw_state_road: boolean | null;
+  osm_highway_classification: string | null;
+  road_max_speed: number | null;
 }

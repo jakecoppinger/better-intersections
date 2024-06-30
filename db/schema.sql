@@ -36,7 +36,7 @@ create table measurements (
   notes text,
   -- latitude & longitude of the node
   latitude float,
-  longitude float
+  longitude float,
 );
 
 -- Set up Row Level Security (RLS)
@@ -53,4 +53,42 @@ on measurements for insert
 to authenticated
 with check ( (select auth.uid()) = user_id );
 
--- Updating own measurements not currently needed.
+-- Cache for properties of an intersection either calculated from measurements, or from other
+-- OSM data.
+-- Can be wiped at any time. Recomputed by maintenance script.
+create table computed_node_properties (
+  osm_node_id bigint primary key,
+
+  -- Latitude and longitude of the OSM node
+  latitude float not null,
+  longitude float not null,
+
+  -- Number of road lanes at the crossing.
+  -- If no OSM lanes count tag is present, this property should be set to null
+  num_road_lanes int,
+
+  -- If the intersection road is oneway for cars
+  -- If no OSM wayway tag is present, this property should be set to false (OSM implied default)
+  is_road_oneway boolean,
+
+  average_cycle_time float not null,
+  average_green_duration float not null,
+  average_flashing_red_duration float not null,
+  average_solid_red_duration float not null,
+  average_flashing_and_solid_red_duration float not null,
+  cycle_time_max_difference float not null,
+
+  human_name text,
+  council_name text,
+  is_nsw_state_road boolean,
+  osm_highway_classification text,
+  road_max_speed int
+);
+
+alter table computed_node_properties
+  enable row level security;
+
+create policy "Public computed_node_properties are visible to everyone."
+on computed_node_properties for select
+using ( true );
+

@@ -36,8 +36,7 @@ as possible (to encourage community contributions).
 You'll need to get a supabase project. Follow
 https://supabase.com/docs/guides/getting-started/tutorials/with-react
 
-Once you have a project, get your `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment
-keys and place them in your `.env` file.
+Once you have a project, insert your Supabase URL and Anon Key into the `config.ts` file.
 
 More DB notes: https://supabase.com/blog/postgresql-views
 
@@ -56,6 +55,20 @@ You will also see any lint errors in the console.
 See Jest docs for args for watching files etc.
 
 `yarn test`
+
+## Caching data
+
+A number of requests are made to the OSM API to display pins correctly, but in addition to perform
+data analysis.
+
+The frontend first checks if any data about an OSM node is cached on the backend. If so this is used.
+
+If an OSM node can't be found in the cache these requests will be send from the frontend. This
+occurs in the case where new measurements of a new intersection have been added since the last cache
+update.
+
+To support [Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
+updating the cache requires locally running a maintenance script. See `package.json` for details.
 
 ## Production build
 

@@ -9,11 +9,9 @@ import {
 } from "../utils/url-formatting";
 import {
   convertUTCtoLocal,
-  filterOutNonRoadWays,
   getIntersections,
-  getMainWayForIntersection,
-  removeVerboseTimezoneDescriptor,
 } from "../utils/utils";
+import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;
@@ -22,7 +20,7 @@ export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
 
 export default function IntersectionNodePage() {
   const [adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(undefined);
-  const [nodeId, setNodeId] = useState<string | undefined>(undefined);
+  const [nodeId, setNodeId] = useState<number | undefined>(undefined);
   const [intersection, setIntersection] = useState<
     IntersectionStats | undefined
   >(undefined);
@@ -43,7 +41,7 @@ export default function IntersectionNodePage() {
   };
   useEffect(() => {
     // check if nodeId is a number, but keep it as a string. If it's not a number, set it as undefined
-    setNodeId(rawNodeId && !isNaN(parseInt(rawNodeId)) ? rawNodeId : undefined);
+    setNodeId(rawNodeId && !isNaN(parseInt(rawNodeId)) ? parseInt(rawNodeId) : undefined);
   }, [rawNodeId]);
 
   useEffect(() => {
@@ -53,7 +51,7 @@ export default function IntersectionNodePage() {
       }
 
       const intersections = await getIntersections();
-      const intersection = intersections.find((i) => i.osmId.toString() === nodeId);
+      const intersection = intersections.find((i) => i.osmId === nodeId);
       setIntersection(intersection);
     }
     getIntersectionData();
