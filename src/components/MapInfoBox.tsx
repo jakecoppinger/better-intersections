@@ -66,12 +66,6 @@ export const MapInfoBox: FunctionComponent = () => {
             <Link to={`/about`}>About</Link> this project
           </li>
           <li>
-            See the{" "}
-            <Link to={`/longest-and-shortest-waits`}>
-              longest and shortest waits measured
-            </Link>
-          </li>
-          <li>
             <Link to={`/analysis`}>
               Analysis of data patterns
             </Link>

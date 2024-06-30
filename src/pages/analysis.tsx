@@ -178,10 +178,10 @@ export default function Analysis() {
       <p>A crowdsourced pedestrian traffic light timing map.</p>
       <h1>Analysis</h1>
       <p>
-        These are a collection of charts on the Better Intersections dataset. I
-        hope they can = demonstrate the value of open data in better
+        These are a collection of charts picking apart the Better Intersections dataset. I
+        hope they can demonstrate the value of open data in better
         understanding a complex, opaque system, but also as a tool for
-        communicating and demonstrating improvement over time (or lack of).
+        communicating and demonstrating improvement over time (or possibly lack thereof).
       </p>
 
       <p>
@@ -196,8 +196,7 @@ export default function Analysis() {
         All code used to generate these charts is{" "}
         <Link to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx">
           open source on Github
-        </Link>
-        . contributions are very welcome!
+        </Link>. Contributions are very welcome!
       </p>
 
       <h4>Data sources, implementation and caching concerns</h4>
@@ -801,6 +800,11 @@ export default function Analysis() {
         }}
       />
 
+      <h1>Longest pedestrian intersection wait times measured</h1>
+      <p>
+        These examples pulled from {intersections.length} crossings which
+        have a measurement - definitely not every intersection in Sydney.
+      </p>
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <IntersectionTable intersections={shortestIntersectionsFirst} />
       <p>
