@@ -114,14 +114,16 @@ export default function Analysis() {
    *  "explode" all measurement reports in each intersection into their own object.
    */
   const explodedIntersections = intersections
-    // If we only have one report, duplicate it so we can still plot it and not receive an error
-    .map((intersection) => ({
-      ...intersection,
-      reports:
-        intersection.reports.length === 1
-          ? [intersection.reports[0], intersection.reports[0]]
-          : intersection.reports,
-    }))
+    // // If we only have one report, duplicate it so we can still plot it and not receive an error
+    // .map((intersection) => ({
+    //   ...intersection,
+    //   reports:
+    //     intersection.reports.length === 1
+    //       ? [intersection.reports[0], intersection.reports[0]]
+    //       : intersection.reports,
+    // }))
+
+    .filter((i) => i.reports.length > 1)
     .flatMap((intersection) =>
       intersection.reports.map((report) => ({
         ...report,
@@ -262,7 +264,7 @@ export default function Analysis() {
 
   return (
     <HeaderAndFooterWide pageTitle={"Analysis"}>
-      <p>An expansion of the Better Intersections Cinematic Universe!</p>
+      <p>An expansion of the Better Intersections Cinematic Universe™️</p>
 
       <p>
         {" "}
@@ -563,6 +565,11 @@ export default function Analysis() {
 
       <PlotFigure
         options={{
+          x: {
+            label: "Time",
+            ...timeXAxisScaleOptions,
+          },
+          y: {label: "Max wait time (s)"},
           marks: [
             Plot.ruleY([0]),
             Plot.lineY(
@@ -597,7 +604,6 @@ export default function Analysis() {
               textAxisOffset: new Date("2023-03-15").getTime(),
             }),
           ],
-          x: timeXAxisScaleOptions,
         }}
       />
 
