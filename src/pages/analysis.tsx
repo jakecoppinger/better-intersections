@@ -270,7 +270,7 @@ export default function Analysis() {
         {" "}
         These are a collection of charts picking apart the Better Intersections
         dataset. They provide multiple avenues to find further patterns in
-        complex and incomplete date, but also as a tool for communicating and
+        complex and incomplete data, but also as a tool for communicating and
         demonstrating improvement over time (or perhaps lack thereof).
       </p>
 
@@ -373,7 +373,7 @@ export default function Analysis() {
       <h2>Histogram of average max waits in City of Sydney</h2>
       <p>
         Histogram buckets (columns): 10 second buckets centred on multiples of 5
-        that aren't multiples of 10. eg: all mesurements between 15 and 25
+        that aren't multiples of 10. eg: all measurements between 15 and 25
         seconds are placed in the 20 second bucket (column).
       </p>
       <p>
@@ -713,7 +713,7 @@ export default function Analysis() {
         centred on multiples of 5
       </h2>
       <p>
-        Eg, all mesurements between 10 and 20 seconds are placed in the 15
+        Eg, all measurements between 10 and 20 seconds are placed in the 15
         second bucket (column).
       </p>
       <p>
@@ -945,7 +945,7 @@ export default function Analysis() {
       <p>
         Note that as state roads are optimised for "movement" rather than
         "place" it is expected they will have higher speed limits and longer
-        cycle times than local roads. TfNSW control traffic signal timing no
+        cycle times than local roads. TfNSW set traffic signal timing no
         matter which agency is the maintainer of the road.
       </p>
       <h2>
