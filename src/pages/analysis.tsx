@@ -1068,13 +1068,13 @@ export default function Analysis() {
         }}
       />
 
-      <h1>Longest pedestrian intersection wait times measured</h1>
+      <h1>Longest pedestrian crossing wait times measured</h1>
       <p>
         These examples pulled from {intersections.length} crossings which have a
         measurement - definitely not every intersection in Sydney.
       </p>
       <IntersectionTable intersections={longestIntersectionsFirst} />
-      <br></br>
+      <h1>Shortest pedestrian crossing wait times measured</h1>
       <IntersectionTable intersections={shortestIntersectionsFirst} />
       <p>
         Know of any intersections that should be on this list? See the{" "}
