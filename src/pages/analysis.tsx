@@ -13,6 +13,7 @@ import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
 import { computedNodeProperties } from "../utils/computed-node-properties";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
+import { Helmet } from "react-helmet-async";
 
 const IntersectionTableRow = ({
   intersection,
@@ -264,6 +265,12 @@ export default function Analysis() {
 
   return (
     <HeaderAndFooterWide pageTitle={"Analysis"}>
+      <Helmet prioritizeSeoTags>
+        <title>Analysis - Better Intersections</title>
+        <meta property="og:title" content="Analysis - Better Intersections" />
+        <meta name="description" content="An analysis of crowdsourced traffic signal timing data for pedestrians and cyclists" />
+      </Helmet>
+
       <p>An expansion of the Better Intersections Cinematic Universe™️</p>
 
       <p>

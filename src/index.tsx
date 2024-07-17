@@ -11,6 +11,7 @@ import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
 import Analysis from "./pages/analysis";
+import { HelmetProvider } from "react-helmet-async";
 
 const router = createBrowserRouter([
   {
@@ -42,7 +43,9 @@ const router = createBrowserRouter([
 
 render(
   <React.StrictMode>
+    <HelmetProvider>
       <RouterProvider router={router} />
+    </HelmetProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

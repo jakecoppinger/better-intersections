@@ -12,6 +12,7 @@ import {
   getIntersections,
 } from "../utils/utils";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
+import { Helmet } from "react-helmet-async";
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;
@@ -70,8 +71,19 @@ export default function IntersectionNodePage() {
       ? getMainWayForIntersection(adjacentWays)
       : undefined;
 
+    const pageTitle = `Intersection ${nodeId} - Better Intersections`;
+    const pageDescription = intersection
+    ? `Crowdsourced traffic signal timings for intersection at ${intersection.lat},
+    ${intersection.lon} with OSM ID ${intersection.osmId}`
+    : `Crowdsourced traffic signal timings for intersection with OSM ID ${nodeId}`;
   return (
     <HeaderAndFooter>
+
+      <Helmet prioritizeSeoTags>
+        <title>{pageTitle}</title>
+        <meta property="og:title" content={pageTitle} />
+        <meta name="description" content={pageDescription}/>
+      </Helmet>
       <div>
         <h1>
           <span>

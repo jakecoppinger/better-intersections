@@ -54,7 +54,7 @@ You will also see any lint errors in the console.
 
 See Jest docs for args for watching files etc.
 
-`yarn test`
+`npm run test`
 
 ## Caching data
 

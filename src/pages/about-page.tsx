@@ -3,10 +3,17 @@ import { HeaderAndFooter } from "../components/HeaderAndFooter";
 import { Link } from "react-router-dom/dist/index";
 import { CsvExport } from "../components/CsvExport";
 import { JsonExport } from "../components/JsonExport";
+import { Helmet } from "react-helmet-async";
 
 const About: FC = () => {
   return (
     <HeaderAndFooter>
+      <Helmet prioritizeSeoTags>
+        <title>About - Better Intersections</title>
+        <meta property="og:title" content="About - Better Intersections" />
+        <meta name="description" content="About the Better Intersections project. Better Intersections is a crowdsourced pedestrian traffic light timing map that works all over the world, with a focus on Sydney, Australia.">
+        </meta>
+      </Helmet>
       <div>
         <h2>About</h2>
         <p>

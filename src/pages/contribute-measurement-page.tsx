@@ -5,6 +5,7 @@ import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
 import { Link, useParams } from "react-router-dom/dist/index";
+import { Helmet } from 'react-helmet-async';
 
 export const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -26,6 +27,12 @@ export const ContributeMeasurementPage: FC = () => {
 
   return (
     <HeaderAndFooter>
+      <Helmet prioritizeSeoTags>
+        <title>Contribute Measurement - Better Intersections</title>
+        <meta property="og:title" content="Contribute Measurement - Better Intersections" />
+        <meta name="description" content="Contribute a measurement of a traffic signal near you to Better Intersections" />
+      </Helmet>
+
       <div>
         <h1>Contribute Measurement</h1>
 
@@ -70,7 +77,7 @@ export const ContributeMeasurementPage: FC = () => {
         </p>
 
         {session && (
-          <AuthenticatedForm key={session.user.id} session={session} nodeId={isNodeId.nodeId}/>
+          <AuthenticatedForm key={session.user.id} session={session} nodeId={isNodeId.nodeId} />
         )}
         <br></br>
 

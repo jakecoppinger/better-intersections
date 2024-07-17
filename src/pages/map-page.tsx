@@ -29,6 +29,7 @@ import {
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { computedNodeProperties } from "../utils/computed-node-properties";
+import { Helmet } from "react-helmet-async";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
@@ -124,6 +125,12 @@ export function MapComponent() {
   };
   return (
     <div id="container">
+      <Helmet prioritizeSeoTags>
+        <title>Better Intersections</title>
+        <meta property="og:title" content="Better Intersections" />
+        <meta name="description" content="Better Intersections is a crowdsourced pedestrian traffic light timing map that works all over the world, with a focus on Sydney, Australia."/>
+      </Helmet>
+
       <MapInfoBox />
       <IntersectionFilter
         filterRange={minMaxCycleTimes}
@@ -154,31 +161,31 @@ export function MapComponent() {
           <GeolocateControl position="bottom-right" />
           {state.points
             ? state.points.map((intersection) => {
-                const totalRedDuration = intersection.averageFlashingAndSolidRedDuration;
+              const totalRedDuration = intersection.averageFlashingAndSolidRedDuration;
 
-                /* Check that the current intersection is within the cycle time filter range */
-                if (totalRedDuration >= min && totalRedDuration <= max) {
-                  const markerColor =
-                    displayMode === "max_ped_wait_time"
-                      ? getMaxWaitMarkerColour(intersection.averageFlashingAndSolidRedDuration)
-                      : getCycleTimeMarkerColour(totalRedDuration);
-                  return (
-                    <Marker
-                      key={`${intersection.osmId}-${markerColor}`}
-                      latitude={intersection.lat}
-                      longitude={intersection.lon}
-                      onClick={() => {
-                        setPopupIntersection(intersection);
-                        if (!showPopup) {
-                          setShowPopup(true);
-                        }
-                      }}
-                      color={markerColor}
-                    />
-                  );
-                }
-                return null;
-              })
+              /* Check that the current intersection is within the cycle time filter range */
+              if (totalRedDuration >= min && totalRedDuration <= max) {
+                const markerColor =
+                  displayMode === "max_ped_wait_time"
+                    ? getMaxWaitMarkerColour(intersection.averageFlashingAndSolidRedDuration)
+                    : getCycleTimeMarkerColour(totalRedDuration);
+                return (
+                  <Marker
+                    key={`${intersection.osmId}-${markerColor}`}
+                    latitude={intersection.lat}
+                    longitude={intersection.lon}
+                    onClick={() => {
+                      setPopupIntersection(intersection);
+                      if (!showPopup) {
+                        setShowPopup(true);
+                      }
+                    }}
+                    color={markerColor}
+                  />
+                );
+              }
+              return null;
+            })
             : null}
 
           {showPopup && popupIntersection ? (
