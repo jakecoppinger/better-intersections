@@ -24,6 +24,17 @@ import {
 } from "./intersection-computed-properties";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+function computeAverages(intersection: IntersectionStats) {
+  return {
+      averageCycleTime: calculateAverageCycleTime(intersection),
+      averageGreenDuration: calculateAverageGreenDuration(intersection),
+      averageFlashingRedDuration: calculateAverageFlashingRedDuration(intersection),
+      averageFlashingAndSolidRedDuration: calculateAverageFlashingAndSolidRedDuration(intersection),
+      averageSolidRedDuration: calculateAverageSolidRedDuration(intersection),
+      cycleTimeMaxDifference: calculateCycleTimeMaxDifference(intersection),
+  }
+}
+
 /**
  * This function is used by both the frontend and maintenance scripts to ensure
  * the logic for generating computed properties on the frontend and backend don't drift.
@@ -71,6 +82,8 @@ export async function computedNodeProperties(
       newIntersections.push({
         ...intersections[i],
         ...cachedProperties,
+        // TODO: This is a hack - we shouldn't be storing averages in the DB.
+        ...computeAverages(intersections[i]),
       });
       continue;
     }
@@ -103,12 +116,9 @@ export async function computedNodeProperties(
       latitude,
       longitude,
 
-      averageCycleTime: calculateAverageCycleTime(intersection),
-      averageGreenDuration: calculateAverageGreenDuration(intersection),
-      averageFlashingRedDuration: calculateAverageFlashingRedDuration(intersection),
-      averageFlashingAndSolidRedDuration: calculateAverageFlashingAndSolidRedDuration(intersection),
-      averageSolidRedDuration: calculateAverageSolidRedDuration(intersection),
-      cycleTimeMaxDifference: calculateCycleTimeMaxDifference(intersection),
+      // TODO: We shouldn't be storing averages in the DB.
+      // They are recalculated from cache above.
+      ...computeAverages(intersection),
 
       numRoadLanes,
       isRoadOneway,
