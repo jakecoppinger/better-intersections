@@ -112,7 +112,7 @@ export function IntersectionFilter({ filterRange, min,
         of 40s or less (<Link
           target="_blank"
           rel="noopener noreferrer"
-          to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
+          to={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
           CoS target is ≤ 35</Link>)</GreenText>, <OrangeText>orange 50 or less (recommended max is ≤ 45)</OrangeText> and{" "}
         <RedText>red above 50 seconds</RedText>.</p> : null}
 

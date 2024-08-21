@@ -82,7 +82,7 @@ export const MapInfoBox: FunctionComponent = () => {
             target="_blank"
             rel="noopener noreferrer"
             to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
-            City of Sydney draft Walking Strategy and Action Plan</Link> is advocating <Link
+            City of Sydney Walking Strategy and Action Plan</Link> is advocating <Link
               target="_blank"
               rel="noopener noreferrer"
               to={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time

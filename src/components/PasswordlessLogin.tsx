@@ -45,6 +45,7 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
     return (
       <>
         <h1>Verify your email to submit a measurement</h1>
+        <p>You will receive a 6 digit login code via email.</p>
         <FormWithPadding
           className="form-widget"
           onSubmit={async (event: any) => {
@@ -88,7 +89,10 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
     return (
       <div>
         <h1>Enter your verification code</h1>
-        <p>Check your email for the login code!</p>
+        <p>Check your email for the login code, and input it below!</p>
+        <p>Make sure to check your junk mail folder (it will come from noreply@mail.app.supabase.io).
+          If it does not arrive, or you see an error, wait a few minutes and reload the page to try again.
+        </p>
         <form
           className="form-widget"
           onSubmit={async (event: any) => {
@@ -127,7 +131,7 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
             <input
               className="inputField"
               type="text"
-              placeholder="Verification code"
+              placeholder="6-digit code from email"
               value={verificationCode}
               required={true}
               onChange={(e) => setVerificationCode(e.target.value)}
@@ -146,6 +150,8 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
             </button>
           </div>
         </form>
+        <br></br>
+        <br></br>
       </div>
     );
   }
