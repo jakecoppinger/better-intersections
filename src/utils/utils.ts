@@ -131,7 +131,11 @@ export function tagListToRecord(tagList: RawTag[]): Record<OsmWayKeys, string> {
   return record;
 }
 
-export function getMaxWaitMarkerColour(maxWait: number): string {
+/**
+ * Colour markers as green / orange / red based on the max pedestrian wait time
+ * as per City of Sydney strategy
+ */
+export function getMaxWaitMarkerColour({maxWait }: {maxWait: number}): string {
   if (maxWait > 45) {
     return "red";
   }
