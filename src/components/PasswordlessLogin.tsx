@@ -90,7 +90,7 @@ export const PasswordlessLogin: FC<PasswordlessLoginProps> = (
       <div>
         <h1>Enter your verification code</h1>
         <p>Check your email for the login code, and input it below!</p>
-        <p>Make sure to check your junk mail folder (it will come from noreply@mail.app.supabase.io).
+        <p>Make sure to check your junk mail folder (it will come from noreply@betterintersections.jakecoppinger.com).
           If it does not arrive, or you see an error, wait a few minutes and reload the page to try again.
         </p>
         <form
