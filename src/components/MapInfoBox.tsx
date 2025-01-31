@@ -81,12 +81,12 @@ export const MapInfoBox: FunctionComponent = () => {
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            to={`https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan`}>
+            to={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
             City of Sydney Walking Strategy and Action Plan</Link> is advocating <Link
               target="_blank"
               rel="noopener noreferrer"
-              to={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time
-          at intersections of <b>45 seconds</b> for people walking with a <b>target of 30 seconds</b>.</p>
+              to={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time for
+              pedestrians of <b>45 seconds</b> with a <b>target of 30 seconds</b>.</p>
         <p>
           Built by{" "}
           <a
@@ -112,7 +112,7 @@ export const MapInfoBox: FunctionComponent = () => {
           >
             Ayaan Adil
           </a>
-          .
+          . Contact Jake Coppinger at <a href="mailto:jake@jakecoppinger.com">jake@jakecoppinger.com</a>.
         </p>
       </DescriptionBox>
     </Wrapper>

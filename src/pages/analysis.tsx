@@ -353,7 +353,7 @@ export default function Analysis() {
       </p>
       <p>
         The excellent City of Sydney{" "}
-        <Link to="https://www.cityofsydney.nsw.gov.au/policy-planning-changes/your-feedback-walking-strategy-action-plan">
+        <Link to="https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision">
           "A City for Walking: Strategy and Action Plan - Continuing the Vision"
         </Link>{" "}
         draft states action 4 (pg. 36) is:
