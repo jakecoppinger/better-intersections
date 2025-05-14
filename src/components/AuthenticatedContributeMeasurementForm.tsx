@@ -22,9 +22,7 @@ import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
 import { getOSMCrossings } from "../api/overpass";
 import { isNodeValid, requestOsmNodePosition } from "../api/osm"
-
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
+import { mapboxToken } from "../config";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -312,7 +310,7 @@ You'll need to manually find the intersection or provide a location description.
                   latitude: location.latitude,
                   zoom: 18,
                 }}
-                mapboxAccessToken={MAPBOX_TOKEN}
+                mapboxAccessToken={mapboxToken}
                 id={"react-map"}
                 style={{ width: "90vw", height: "50vh" }}
                 mapStyle="mapbox://styles/mapbox/streets-v9"

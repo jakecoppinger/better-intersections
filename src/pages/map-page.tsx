@@ -30,9 +30,8 @@ import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { computedNodeProperties } from "../utils/computed-node-properties";
 import { Helmet } from "react-helmet-async";
+import { mapboxToken } from "../config";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiamFrZWMiLCJhIjoiY2tkaHplNGhjMDAyMDJybW4ybmRqbTBmMyJ9.AR_fnEuka8-cFb4Snp3upw";
 
 interface State {
   // viewport: {
@@ -146,7 +145,7 @@ export function MapComponent() {
         {state.points === undefined && <LoadingIndicator></LoadingIndicator>}
         <Map
           initialViewState={viewport}
-          mapboxAccessToken={MAPBOX_TOKEN}
+          mapboxAccessToken={mapboxToken}
           id={"react-map"}
           style={{ width: "100vw", height: "100vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v12"
