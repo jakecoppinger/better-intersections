@@ -15,6 +15,7 @@ import { computedNodeProperties } from "../utils/computed-node-properties";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
 import { Helmet } from "react-helmet-async";
 import { InitialPageText } from "./analysis/copy-text";
+import { MaxWaitComponent } from "./analysis/max-wait-component";
 
 const IntersectionTableRow = ({
   intersection,
@@ -287,6 +288,10 @@ export default function Analysis() {
         and solid red times of each measurement, then averaging across all
         measurements at that crossing.
       </p>
+
+      <MaxWaitComponent intersections={intersections} threshold={45} council="Council of the City of Sydney" />
+      <MaxWaitComponent intersections={intersections} threshold={30} council="Council of the City of Sydney" />
+
       <PlotFigure
         options={{
           y: histogramPercentageYAxis("Percentage of total intersections"),
@@ -986,7 +991,7 @@ export default function Analysis() {
       <h1>Longest pedestrian crossing wait times measured</h1>
       <p>
         These examples pulled from {intersections.length} crossings which have a
-        measurement - definitely not every intersection in Sydney.
+        measurement. This includes international examples.
       </p>
       <IntersectionTable intersections={longestIntersectionsFirst} />
       <h1>Shortest pedestrian crossing wait times measured</h1>
