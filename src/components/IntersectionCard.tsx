@@ -26,11 +26,21 @@ export function IntersectionCard(props: {
         }}
       ></div>
       <IntersectionCardText>
+        Are you standing here? <a href={`/contribute-measurement/${intersection.osmId}`}>
+          Record and submit a measurement!</a>.{" "}
         {numMeasurements}{" "}
         {numMeasurements === 1 ? "measurement" : "measurements"} at this
-        intersection. Are you standing here? <a href={`/contribute-measurement/${intersection.osmId}`}>
-          Record and submit a measurement!</a>
+        intersection.
       </IntersectionCardText>
+
+
+
+      <NoMarginP>
+        {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
+        <a href={`/intersection/node/${intersection.osmId}`}>
+          View more detailed stats (including imagery, # of lanes & road type)
+        </a>.
+      </NoMarginP>
       <table>
         <tbody>
           <tr>
@@ -64,6 +74,19 @@ export function IntersectionCard(props: {
             ))}
           </tr>
           <tr>
+            <th>Red+flashing</th>
+            {intersection.reports.map((r) => (
+              <td key={r.timestamp.toString()}>{r.redDuration + r.flashingDuration} sec.</td>
+            ))}
+          </tr>
+          <tr>
+            <th>Cycle time</th>
+            {intersection.reports.map((r) => (
+              <td key={r.timestamp.toString()}>{
+                Math.round((r.greenDuration + r.redDuration + r.flashingDuration) * 100) / 100} sec.</td>
+            ))}
+          </tr>
+          <tr>
             <th>Unprotected when flashing red</th>
             {intersection.reports.map((r) => (
               <td key={r.timestamp.toString()}>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
@@ -77,13 +100,6 @@ export function IntersectionCard(props: {
           </tr>
         </tbody>
       </table>
-
-      <NoMarginP>
-        {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
-        <a href={`/intersection/node/${intersection.osmId}`}>
-          View more detailed stats (including imagery, # of lanes & road type)
-        </a>.
-      </NoMarginP>
     </div>
   );
 }
