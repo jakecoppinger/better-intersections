@@ -297,3 +297,11 @@ export function removeVerboseTimezoneDescriptor(input: string): string {
     .replace(" (Australian Eastern Standard Time)", "")
     .replace(" (Australian Eastern Daylight Time)", "");
 }
+
+
+/**
+ * Format a number to one decimal place
+ */
+export function FormatToOneDecimal (value: number): number {
+  return Math.round(value * 10) / 10;
+};

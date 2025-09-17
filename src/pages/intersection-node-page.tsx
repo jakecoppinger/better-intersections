@@ -9,6 +9,7 @@ import {
 } from "../utils/url-formatting";
 import {
   convertUTCtoLocal,
+  FormatToOneDecimal,
   getIntersections,
 } from "../utils/utils";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
@@ -139,17 +140,17 @@ export default function IntersectionNodePage() {
                 <tr key={r.osmId}>
                   <td>{convertUTCtoLocal(r.timestamp.toString())}</td>
                   <td>
-                    <span className="green">{r.greenDuration} sec.</span>
+                    <span className="green">{FormatToOneDecimal(r.greenDuration)} sec.</span>
                   </td>
                   <td>
                     <span className="flashing_red">
-                      {r.flashingDuration} sec.
+                      {FormatToOneDecimal(r.flashingDuration)} sec.
                     </span>
                   </td>
                   <td>
-                    <span className="red">{r.redDuration} sec.</span>
+                    <span className="red">{FormatToOneDecimal(r.redDuration)} sec.</span>
                   </td>
-                  <td>{r.cycleLength} sec.</td>
+                  <td>{FormatToOneDecimal(r.cycleLength)} sec.</td>
                   <td>{r.unprotectedOnFlashingRed === true ? 'Yes' : (r.unprotectedOnFlashingRed === false ? 'No' : 'Unknown')}</td>
                   {r.notes ? <td>{r.notes}</td> : <td></td>}
                 </tr>
