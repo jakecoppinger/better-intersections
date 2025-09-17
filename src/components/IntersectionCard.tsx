@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { IntersectionStats } from "../types";
-import { convertUTCtoLocal } from "../utils/utils";
+import { convertUTCtoLocal, FormatToOneDecimal } from "../utils/utils";
 
 const IntersectionCardText = styled.p`
   margin-top: 10px;
@@ -16,6 +16,7 @@ export function IntersectionCard(props: {
 }) {
   const { intersection } = props;
   const numMeasurements = intersection.reports.length;
+
 
   return (
     <div style={{ overflowX: "auto" }}>
@@ -52,38 +53,38 @@ export function IntersectionCard(props: {
           <tr>
             <th>Green</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}><span className="green">{r.greenDuration} sec.</span></td>
+              <td key={r.timestamp.toString()}><span className="green">{FormatToOneDecimal(r.greenDuration)} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Flashing red</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}><span className="flashing_red">{r.flashingDuration} sec.</span></td>
+              <td key={r.timestamp.toString()}><span className="flashing_red">{FormatToOneDecimal(r.flashingDuration)} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Red</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}><span className="red">{r.redDuration} sec.</span></td>
+              <td key={r.timestamp.toString()}><span className="red">{FormatToOneDecimal(r.redDuration)} sec.</span></td>
             ))}
           </tr>
           <tr>
             <th>Cycle length</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}>{Math.round(r.cycleLength * 100) / 100} sec.</td>
+              <td key={r.timestamp.toString()}>{FormatToOneDecimal(r.cycleLength)} sec.</td>
             ))}
           </tr>
           <tr>
             <th>Red+flashing</th>
             {intersection.reports.map((r) => (
-              <td key={r.timestamp.toString()}>{r.redDuration + r.flashingDuration} sec.</td>
+              <td key={r.timestamp.toString()}>{FormatToOneDecimal(r.redDuration + r.flashingDuration)} sec.</td>
             ))}
           </tr>
           <tr>
             <th>Cycle time</th>
             {intersection.reports.map((r) => (
               <td key={r.timestamp.toString()}>{
-                Math.round((r.greenDuration + r.redDuration + r.flashingDuration) * 100) / 100} sec.</td>
+                FormatToOneDecimal(r.greenDuration + r.redDuration + r.flashingDuration)} sec.</td>
             ))}
           </tr>
           <tr>
