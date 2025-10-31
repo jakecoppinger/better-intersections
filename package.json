@@ -42,7 +42,7 @@
     "build": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts build",
     "test": "cp tsconfigs/web.tsconfig.json tsconfig.json && react-scripts test --watchAll=false",
     "start-maintenance": "cp tsconfigs/node.tsconfig.json tsconfig.json && tsc && NODE_NO_WARNINGS=1 node --max_old_space_size=4096 --trace-warnings  --experimental-specifier-resolution=node ./dist/local-maintenance-entrypoint.js",
-    "deploy": "npm run test && npm run build && npx wrangler pages deploy ./build/"
+    "deploy": "npm run test && npm run build && npx wrangler pages deploy --project-name \"better-intersections\" ./build/"
   },
   "eslintConfig": {
     "extends": "react-app"
