@@ -162,8 +162,13 @@ export function MapComponent() {
             ? state.points.map((intersection) => {
               const {averageCycleTime, averageFlashingAndSolidRedDuration} = intersection;
 
+              const shouldPinBeVisible = (averageCycleTime >= min && averageCycleTime <= max)
+                // If min/max is at default, show pins that are outside the default range.
+                // Chances are these are invalid.
+                || ((min < defaultMinMax.min + 0.1) && averageCycleTime < min)
+                || ((max > defaultMinMax.max - 0.1) && averageCycleTime > max)
               /* Check that the current intersection is within the cycle time filter range */
-              if (averageCycleTime >= min && averageCycleTime <= max) {
+              if (shouldPinBeVisible) {
                 const markerColor =
                   displayMode === "max_ped_wait_time"
                     ? getMaxWaitMarkerColour({maxWait: averageFlashingAndSolidRedDuration})
