@@ -24,6 +24,7 @@ export default defineConfig({
     alias: {
       buffer: 'buffer',
       stream: 'stream',
+      events: 'events',
     },
   },
 })
