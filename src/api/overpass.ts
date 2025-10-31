@@ -43,7 +43,21 @@ export async function getOSMCrossings(my_location: { lat: number; lon: number },
 }
 
 
-export async function overpassTurboRequest(request: string): Promise<(OSMNode | OSMWay | OSMRelation)[]> {
+export async function overpassTurboRequestWithRetries({
+  request,
+  retries = 3,
+}: { request: string, retries?: number }): Promise<(OSMNode | OSMWay | OSMRelation)[]> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await overpassTurboRequest(request);
+    } catch (e) {
+      console.error(`Error: ${e}`);
+    }
+  }
+  throw new Error(`Failed to fetch data after ${retries} retries`);
+}
+
+async function overpassTurboRequest(request: string): Promise<(OSMNode | OSMWay | OSMRelation)[]> {
   console.log(`Started POST request at ${new Date().toISOString()}`);
 
   const response = await fetch(apiUrl, {

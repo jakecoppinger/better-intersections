@@ -1,5 +1,5 @@
 import { IntersectionStats, OSMNode, OSMRelation} from "../types";
-import { overpassTurboRequest } from "../api/overpass";
+import { overpassTurboRequestWithRetries } from "../api/overpass";
 
 /** OSM relation for Sydney */
 const sydneyOsmRelation = 5750005;
@@ -34,9 +34,9 @@ export async function generateSignalNodeIdToCouncilNameMap(intersections: Inters
   Map<number,string>
 > {
   const allSydneyCouncilsQuery = generateAllCouncilsQuery(sydneyOsmRelation);
-  const councilResults = (await overpassTurboRequest(
-    allSydneyCouncilsQuery
-  )) as OSMRelation[];
+  const councilResults = (await overpassTurboRequestWithRetries({
+    request: allSydneyCouncilsQuery,
+  })) as OSMRelation[];
   const councilList = councilResults
     .filter((council) => council.tags.name)
     .map((council) => ({
@@ -84,9 +84,9 @@ async function fetchTrafficLightsInCouncil(relationId: number) {
     out tags;
     `;
 
-  const trafficLightResults = (await overpassTurboRequest(
-    trafficLightQuery
-  )) as OSMNode[];
+  const trafficLightResults = (await overpassTurboRequestWithRetries({
+    request: trafficLightQuery
+  })) as OSMNode[];
   const trafficLightNodeIds = trafficLightResults.map((node) => node.id);
   return trafficLightNodeIds;
 }
