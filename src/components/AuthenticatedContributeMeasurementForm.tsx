@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+
 import {
   AttributionControl,
   FullscreenControl,
   GeolocateControl,
   Marker,
-  Map as ReactMapGL
-} from "react-map-gl/dist/esm/exports-mapbox"
-import { Session } from "@supabase/gotrue-js/src/lib/types";
+  Map,
+} from "react-map-gl/mapbox";
+import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 
 import {
@@ -304,7 +305,7 @@ You'll need to manually find the intersection or provide a location description.
                 but make sure to describe the location well in the textbox
                 below.
               </p>
-              <ReactMapGL
+              <Map
                 initialViewState={{
                   longitude: location.longitude,
                   latitude: location.latitude,
@@ -339,7 +340,7 @@ You'll need to manually find the intersection or provide a location description.
                 <AttributionControl compact={false} />
                 <FullscreenControl position="bottom-right" />
                 <GeolocateControl position="bottom-right" />
-              </ReactMapGL>
+              </Map>
             </>
           )}
 

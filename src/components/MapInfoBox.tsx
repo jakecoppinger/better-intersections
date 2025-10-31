@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { FunctionComponent, useState } from "react";
-import { Link } from "react-router-dom/dist/index";
+import { Link } from "react-router-dom";
 
 
 const TitleBox = styled.div`

@@ -12,7 +12,7 @@ import {
   getIntersections,
 } from "../utils/utils";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from '@dr.pogodin/react-helmet';
 
 export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
   const nodeId = params.nodeId;

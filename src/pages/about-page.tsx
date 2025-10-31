@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
-import { Link } from "react-router-dom/dist/index";
+import { Link } from "react-router-dom";
 import { CsvExport } from "../components/CsvExport";
 import { JsonExport } from "../components/JsonExport";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from '@dr.pogodin/react-helmet';
 
 const About: FC = () => {
   return (

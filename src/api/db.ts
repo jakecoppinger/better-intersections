@@ -91,7 +91,7 @@ export async function insertComputedNodeProperties(
     latitude: properties.latitude,
     longitude: properties.longitude,
     is_road_oneway: properties.isRoadOneway,
-    
+
     average_cycle_time: properties.averageCycleTime,
     average_green_duration: properties.averageGreenDuration,
     average_flashing_red_duration: properties.averageFlashingRedDuration,
