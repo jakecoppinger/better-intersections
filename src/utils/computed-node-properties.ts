@@ -144,6 +144,9 @@ export async function computedNodeProperties(
         serviceRoleSupabase
       );
     }
+    const secondsToWait = 3;
+    console.log(`Waiting for ${secondsToWait} seconds...`)
+    await new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
   }
   return newIntersections;
 }
