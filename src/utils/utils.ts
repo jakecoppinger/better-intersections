@@ -13,14 +13,6 @@ export function generateOSMNodeUrl(osmId: number): string {
   return `https://www.openstreetmap.org/node/${osmId}`;
 }
 
-/** Returns true if the form response has an OpenStreetMap node id, and so can be displayed */
-export function isValidTrafficLightReport(
-  formResponse: IntersectionMeasurementResult
-): boolean {
-  const rawOsmId = formResponse.osm_node_id;
-  return rawOsmId !== null;
-}
-
 export async function convertToTrafficLightReport(
   formResponse: IntersectionMeasurementResult,
   nodeIdLocationLookup: Record<number, { lat: number; lon: number }>
@@ -249,7 +241,8 @@ export async function getIntersections(): Promise<IntersectionStats[]> {
   try {
     const reportsOrNull: (TrafficLightReport | null)[] = await Promise.all(
       safeData
-        .filter(isValidTrafficLightReport)
+        // Can't show the node if we don't have a location.
+        .filter(measurement => measurement.osm_node_id)
         .map((measurement) =>
           convertToTrafficLightReport(measurement, nodeIdLocationLookup)
         )
