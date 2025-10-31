@@ -3,7 +3,7 @@ import { IntersectionStats } from "../types";
 import { convertUTCtoLocal } from "../utils/utils";
 
 const IntersectionCardText = styled.p`
-  margin-top: 10px;
+  margin-top: 0px;
   margin-bottom:0px;
 `;
 
@@ -26,21 +26,15 @@ export function IntersectionCard(props: {
         }}
       ></div>
       <IntersectionCardText>
-        Are you standing here? <a href={`/contribute-measurement/${intersection.osmId}`}>
-          Record and submit a measurement!</a>.{" "}
+        Are you here? <a href={`/contribute-measurement/${intersection.osmId}`}>
+          Submit measurement</a>.<br></br>
         {numMeasurements}{" "}
-        {numMeasurements === 1 ? "measurement" : "measurements"} at this
-        intersection.
-      </IntersectionCardText>
-
-
-
-      <NoMarginP>
+        {numMeasurements === 1 ? "measurement" : "measurements"} here - {" "}
         {/* TODO: Replace this with a <Link>, which would need a refactor to use a react-map-gl popup */}
         <a href={`/intersection/node/${intersection.osmId}`}>
-          View more detailed stats (including imagery, # of lanes & road type)
+          View Detailed Stats
         </a>.
-      </NoMarginP>
+      </IntersectionCardText>
       <table>
         <tbody>
           <tr>
