@@ -8,23 +8,48 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Only returns intersections with valid OSM node IDs.
+ * Uses pagination to fetch all rows (Supabase default limit is 1000).
  * @returns
  */
 export async function getIntersectionMeasurements(): Promise<
   IntersectionMeasurementResult[]
 > {
-  const { data, error } = await webSupabase
-    .from("measurements")
-    // user_id is not excluded here for security reasons -
-    // user_id references a record in the (locked down) auth table
-    .select(
-      `id,updated_at,custom_updated_at,location_description,green_light_duration,flashing_red_light_duration,solid_red_light_duration,osm_node_id,crossing_lantern_type,unprotected_crossing,intersection_id,is_scramble_crossing,is_two_stage_crossing,has_countdown_timer,notes,longitude,latitude`
-    );
+  const allData: IntersectionMeasurementResult[] = [];
+  const pageSize = 1000;
+  let currentPage = 0;
+  let hasMore = true;
 
-  if (error) {
-    throw error;
+  while (hasMore) {
+    const from = currentPage * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error } = await webSupabase
+      .from("measurements")
+      // user_id is not excluded here for security reasons -
+      // user_id references a record in the (locked down) auth table
+      .select(
+        `id,updated_at,custom_updated_at,location_description,green_light_duration,flashing_red_light_duration,solid_red_light_duration,osm_node_id,crossing_lantern_type,unprotected_crossing,intersection_id,is_scramble_crossing,is_two_stage_crossing,has_countdown_timer,notes,longitude,latitude`
+      )
+      .range(from, to);
+
+    if (error) {
+      throw error;
+    }
+
+    if (data && data.length > 0) {
+      allData.push(...data);
+      // If we got fewer rows than pageSize, we've reached the end
+      hasMore = data.length === pageSize;
+      currentPage++;
+    } else {
+      hasMore = false;
+    }
   }
-  return data.filter((formResponse) => formResponse.osm_node_id !== null);
+
+  const numMeasurementRows = allData.length;
+  const rowsWithOsmNodeId = allData.filter((formResponse) => formResponse.osm_node_id);
+  console.log(`Fetched ${numMeasurementRows} measurement rows, ${rowsWithOsmNodeId.length} with OSM node ID.`);
+  return rowsWithOsmNodeId;
 }
 
 
