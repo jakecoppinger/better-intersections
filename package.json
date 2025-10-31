@@ -39,10 +39,10 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "dev": "cp tsconfigs/web.tsconfig.json tsconfig.json && vite --host",
-    "build": "cp tsconfigs/web.tsconfig.json tsconfig.json && vite build",
-    "test": "cp tsconfigs/web.tsconfig.json tsconfig.json && vite test --watchAll=false",
-    "start-maintenance": "cp tsconfigs/node.tsconfig.json tsconfig.json && NODE_NO_WARNINGS=1 NODE_OPTIONS='--max_old_space_size=4096 --trace-warnings' tsx src/local-maintenance-entrypoint.ts",
+    "dev": "vite --host",
+    "build": "vite build",
+    "test": "vite test --watchAll=false",
+    "start-maintenance": "NODE_NO_WARNINGS=1 NODE_OPTIONS='--max_old_space_size=4096 --trace-warnings' tsx src/local-maintenance-entrypoint.ts",
     "deploy": "npm run test && npm run build && npx wrangler pages deploy --project-name \"better-intersections\" ./build/",
     "lint": "eslint ."
   },
