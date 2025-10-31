@@ -42,7 +42,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "test": "vite test --watchAll=false",
-    "start-maintenance": "NODE_NO_WARNINGS=1 NODE_OPTIONS='--max_old_space_size=4096 --trace-warnings' tsx src/local-maintenance-entrypoint.ts",
+    "start-maintenance": "tsx src/local-maintenance-entrypoint.ts",
     "deploy": "npm run test && npm run build && npx wrangler pages deploy --project-name \"better-intersections\" ./build/",
     "lint": "eslint ."
   },
