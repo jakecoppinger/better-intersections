@@ -26,6 +26,8 @@ function OldStatsTable({ intersection, detailedStatsUrl }: { intersection: Inter
           {intersection.reports.map((r) => (
             <td key={r.timestamp.toString()}>{convertUTCtoLocal(r.timestamp.toString())}</td>
           ))}
+        </tr>
+        <tr>
           <th>Green</th>
           {intersection.reports.map((r) => (
             <td key={r.timestamp.toString()}><span className="green">{r.greenDuration} sec.</span></td>
