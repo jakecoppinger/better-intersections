@@ -85,10 +85,6 @@ p {
     transform: rotate(360deg);
   }
 }
-/*  YOLO */
-.overlays {
-  z-index: -100 !important;
-}
 
 .mapClass {
   border: 1px red;
