@@ -3,7 +3,7 @@ import { OSMNode, OSMRelation, OSMWay } from "../types";
 
 
 
-const apiUrl= 'http://jakes-dev-server:54321/api/interpreter';
+const apiUrl = 'http://jakes-dev-server:54321/api/interpreter';
 // const apiUrl = 'https://overpass-api.de/api/interpreter';
 
 export async function overpassTurboRequestWithRetries({
@@ -20,7 +20,12 @@ export async function overpassTurboRequestWithRetries({
   throw new Error(`Failed to fetch data after ${retries} retries`);
 }
 
-export async function overpassTurboRequest(request: string): Promise<(OSMNode | OSMWay | OSMRelation)[]> {
+/**
+ * Returns the raw JSON response from the Overpass Turbo API.
+ * @returns Response - with `elements` property containing the raw JSON response.
+ */
+export async function overpassTurboRequest(request: string): Promise<any> {
+
   console.log(`Started POST request at ${new Date().toISOString()}`);
 
   const response = await fetch(apiUrl, {
@@ -39,7 +44,7 @@ export async function overpassTurboRequest(request: string): Promise<(OSMNode | 
   const textResponse = await response.text();
   try {
     const jsonResponse = JSON.parse(textResponse);
-    return jsonResponse.elements as (OSMNode | OSMWay)[];
+    return jsonResponse;
   } catch (e) {
     console.error(`Request: ${request}`);
     console.error(`Response: ${textResponse}`);

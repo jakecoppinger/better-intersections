@@ -274,12 +274,13 @@ You'll need to manually find the intersection or provide a location description.
           geolocationStatus !== "Recorded intersection ID." && (
             <RequestSignalOnMap
               location={location}
-              onComplete={(osmNodeId, latitude, longitude) => {
+              onComplete={({osmNodeId, latitude, longitude, signalSite}) => {
                 setFormState((prev) => ({
                   ...prev,
                   osm_node_id: osmNodeId,
                   latitude,
                   longitude,
+                  signalSite,
                 }));
                 setGeolocationStatus("Recorded intersection ID.");
               }}

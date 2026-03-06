@@ -1,3 +1,5 @@
+import { OSMWay, OSMNode, RawOSMCrossing } from "@/src/types";
+
 export interface SiteDetails {
   /* eg. "TfNSW Traffic Controlled Site 0414", */
   "name": string;
@@ -32,3 +34,4 @@ export function getSiteDetailsForNodeId({ trafficSignalOsmNodeId, overpassRespon
     ref,
   });
 }
+
