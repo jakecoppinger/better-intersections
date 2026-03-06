@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
 
-import {
-  AttributionControl,
-  FullscreenControl,
-  GeolocateControl,
-  Marker,
-  Map,
-} from "react-map-gl/mapbox";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 
@@ -17,13 +10,11 @@ import {
   IsScrambleCrossing,
   IntersectionInsertionFields,
   IsTwoStageCrossing,
-  RawOSMCrossing,
 } from "../types";
 import { FormTextInput, RadioButtonComponent } from "./form-components";
 import { SignalTimer } from "./SignalTimer";
-import { getOSMCrossings } from "../api/overpass";
 import { isNodeValid, requestOsmNodePosition } from "../api/osm"
-import { mapboxToken } from "../config";
+import { RequestSignalOnMap } from "./RequestSignalOnMap";
 
 export interface AuthenticatedFormProps {
   session: Session;
@@ -178,7 +169,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
       setNextCycleStartTime(null);
       setGeolocationStatus(null);
       setGeolocationAllowed(null);
-      setOSMIntersections(undefined);
     }
     setIsSubmitting(false);
   };
@@ -191,10 +181,6 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
     null
   );
   const [geolocationStatus, setGeolocationStatus] = useState<string | null>();
-  const [osmIntersections, setOSMIntersections] = useState<any[] | undefined>(
-    undefined
-  );
-
   useEffect(() => {
     // Check if the node in the URL is valid.
     const checkIfNodeValid = async () => {
@@ -215,24 +201,7 @@ You'll need to manually find the intersection or provide a location description.
     } else {
       checkIfNodeValid();
     }
-
-    const asyncFunc = async () => {
-      if (geolocationAllowed && location?.latitude && location?.longitude) {
-        setGeolocationStatus("Finding nearby intersections...");
-        const osmIntersections = await getOSMCrossings(
-          { lat: location?.latitude, lon: location?.longitude },
-          200
-        );
-
-        setOSMIntersections(osmIntersections);
-        setGeolocationStatus("Found intersections.");
-        console.log({ osmIntersections });
-      }
-    };
-
-
-    asyncFunc();
-  }, [geolocationAllowed, location, nodeId, isSuppliedNodeValid]);
+  }, [nodeId, isSuppliedNodeValid]);
 
   return (
     <>
@@ -303,51 +272,18 @@ You'll need to manually find the intersection or provide a location description.
         {geolocationAllowed === true &&
           location &&
           geolocationStatus !== "Recorded intersection ID." && (
-            <>
-              <h2>Select intersection</h2>
-              <p>
-                Select an intersection to take a measurement. If there is no pin
-                at your desired location you you don't need to select a pin -
-                but make sure to describe the location well in the textbox
-                below.
-              </p>
-              <Map
-                initialViewState={{
-                  longitude: location.longitude,
-                  latitude: location.latitude,
-                  zoom: 18,
-                }}
-                mapboxAccessToken={mapboxToken}
-                id={"react-map"}
-                style={{ width: "90vw", height: "50vh" }}
-                mapStyle="mapbox://styles/mapbox/streets-v9"
-                attributionControl={false}
-              >
-                {osmIntersections !== undefined
-                  ? osmIntersections.map((intersection: RawOSMCrossing) => (
-                    <Marker
-                      key={intersection.id}
-                      latitude={intersection.lat}
-                      longitude={intersection.lon}
-                      onClick={() => {
-                        setFormState((prev) => ({
-                          ...prev,
-                          osm_node_id: intersection.id,
-                          latitude: intersection.lat,
-                          longitude: intersection.lon
-                        }));
-                        setGeolocationStatus("Recorded intersection ID.");
-                      }}
-                      color={"red"}
-                    />
-                  ))
-                  : null}
-
-                <AttributionControl compact={false} />
-                <FullscreenControl position="bottom-right" />
-                <GeolocateControl position="bottom-right" />
-              </Map>
-            </>
+            <RequestSignalOnMap
+              location={location}
+              onComplete={(osmNodeId, latitude, longitude) => {
+                setFormState((prev) => ({
+                  ...prev,
+                  osm_node_id: osmNodeId,
+                  latitude,
+                  longitude,
+                }));
+                setGeolocationStatus("Recorded intersection ID.");
+              }}
+            />
           )}
 
 
