@@ -47,7 +47,13 @@ export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const [nextCycleStartTime, setNextCycleStartTime] = useState<number | null>(
     null
   );
+  type FormStep = 'find-nearby-nodes' | 'time-signal' | 'fill-in-details';
 
+  // form steps:
+  // - find-nearby-nodes: find nearby nodes on the map
+  // - time-signal: time the signal
+  // - fill-in-details: fill in the details of the crossing
+  const [newFormStaep, setFormStep] = useState<FormStep>("find-nearby-nodes");
   const [formState, setFormState] = useState<Partial<IntersectionForm>>({});
 
   type FormValidatorOutput =

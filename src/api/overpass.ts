@@ -2,7 +2,9 @@ import { OSMNode, OSMRelation, OSMWay, RawOSMCrossing } from "../types";
 
 
 
-const apiUrl = 'https://overpass-api.de/api/interpreter';
+
+const apiUrl= 'http://jakes-dev-server:54321/api/interpreter';
+// const apiUrl = 'https://overpass-api.de/api/interpreter';
 
 /**
  * Fetch an array of signalised crossing locations from OSM within a given radius of a given location.
