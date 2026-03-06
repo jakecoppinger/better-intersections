@@ -173,7 +173,8 @@ export function MapComponent() {
                     key={`${intersection.osmId}-${markerColor}`}
                     latitude={intersection.lat}
                     longitude={intersection.lon}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.originalEvent.stopPropagation();
                       setPopupIntersection(intersection);
                       if (!showPopup) {
                         setShowPopup(true);
