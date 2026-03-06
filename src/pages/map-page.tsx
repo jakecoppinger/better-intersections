@@ -33,13 +33,6 @@ import { mapboxToken } from "../config";
 
 
 interface State {
-  // viewport: {
-  //   longitude: number;
-  //   latitude: number; // starting position
-  //   zoom: number;
-  //   // height: number;
-  //   // width: number;
-  // };
   points?: IntersectionStatsWithComputed[];
   markers?: mapboxgl.Marker[];
 }
