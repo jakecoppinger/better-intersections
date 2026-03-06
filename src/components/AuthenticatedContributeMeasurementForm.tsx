@@ -21,6 +21,40 @@ export interface AuthenticatedFormProps {
   nodeId: undefined | string
 }
 
+/**
+ * A form foa collecting a traffic signal timing measurement.
+ * 
+ * 
+ * Only one step is shown at a time, and each form step is a separate component.
+ * The form steps are:
+ * - 1. find-nearby-nodes: find nearby nodes on the map
+ *    - try to find the nearby node by using geolocation. if the geolocation is successful,
+ * we save that node, lat, lon and site details (if avilable).
+      * if the geolocation
+      * isn't successful or there aren't any nearby nodes, the user is prompted to
+      * add a:
+      *    - location description (eg. crossing Alice St east of Bob St)
+      *    - Optionally: OSM node ID (if available)
+ * 
+ * - 2. - time-signal: the user times the signal. Rather than measureing the time between green and flashing red,
+ * and flashing red to soled, and back to green - we record the _timestamp_ (iso8601)
+ * at each of the following events:
+ *    - green light starts
+ *    - flashing red light starts
+ *    - solid red light starts
+ *    - next green light starts
+ * we will store these in the DB (and the times between can be calculated). The frontend still
+ * shows the timing in the same way as before
+  - fill-in-details: fill in the details of the crossing - as required by the data in the schema.
+ * 
+ * 
+ * The form steps are shown in the order they are defined in the `FormStep` type.
+ * 
+ * The form steps are shown in the order they are defined in the `FormStep` type.
+ * 
+ * @param props 
+ * @returns 
+ */
 export const AuthenticatedForm: React.FC<AuthenticatedFormProps> = (props) => {
   const { session, nodeId } = props;
   const [isSuppliedNodeValid, setIsSuppliedNodeValid] = useState<boolean | undefined>(undefined);
