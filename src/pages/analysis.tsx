@@ -13,7 +13,7 @@ import * as Plot from "@observablehq/plot";
 import { PlotFigure } from "../components/Observable/PlotFigure";
 import { computedNodeProperties } from "../utils/computed-node-properties";
 import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from '@dr.pogodin/react-helmet';
 import { InitialPageText } from "./analysis/copy-text";
 import { MaxWaitComponent } from "./analysis/max-wait-component";
 

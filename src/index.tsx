@@ -2,16 +2,17 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 
 import AboutPage from "./pages/about-page";
-import { render } from "react-dom";
 import React from "react";
 import "./index.css";
 import { MapComponent as MapPage } from "./pages/map-page";
-import {ContributeMeasurementPage} from "./pages/contribute-measurement-page";
+import { ContributeMeasurementPage } from "./pages/contribute-measurement-page";
 import IntersectionNodePage, {
   nodeIdLoader,
 } from "./pages/intersection-node-page";
 import Analysis from "./pages/analysis";
-import { HelmetProvider } from "react-helmet-async";
+import { HelmetProvider } from '@dr.pogodin/react-helmet';
+import ReactDOM from "react-dom/client";
+
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/analysis",
-    element: <Analysis/>,
+    element: <Analysis />,
   },
   {
     path: "/contribute-measurement/:nodeId",
@@ -41,11 +42,18 @@ const router = createBrowserRouter([
   },
 ]);
 
-render(
+
+const containerId = "root";
+const container = document.getElementById(containerId);
+if (!container) {
+  console.error(`Failed to find the root element ${containerId}`);
+  throw new Error('Unable to load the map. Please contact the Heart Foundation.');
+}
+
+ReactDOM.createRoot(container).render(
   <React.StrictMode>
     <HelmetProvider>
       <RouterProvider router={router} />
     </HelmetProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );

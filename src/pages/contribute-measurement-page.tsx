@@ -1,11 +1,11 @@
 import { useState, useEffect, FC } from "react";
 import { HeaderAndFooter } from "../components/HeaderAndFooter";
-import { Session } from "@supabase/gotrue-js/src/lib/types";
+import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/supabase-client";
 import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
 import { PasswordlessLogin } from "../components/PasswordlessLogin";
-import { Link, useParams } from "react-router-dom/dist/index";
-import { Helmet } from 'react-helmet-async';
+import { Link, useParams } from "react-router-dom";
+import { Helmet } from '@dr.pogodin/react-helmet';
 
 export const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);

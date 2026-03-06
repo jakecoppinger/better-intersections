@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom/dist/index";
+import { Link } from "react-router-dom";
 import { FC, PropsWithChildren } from "react";
 import styled from "@emotion/styled";
 

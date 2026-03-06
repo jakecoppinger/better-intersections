@@ -1,3 +1,6 @@
+import {
+  LngLat,
+} from "react-map-gl/mapbox";
 import { getIntersectionMeasurements } from "../api/db";
 import { getOsmNodePosition, logOSMCacheStats } from "../api/osm";
 import {
@@ -91,7 +94,7 @@ export function summariseReportsByIntersection(
 }
 
 interface MoveEndCallbackProps {
-  centre: mapboxgl.LngLat;
+  centre: LngLat;
   zoom: number;
 }
 

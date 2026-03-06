@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Map as MapboxMap } from "react-map-gl/node_modules/@types/mapbox-gl/index";
 import {
   AttributionControl,
   FullscreenControl,
@@ -8,7 +7,7 @@ import {
   Popup,
   ViewStateChangeEvent,
   Map,
-} from "react-map-gl/dist/esm/exports-mapbox";
+} from "react-map-gl/mapbox";
 import "../App.css";
 import { MapInfoBox } from "../components/MapInfoBox";
 import {
@@ -29,7 +28,7 @@ import {
 import { IntersectionFilter } from "../components/IntersectionFilter";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 import { computedNodeProperties } from "../utils/computed-node-properties";
-import { Helmet } from "react-helmet-async";
+import { Helmet } from '@dr.pogodin/react-helmet';
 import { mapboxToken } from "../config";
 
 
@@ -41,7 +40,6 @@ interface State {
   //   // height: number;
   //   // width: number;
   // };
-  map?: MapboxMap | undefined;
   points?: IntersectionStatsWithComputed[];
   markers?: mapboxgl.Marker[];
 }
@@ -149,9 +147,6 @@ export function MapComponent() {
           id={"react-map"}
           style={{ width: "100vw", height: "100vh" }}
           mapStyle="mapbox://styles/mapbox/streets-v12"
-          ref={(ref) =>
-            ref && !state.map && setState({ ...state, map: ref.getMap() })
-          }
           onMoveEnd={onMoveEnd}
           attributionControl={false}
         >

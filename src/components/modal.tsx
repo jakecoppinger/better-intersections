@@ -12,7 +12,7 @@ import {
 export interface ModalProps {
   isShown: boolean;
   hide: () => void;
-  modalContent: JSX.Element;
+  modalContent: React.ReactNode;
   headerText: string;
 }
 export const Modal: FunctionComponent<ModalProps> = ({
