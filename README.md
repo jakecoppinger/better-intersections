@@ -65,9 +65,6 @@ If an OSM node can't be found in the cache these requests will be send from the 
 occurs in the case where new measurements of a new intersection have been added since the last cache
 update.
 
-To support [Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
-updating the cache requires locally running a maintenance script. See `package.json` for details.
-
 ## Production build
 
 `yarn build`
@@ -76,17 +73,6 @@ Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br />
-
-## Deploying to Cloudflare Pages using Wrangler
-
-TODO: This section is outdated.
-
-Note: You'll need to set up your own Cloudflare pages site if you'd like to do this.
-
-Docs: https://developers.cloudflare.com/pages/get-started/direct-upload/
-
-- First login to wrangler: `npx wrangler login`
-- Choose project and deploy (running tests and build beforehand): `npm run deploy`
 
 # Authors
 
