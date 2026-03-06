@@ -1,71 +1,41 @@
 {
-  "name": "better-intersections",
-  "version": "0.9",
-  "private": false,
-  "type": "module",
+  "name": "new-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "cp node_modules/mapbox-gl/dist/mapbox-gl-csp-worker.js public/mapbox-gl-csp-worker.js"
+  },
   "dependencies": {
-    "@dr.pogodin/react-helmet": "^3.0.4",
+    "@dr.pogodin/react-helmet": "^3.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@eslint/js": "^9.38.0",
     "@observablehq/plot": "^0.6.17",
-    "@supabase/supabase-js": "^2.78.0",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.9.2",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@types/react-router-hash-link": "^2.4.9",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@supabase/supabase-js": "^2.98.0",
     "buffer": "^6.0.3",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
     "events": "^3.3.0",
-    "globals": "^16.4.0",
     "mapbox-gl": "^3.19.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-map-gl": "^8.1.0",
-    "react-router-dom": "^7.9.5",
     "react-router-hash-link": "^2.4.3",
-    "rsuite": "^6.0.0-canary-20251031",
-    "stream": "0.0.3",
-    "timers": "^0.1.1",
+    "rsuite": "^6.1.2",
+    "stream-browserify": "^3.0.0",
     "timers-browserify": "^2.0.12",
-    "typescript": "^5.9.3",
-    "vite": "^7.1.12",
     "xml2js": "^0.6.2"
   },
-  "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "test": "vite test --watchAll=false",
-    "start-maintenance": "tsx src/local-maintenance-entrypoint.ts",
-    "deploy": "npm run test && npm run build && npx wrangler pages deploy --project-name \"better-intersections\" ./build/",
-    "lint": "eslint ."
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "not safari < 10",
-      "not chrome < 51",
-      "not android < 5",
-      "not ie < 12"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "homepage": "",
   "devDependencies": {
-    "@types/xml2js": "^0.4.14",
-    "tsx": "^4.20.6",
-    "wrangler": "^4.45.3"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

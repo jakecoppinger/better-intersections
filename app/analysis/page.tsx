@@ -1,21 +1,20 @@
+'use client';
 import { useState, useEffect } from "react";
-import { fetchOsmWaysForNode } from "../api/osm";
-import { IntersectionStatsWithComputed, Way } from "../types";
+import { fetchOsmWaysForNode } from "../../src/api/osm";
+import { IntersectionStatsWithComputed, Way } from "../../src/types";
 import {
   HeaderAndFooter,
   HeaderAndFooterWide,
-} from "../components/HeaderAndFooter";
-import { getIntersections } from "../utils/utils";
-import { Link } from "react-router-dom";
-// @ts-ignore
-import { HashLink } from "react-router-hash-link";
+} from "../../src/components/HeaderAndFooter";
+import { getIntersections } from "../../src/utils/utils";
+import Link from "next/link";
 import * as Plot from "@observablehq/plot";
-import { PlotFigure } from "../components/Observable/PlotFigure";
-import { computedNodeProperties } from "../utils/computed-node-properties";
-import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
+import { PlotFigure } from "../../src/components/Observable/PlotFigure";
+import { computedNodeProperties } from "../../src/utils/computed-node-properties";
+import { getMainWayForIntersection } from "../../src/utils/intersection-computed-properties";
 import { Helmet } from '@dr.pogodin/react-helmet';
-import { InitialPageText } from "./analysis/copy-text";
-import { MaxWaitComponent } from "./analysis/max-wait-component";
+import { InitialPageText } from "./copy-text";
+import { MaxWaitComponent } from "./max-wait-component";
 
 const IntersectionTableRow = ({
   intersection,
@@ -43,12 +42,12 @@ const IntersectionTableRow = ({
   return (
     <tr>
       <td>
-        <Link to={`/intersection/node/${intersection.osmId}`}>
+        <Link href={`/intersection/node/${intersection.osmId}`}>
           {mainWay ? mainWay.tags.name : "Loading..."}
         </Link>
       </td>
       <td>
-        <Link to={`/intersection/node/${intersection.osmId}`}>
+        <Link href={`/intersection/node/${intersection.osmId}`}>
           {intersection.osmId}
         </Link>
       </td>
@@ -326,7 +325,7 @@ export default function Analysis() {
         relatively low max wait) tend to be light-rail adjacent main roads. One
         example is Pitt St adjacent to Central Station (7 lanes):{" "}
         <Link
-          to="https://betterintersections.jakecoppinger.com/intersection/node/3500777435"
+          href="https://betterintersections.jakecoppinger.com/intersection/node/3500777435"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -390,7 +389,7 @@ export default function Analysis() {
         error and warrants further investigation. See details of all
         measurements at this intersection at{" "}
         <Link
-          to="https://betterintersections.jakecoppinger.com/intersection/node/610196239"
+          href="https://betterintersections.jakecoppinger.com/intersection/node/610196239"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -538,7 +537,7 @@ export default function Analysis() {
 
       <p>
         The{" "}
-        <Link to="https://www.transport.nsw.gov.au/system/files/media/documents/2024/King-Street-cycleway_consultation-report_February-2024.pdf">
+        <Link href="https://www.transport.nsw.gov.au/system/files/media/documents/2024/King-Street-cycleway_consultation-report_February-2024.pdf">
           King Street Cycleway Community consultation report (February 2024)
         </Link>{" "}
         includes in the feedback a question: "Currently there are substantial
@@ -714,7 +713,7 @@ export default function Analysis() {
         <Link
           target="_blank"
           rel="noopener noreferrer"
-          to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+          href="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
         >
           Shining a Light on the Traffic Signals of Sydney (July 2023)
         </Link>{" "}
@@ -998,9 +997,9 @@ export default function Analysis() {
       <IntersectionTable intersections={shortestIntersectionsFirst} />
       <p>
         Know of any intersections that should be on this list? See the{" "}
-        <HashLink to={`/about#contributing`}>
+        <a href={`/about#contributing`}>
           instructions for contributing!
-        </HashLink>
+        </a>
       </p>
       <p>
         These examples pulled from {intersections.length} intersections which

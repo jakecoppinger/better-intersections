@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import mapboxgl from "mapbox-gl";
 import {
   AttributionControl,
   FullscreenControl,
@@ -8,43 +11,37 @@ import {
   ViewStateChangeEvent,
   Map,
 } from "react-map-gl/mapbox";
-import "../App.css";
-import { MapInfoBox } from "../components/MapInfoBox";
+import "../src/App.css";
+
+// Use the pre-built worker to avoid Turbopack transpilation breaking the WebWorker
+mapboxgl.workerUrl = "/mapbox-gl-csp-worker.js";
+import { MapInfoBox } from "../src/components/MapInfoBox";
 import {
   DisplayMode,
   IntersectionFilterState,
   IntersectionStats,
   IntersectionStatsWithComputed,
-} from "../types";
+} from "../src/types";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { IntersectionCard } from "../components/IntersectionCard";
+import { IntersectionCard } from "../src/components/IntersectionCard";
 import {
   getIntersections,
   getCycleTimeMarkerColour,
   getMaxCycleTime,
   getNextLargestMultipleOf5,
   getMaxWaitMarkerColour,
-} from "../utils/utils";
-import { IntersectionFilter } from "../components/IntersectionFilter";
-import { LoadingIndicator } from "../components/LoadingIndicator";
-import { computedNodeProperties } from "../utils/computed-node-properties";
+} from "../src/utils/utils";
+import { IntersectionFilter } from "../src/components/IntersectionFilter";
+import { LoadingIndicator } from "../src/components/LoadingIndicator";
+import { computedNodeProperties } from "../src/utils/computed-node-properties";
 import { Helmet } from '@dr.pogodin/react-helmet';
-import { mapboxToken } from "../config";
+import { mapboxToken } from "../src/config";
 
 
 interface State {
   points?: IntersectionStatsWithComputed[];
   markers?: mapboxgl.Marker[];
 }
-
-const params = new URLSearchParams(window.location.search);
-const paramLat = params.get("lat");
-const paramLon = params.get("lon");
-const paramZoom = params.get("zoom");
-
-const latitude = paramLat ? parseFloat(paramLat) : -33.8688;
-const longitude = paramLon ? parseFloat(paramLon) : 151.1593;
-const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
 
 // TODO: Consolidate or break out state
 const initialState: State = {};
@@ -55,7 +52,16 @@ type Viewport = {
   zoom: number;
 };
 
-export function MapComponent() {
+function MapComponent() {
+  const searchParams = useSearchParams();
+  const paramLat = searchParams.get("lat");
+  const paramLon = searchParams.get("lon");
+  const paramZoom = searchParams.get("zoom");
+
+  const latitude = paramLat ? parseFloat(paramLat) : -33.8688;
+  const longitude = paramLon ? parseFloat(paramLon) : 151.1593;
+  const zoom: number = paramZoom ? parseFloat(paramZoom) : 11;
+
   const [state, setState] = useState<State>(initialState);
   const [popupIntersection, setPopupIntersection] = useState<
     IntersectionStats | undefined
@@ -198,5 +204,13 @@ export function MapComponent() {
         </Map>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <MapComponent />
+    </Suspense>
   );
 }

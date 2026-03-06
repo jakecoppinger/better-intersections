@@ -1,4 +1,4 @@
-import { IntersectionStatsWithComputed } from "../../types";
+import { IntersectionStatsWithComputed } from "../../src/types";
 
 export function MaxWaitComponent({ council, threshold,
   intersections

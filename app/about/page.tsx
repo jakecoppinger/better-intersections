@@ -1,8 +1,9 @@
+'use client';
 import { FC } from "react";
-import { HeaderAndFooter } from "../components/HeaderAndFooter";
-import { Link } from "react-router-dom";
-import { CsvExport } from "../components/CsvExport";
-import { JsonExport } from "../components/JsonExport";
+import { HeaderAndFooter } from "../../src/components/HeaderAndFooter";
+import Link from "next/link";
+import { CsvExport } from "../../src/components/CsvExport";
+import { JsonExport } from "../../src/components/JsonExport";
 import { Helmet } from '@dr.pogodin/react-helmet';
 
 const About: FC = () => {
@@ -19,7 +20,7 @@ const About: FC = () => {
         <p>
           Better Intersections is a tool to record and visualise how long people
           walking and on bikes have to wait at traffic lights. You can{" "}
-          <Link to={"/contribute-measurement"}>
+          <Link href={"/contribute-measurement"}>
             contribute timing measurements
           </Link>{" "}
           yourself. It's focused on Sydney, Australia, but you're welcome to
@@ -46,7 +47,7 @@ const About: FC = () => {
           blog post,{" "}
           <Link
             target="_blank"
-            to={
+            href={
               "https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
             }
           >
@@ -217,7 +218,7 @@ const About: FC = () => {
               rel="noopener noreferrer"
               href="https://jakecoppinger.com/2022/12/sydney-cbd-is-bringing-back-pedestrian-beg-buttons/"
             >
-              Sydney CBD is bringing back pedestrian “beg buttons” - Jake
+              Sydney CBD is bringing back pedestrian "beg buttons" - Jake
               Coppinger
             </a>
           </li>

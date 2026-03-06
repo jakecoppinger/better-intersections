@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { FC, PropsWithChildren } from "react";
 import styled from "@emotion/styled";
 
@@ -26,7 +26,7 @@ export const Wrapper = styled.div`
 export const HeaderAndFooter: FC<PropsWithChildren> = ({children}) => {
   return (
     <Wrapper>
-      <h1><Link to={`/`}>Better Intersections</Link></h1>
+      <h1><Link href={`/`}>Better Intersections</Link></h1>
       {children}
     </Wrapper>
   );
@@ -38,7 +38,7 @@ export const HeaderAndFooterWide = ({children, pageTitle}: PropsWithChildren<{pa
 
   return (
     <WideWrapper>
-      <h1><Link to={`/`}>Better Intersections</Link> / {pageTitle}</h1>
+      <h1><Link href={`/`}>Better Intersections</Link> / {pageTitle}</h1>
       {children}
     </WideWrapper>
   );

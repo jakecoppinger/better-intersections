@@ -1,5 +1,5 @@
 import { FunctionComponent, Fragment} from 'react';
-import ReactDOM from 'react-dom/index';
+import ReactDOM from 'react-dom';
 import {
   Wrapper,
   Header,

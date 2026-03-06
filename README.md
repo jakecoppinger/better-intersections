@@ -15,13 +15,9 @@ See http://betterintersections.jakecoppinger.com/about
 
 # Architecture
 
-Better Intersections is a statically build Typescript app hosted on Cloudflare pages.
+Better Intersections is a Next.js typescript app.
 
-Data is stored in a Postgres database in Supabase. Pin locations are looked up using the
-OpenStreetMap API.
-
-It has a performance overhead loading the pins for the first time but ensures the data is as fresh
-as possible (to encourage community contributions).
+Data is stored in a Postgres database in Supabase. Data is fetchd from OpenStreetMap (either via the API or via Overpass) when adding new pins.
 
 # Development
 
@@ -58,6 +54,8 @@ See Jest docs for args for watching files etc.
 
 ## Caching data
 
+TODO: This section is outdated.
+
 A number of requests are made to the OSM API to display pins correctly, but in addition to perform
 data analysis.
 
@@ -81,6 +79,8 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Deploying to Cloudflare Pages using Wrangler
 
+TODO: This section is outdated.
+
 Note: You'll need to set up your own Cloudflare pages site if you'd like to do this.
 
 Docs: https://developers.cloudflare.com/pages/get-started/direct-upload/
@@ -90,7 +90,7 @@ Docs: https://developers.cloudflare.com/pages/get-started/direct-upload/
 
 # Authors
 
-Started by Jake Coppinger. Hosting (Cloudflare Pages, Supabase) and domain under his name.
+Started and maintined by Jake Coppinger.
 
 See contributors on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
 

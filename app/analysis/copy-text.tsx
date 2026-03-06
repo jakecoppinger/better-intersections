@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export const InitialPageText = () => <>
       <p>An expansion of the Better Intersections Cinematic Universe™️</p>
@@ -23,7 +23,7 @@ export const InitialPageText = () => <>
       <p>
         All code used to generate these charts is{" "}
         <Link
-          to="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx"
+          href="https://github.com/jakecoppinger/better-intersections/blob/main/src/pages/analysis.tsx"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -31,8 +31,8 @@ export const InitialPageText = () => <>
         </Link>
         . Contributions are very welcome! Please raise an issue if you find any
         bugs, or feel free to contact me via email (
-        <Link to={"mailto:jake@jakecoppinger.com"}>jake@jakecoppinger.com</Link>
-        ) or <Link to={"https://mastodon.social/@jakecoppinger"}>Mastodon</Link>
+        <Link href={"mailto:jake@jakecoppinger.com"}>jake@jakecoppinger.com</Link>
+        ) or <Link href={"https://mastodon.social/@jakecoppinger"}>Mastodon</Link>
         .
       </p>
       <p>
@@ -45,7 +45,7 @@ export const InitialPageText = () => <>
         All geographic data is from OpenStreetMap. All measurement data is from
         Better Intersections. Charts are generated using{" "}
         <Link
-          to="https://observablehq.com/plot/"
+          href="https://observablehq.com/plot/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -75,7 +75,7 @@ export const InitialPageText = () => <>
         <Link
           target="_blank"
           rel="noopener noreferrer"
-          to="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
+          href="https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/"
         >
           Shining a Light on the Traffic Signals of Sydney (July 2023)
         </Link>
@@ -83,7 +83,7 @@ export const InitialPageText = () => <>
       </p>
       <p>
         The excellent City of Sydney{" "}
-        <Link to="https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision">
+        <Link href="https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision">
           "A City for Walking: Strategy and Action Plan - Continuing the Vision"
         </Link>{" "}
         draft states action 4 (pg. 36) is:

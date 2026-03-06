@@ -1,23 +1,19 @@
-import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
+'use client';
+import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { fetchOsmWaysForNode } from "../api/osm";
-import { IntersectionStats, Way } from "../types";
-import { HeaderAndFooter } from "../components/HeaderAndFooter";
+import { fetchOsmWaysForNode } from "../../../../src/api/osm";
+import { IntersectionStats, Way } from "../../../../src/types";
+import { HeaderAndFooter } from "../../../../src/components/HeaderAndFooter";
 import {
   generateGeohackQueryParam,
   googleStreetViewUrl,
-} from "../utils/url-formatting";
+} from "../../../../src/utils/url-formatting";
 import {
   convertUTCtoLocal,
   getIntersections,
-} from "../utils/utils";
-import { getMainWayForIntersection } from "../utils/intersection-computed-properties";
+} from "../../../../src/utils/utils";
+import { getMainWayForIntersection } from "../../../../src/utils/intersection-computed-properties";
 import { Helmet } from '@dr.pogodin/react-helmet';
-
-export async function nodeIdLoader({ params }: LoaderFunctionArgs) {
-  const nodeId = params.nodeId;
-  return { nodeId };
-}
 
 export default function IntersectionNodePage() {
   const [adjacentWays, setAdjacentWays] = useState<Way[] | undefined>(undefined);
@@ -25,6 +21,13 @@ export default function IntersectionNodePage() {
   const [intersection, setIntersection] = useState<
     IntersectionStats | undefined
   >(undefined);
+
+  const { nodeId: rawNodeId } = useParams<{ nodeId: string }>();
+
+  useEffect(() => {
+    // check if nodeId is a number, but keep it as a string. If it's not a number, set it as undefined
+    setNodeId(rawNodeId && !isNaN(parseInt(rawNodeId)) ? parseInt(rawNodeId) : undefined);
+  }, [rawNodeId]);
 
   useEffect(() => {
     async function getAdjacentWays() {
@@ -37,13 +40,6 @@ export default function IntersectionNodePage() {
     }
     getAdjacentWays();
   }, [nodeId]);
-  const { nodeId: rawNodeId } = useLoaderData() as {
-    nodeId: string | undefined;
-  };
-  useEffect(() => {
-    // check if nodeId is a number, but keep it as a string. If it's not a number, set it as undefined
-    setNodeId(rawNodeId && !isNaN(parseInt(rawNodeId)) ? parseInt(rawNodeId) : undefined);
-  }, [rawNodeId]);
 
   useEffect(() => {
     async function getIntersectionData() {

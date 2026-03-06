@@ -1,15 +1,17 @@
+'use client';
 import { useState, useEffect, FC } from "react";
-import { HeaderAndFooter } from "../components/HeaderAndFooter";
+import { HeaderAndFooter } from "../../../src/components/HeaderAndFooter";
 import { Session } from "@supabase/supabase-js";
-import { supabase } from "../utils/supabase-client";
-import { AuthenticatedForm } from "../components/AuthenticatedContributeMeasurementForm";
-import { PasswordlessLogin } from "../components/PasswordlessLogin";
-import { Link, useParams } from "react-router-dom";
+import { supabase } from "../../../src/utils/supabase-client";
+import { AuthenticatedForm } from "../../../src/components/AuthenticatedContributeMeasurementForm";
+import { PasswordlessLogin } from "../../../src/components/PasswordlessLogin";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Helmet } from '@dr.pogodin/react-helmet';
 
-export const ContributeMeasurementPage: FC = () => {
+const ContributeMeasurementPage: FC = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const isNodeId = useParams();
+  const { nodeId } = useParams<{ nodeId: string }>();
 
   useEffect(() => {
     async function getDBSession() {
@@ -65,7 +67,7 @@ export const ContributeMeasurementPage: FC = () => {
         <p>
           Your email address is required to identify and remove spam
           submissions, however your email will not be published. Read more on
-          the <Link to="/about">about page</Link>. Code is open source on{" "}
+          the <Link href="/about">about page</Link>. Code is open source on{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
@@ -77,7 +79,7 @@ export const ContributeMeasurementPage: FC = () => {
         </p>
 
         {session && (
-          <AuthenticatedForm key={session.user.id} session={session} nodeId={isNodeId.nodeId} />
+          <AuthenticatedForm key={session.user.id} session={session} nodeId={nodeId} />
         )}
         <br></br>
 
@@ -110,3 +112,5 @@ export const ContributeMeasurementPage: FC = () => {
     </HeaderAndFooter>
   );
 };
+
+export default ContributeMeasurementPage;
