@@ -1,3 +1,27 @@
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+p {
+  font-size: 1rem;
+}
+
+a {
+  text-decoration: revert;
+  color: revert;
+}
+
+input,
+textarea,
+select {
+  all: revert;
+}
+
 .App {
   text-align: center;
 }
@@ -60,10 +84,6 @@ p {
   to {
     transform: rotate(360deg);
   }
-}
-/*  YOLO */
-.overlays {
-  z-index: -100 !important;
 }
 
 .mapClass {

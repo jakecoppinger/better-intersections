@@ -1,5 +1,5 @@
 import { FunctionComponent, Fragment} from 'react';
-import ReactDOM from 'react-dom/index';
+import ReactDOM from 'react-dom';
 import {
   Wrapper,
   Header,
@@ -12,7 +12,7 @@ import {
 export interface ModalProps {
   isShown: boolean;
   hide: () => void;
-  modalContent: JSX.Element;
+  modalContent: React.ReactNode;
   headerText: string;
 }
 export const Modal: FunctionComponent<ModalProps> = ({

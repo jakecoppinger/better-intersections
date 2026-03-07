@@ -2,7 +2,7 @@ import { RangeSlider } from "rsuite";
 import "rsuite/dist/rsuite-no-reset.min.css";
 import { DisplayMode, IntersectionFilterState } from "../types";
 import styled from "@emotion/styled";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const GreenText = styled.span`
     color: green;
@@ -111,7 +111,7 @@ export function IntersectionFilter({ filterRange, min,
       {displayMode === "max_ped_wait_time" ? <p><GreenText>Green represents measurement avg. at crossing of 35s or less (<Link
           target="_blank"
           rel="noopener noreferrer"
-          to={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
+          href={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
           CoS target is ≤ 30</Link>)</GreenText>, <OrangeText>orange 50 or less (recommended max is ≤ 45)</OrangeText> and{" "}
         <RedText>red above 50 seconds</RedText>. Each measurement is max pedestrian wait at that
         time (ie. end of flashing red to start of green) if button has been pressed (or is automatic).</p> : null}

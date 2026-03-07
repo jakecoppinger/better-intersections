@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { FunctionComponent, useState } from "react";
-import { Link } from "react-router-dom/dist/index";
+import Link from "next/link";
 
 
 const TitleBox = styled.div`
@@ -60,13 +60,13 @@ export const MapInfoBox: FunctionComponent = () => {
         <h3>A crowdsourced pedestrian traffic light timing map</h3>
         <ul>
           <li>
-            <Link to={`/contribute-measurement`}>Contribute a measurement!</Link>
+            <Link href={`/contribute-measurement`}>Contribute a measurement!</Link>
           </li>
           <li>
-            <Link to={`/about`}>About</Link> this project
+            <Link href={`/about`}>About</Link> this project
           </li>
           <li>
-            <Link to={`/analysis`}>
+            <Link href={`/analysis`}>
               Analysis of data patterns
             </Link>
           </li>
@@ -74,18 +74,18 @@ export const MapInfoBox: FunctionComponent = () => {
             <Link
               target="_blank"
               rel="noopener noreferrer"
-              to={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>the design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
+              href={`https://jakecoppinger.com/2023/07/shining-a-light-on-the-traffic-signals-of-sydney/`}>the design & politics</Link> of Sydney's traffic signals (Jake Coppinger's blog)
           </li>
         </ul>
         <p>The{" "}
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            to={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
+            href={`https://www.cityofsydney.nsw.gov.au/strategies-action-plans/city-walking-strategy-action-plan-continuing-vision`}>
             City of Sydney Walking Strategy and Action Plan</Link> is advocating <Link
               target="_blank"
               rel="noopener noreferrer"
-              to={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time for
+              href={`https://www.transport.nsw.gov.au`}>TfNSW</Link> sets a maximum wait time for
               pedestrians of <b>45 seconds</b> with a <b>target of 30 seconds</b>.</p>
         <p>
           Built by{" "}

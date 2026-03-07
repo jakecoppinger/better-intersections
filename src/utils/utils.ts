@@ -1,4 +1,9 @@
-import { getIntersectionMeasurements } from "../api/db";
+import {
+  LngLat,
+} from "react-map-gl/mapbox";
+import { 
+
+} from "../api/db";
 import { getOsmNodePosition, logOSMCacheStats } from "../api/osm";
 import {
   IntersectionStats,
@@ -91,7 +96,7 @@ export function summariseReportsByIntersection(
 }
 
 interface MoveEndCallbackProps {
-  centre: mapboxgl.LngLat;
+  centre: LngLat;
   zoom: number;
 }
 
@@ -226,7 +231,8 @@ export function buildNodeIdLocationLookup(
 export async function getIntersections(): Promise<IntersectionStats[]> {
   let data: IntersectionMeasurementResult[] = [];
   try {
-    data = await getIntersectionMeasurements();
+    console.warn('noop - get data here');
+    // data = await getIntersectionMeasurements();
   } catch (e) {
     // TODO: Adding logging
     alert(

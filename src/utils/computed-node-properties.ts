@@ -1,6 +1,6 @@
 import {
-  fetchAllCachedNodeProperties,
-  insertComputedNodeProperties,
+  // fetchAllCachedNodeProperties,
+  // insertComputedNodeProperties,
 } from "../api/db";
 import { fetchOsmWaysForNode, requestOsmNodePosition } from "../api/osm";
 import {
@@ -56,14 +56,14 @@ export async function computedNodeProperties(
   
   const newIntersections: IntersectionStatsWithComputed[] = [];
 
-  console.log(`Fetching cached node ids from DB...`);
-  const cachedNodeProperties = await fetchAllCachedNodeProperties();
-  console.log(`Cache length: ${cachedNodeProperties.length} nodes.`);
+  // console.log(`Fetching cached node ids from DB...`);
+  // const cachedNodeProperties = await fetchAllCachedNodeProperties();
+  // console.log(`Cache length: ${cachedNodeProperties.length} nodes.`);
 
-  const cachedNodeIdsMap = new Map<number, ComputedNodeProperties>();
-  cachedNodeProperties.forEach((value) => {
-    cachedNodeIdsMap.set(value.osmId, value);
-  });
+  // const cachedNodeIdsMap = new Map<number, ComputedNodeProperties>();
+  // cachedNodeProperties.forEach((value) => {
+  //   cachedNodeIdsMap.set(value.osmId, value);
+  // });
 
   const signalNodeIdToCouncilNameMap = 
     // Only generate map if on backend. If on frontend and it's cached
@@ -75,18 +75,18 @@ export async function computedNodeProperties(
   // We intentionally want to do this in serial to avoid hitting OSM API all at once
   for (let i = 0; i < osmNodeIds.length; i++) {
     const nodeId = osmNodeIds[i];
-    if (cachedNodeIdsMap.has(nodeId)) {
-      const cachedProperties = cachedNodeIdsMap.get(
-        nodeId
-      ) as ComputedNodeProperties;
-      newIntersections.push({
-        ...intersections[i],
-        ...cachedProperties,
-        // TODO: This is a hack - we shouldn't be storing averages in the DB.
-        ...computeAverages(intersections[i]),
-      });
-      continue;
-    }
+    // if (cachedNodeIdsMap.has(nodeId)) {
+    //   const cachedProperties = cachedNodeIdsMap.get(
+    //     nodeId
+    //   ) as ComputedNodeProperties;
+    //   newIntersections.push({
+    //     ...intersections[i],
+    //     ...cachedProperties,
+    //     // TODO: This is a hack - we shouldn't be storing averages in the DB.
+    //     ...computeAverages(intersections[i]),
+    //   });
+    //   continue;
+    // }
     console.log(`Cache miss for node ${nodeId}. Fetching from OSM API.`);
 
     const intersection: IntersectionStats = intersections[i];
@@ -136,14 +136,9 @@ export async function computedNodeProperties(
     newIntersections.push(intersectionStatsWithComputed);
 
     // If we're in the backend maintenance script, insert the computed properties into the DB.
-    if (serviceRoleSupabase) {
-      console.log(`Inserting computed properties for node ${nodeId} into DB.`);
-      await insertComputedNodeProperties(
-        nodeId,
-        allComputedProperties,
-        serviceRoleSupabase
-      );
-    }
+    const secondsToWait = 3;
+    console.log(`Waiting for ${secondsToWait} seconds...`)
+    await new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
   }
   return newIntersections;
 }

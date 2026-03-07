@@ -15,13 +15,9 @@ See http://betterintersections.jakecoppinger.com/about
 
 # Architecture
 
-Better Intersections is a statically build Typescript app hosted on Cloudflare pages.
+Better Intersections is a Next.js typescript app.
 
-Data is stored in a Postgres database in Supabase. Pin locations are looked up using the
-OpenStreetMap API.
-
-It has a performance overhead loading the pins for the first time but ensures the data is as fresh
-as possible (to encourage community contributions).
+Data is stored in a Postgres database in Supabase. Data is fetchd from OpenStreetMap (either via the API or via Overpass) when adding new pins.
 
 # Development
 
@@ -58,6 +54,8 @@ See Jest docs for args for watching files etc.
 
 ## Caching data
 
+TODO: This section is outdated.
+
 A number of requests are made to the OSM API to display pins correctly, but in addition to perform
 data analysis.
 
@@ -66,9 +64,6 @@ The frontend first checks if any data about an OSM node is cached on the backend
 If an OSM node can't be found in the cache these requests will be send from the frontend. This
 occurs in the case where new measurements of a new intersection have been added since the last cache
 update.
-
-To support [Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
-updating the cache requires locally running a maintenance script. See `package.json` for details.
 
 ## Production build
 
@@ -79,18 +74,9 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 
-## Deploying to Cloudflare Pages using Wrangler
-
-Note: You'll need to set up your own Cloudflare pages site if you'd like to do this.
-
-Docs: https://developers.cloudflare.com/pages/get-started/direct-upload/
-
-- First login to wrangler: `npx wrangler login`
-- Choose project and deploy (running tests and build beforehand): `npm run deploy`
-
 # Authors
 
-Started by Jake Coppinger. Hosting (Cloudflare Pages, Supabase) and domain under his name.
+Started and maintined by Jake Coppinger.
 
 See contributors on Github: https://github.com/jakecoppinger/better-intersections/graphs/contributors
 

@@ -68,6 +68,9 @@ export async function generateSignalNodeIdToCouncilNameMap(intersections: Inters
         trafficSignalToCouncilLookup.set(intersection.osmId, council.councilName);
       }
     }
+    const secondsToWait = 3;
+    console.log(`Waiting for ${secondsToWait} seconds...`)
+    await new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
   }
   return trafficSignalToCouncilLookup;
 }
